@@ -827,6 +827,11 @@ class Pos_invoices extends CI_Controller
         $data['attach'] = $this->invocies->attach($tid);
         if ($data['invoice']['id']) $data['products'] = $this->invocies->invoice_products($tid);
         if ($data['invoice']['id']) $data['activity'] = $this->invocies->invoice_transactions($tid);
+        
+        $this->load->model('customers_model', 'customers');
+        
+        $data['due'] = $this->customers->due_details($data['invoice']['csd']);
+
         $data['c_custom_fields'] = $this->custom->view_fields_data($data['invoice']['cid'], 1);
 
         $this->load->library("Printer");

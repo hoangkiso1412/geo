@@ -220,6 +220,7 @@
         <th><?php echo $this->lang->line('Price') ?></th>
         <th><?php echo $this->lang->line('Qty') ?></th>
         <th><?php echo $this->lang->line('Amount') ?></th>
+        <th><?php echo $this->lang->line('Pay') ?></th>
     </tr>
 
     <?php
@@ -233,7 +234,8 @@
 		      <td class="description">' . $row['product_des'] . '</td>
 		      <td>' . amountExchange($row['price'], $invoice['multi'], $invoice['loc']) . '</td>
 		      <td>' . +$row['qty'] . $row['unit'] . '</td>
-		      <td>' . amountExchange($row['subtotal'], $invoice['multi'], $invoice['loc']) . '</td>
+              <td>' . amountExchange($row['subtotal'], $invoice['multi'], $invoice['loc']) . '</td>
+              <td style="text-align: center;">'; echo $row['pay'] == 1 ? 'Yes' : 'No'; echo '</td>
 		  </tr>';
 
 

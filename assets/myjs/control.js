@@ -11,14 +11,18 @@ function selectCustomer(cid, cname, cadd1, cadd2, ph, email, discount = 0) {
     $("#customer").show();
 }
 
-function PselectCustomer(cid, cname, discount) {
+function PselectCustomer(cid, cname, discount, due) {
     $('#customer_id').val(cid);
     $('#custom_discount').val(discount);
 
     $('#customer_name').html('<strong>' + cname + '</strong>');
+    if (due != 0) {
+        $('#alert-due').html('<div id="notify" class="alert alert-primary alert-danger" style=""><a href="#" class="close" data-dismiss="alert">×</a><div class="message"><strong>Error</strong>: You have an older due the value is <strong>' + due + '</strong>.</div></div>')
+    }
     $("#customer-box-result").hide();
     $("#customer").show();
 }
+
 
 function selectSupplier(cid, cname, cadd1, cadd2, ph, email) {
     $('#customer_id').val(cid);

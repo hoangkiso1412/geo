@@ -335,6 +335,9 @@ class Invoices extends CI_Controller
         $tid = $this->input->get('id');
         $data['invoice'] = $this->invocies->invoice_details($tid, $this->limited);
         $data['attach'] = $this->invocies->attach($tid);
+        $this->load->model('customers_model', 'customers');
+        
+            $data['due'] = $this->customers->due_details($data['invoice']['csd']);
         $data['c_custom_fields'] = $this->custom->view_fields_data($data['invoice']['cid'], 1);
         $head['usernm'] = $this->aauth->get_user()->username;
         $head['title'] = "Invoice " . $data['invoice']['tid'];
@@ -348,6 +351,7 @@ class Invoices extends CI_Controller
         }
         $this->load->view('fixed/footer');
     }
+
 
     public function printinvoice()
     {

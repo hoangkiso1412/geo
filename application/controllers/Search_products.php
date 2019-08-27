@@ -181,13 +181,17 @@ class Search_products extends CI_Controller
             echo '<ol>';
             $i = 1;
             foreach ($result as $row) {
-                echo "<li onClick=\"PselectCustomer('" . $row['id'] . "','" . $row['name'] . " ','" . amountFormat_general($row['discount_c']) . "')\"><span>$i</span><p>" . $row['name'] . " &nbsp; &nbsp  " . $row['phone'] . "</p></li>";
+                $query2 = $this->db->query("SELECT SUM(total) AS total,SUM(pamnt) AS pamnt,SUM(discount) AS discount FROM geopos_invoices where csd = ". $row['id'] ."");
+                $this->db->where('csd', $row['id']);
+                $ret = $query2->row();
+                echo "<li onClick=\"PselectCustomer('" . $row['id'] . "','" . $row['name'] . " ','" . amountFormat_general($row['discount_c']) . "','" . ((int)$ret->total - (int)$ret->pamnt) . "')\"><span>$i</span><p>" . $row['name'] . " &nbsp; &nbsp  " . $row['phone'] . " &nbsp; &nbsp  due: <span class='text-danger'>" . ((int)$ret->total - (int)$ret->pamnt) . "</span></p></li>";
                 $i++;
             }
             echo '</ol>';
         }
 
     }
+
 
 
     public function supplier()

@@ -68,7 +68,9 @@ class Billing extends CI_Controller
             if (CUSTOM) $data['c_custom_fields'] = $this->custom->view_fields_data($data['invoice']['cid'], 1, 1);
             $data['gateway'] = $this->billing->gateway_list('Yes');
 
-
+            $this->load->model('customers_model', 'customers');
+        
+            $data['due'] = $this->customers->due_details($data['invoice']['csd']);
             $data['employee'] = $this->invocies->employee($data['invoice']['eid']);
 
             $head['usernm'] = '';

@@ -34,16 +34,19 @@
 
                         <br>
                         <div class="row bg-gradient-directional-purple white m-0 pt-1 pb-1">
-                            <div class="col-6 ">
+                            <div class="col-5 ">
                                 <i class="fa fa-briefcase"></i>
                                 <?php echo $this->lang->line('Products') ?></th>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <i class="fa fa-money"></i><?php echo $this->lang->line('Price') ?>
                             </div>
                             <div class="col-3">
                                 <i
                                         class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Total') ?>
+                            </div>
+                            <div class="col-2">
+                                <i class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Pay') ?>
                             </div>
                         </div>
                         <div id="saman-pos2">

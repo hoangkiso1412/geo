@@ -11,6 +11,15 @@
 
                 <div class="message"></div>
             </div>
+            <?php 
+            $due_amount = ((int)$due['total'] - (int)$due['pamnt']);
+            if ($due_amount != 0) { ?>
+            <div  class="alert alert-danger">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+
+                <div class="message"><?php echo $this->lang->line('You have an older due the value is') ?> <strong><?php echo $due_amount ?></strong></div>
+            </div>
+            <?php } ?>
             <div id="invoice-template" class="card-body">
                 <div class="row">
 

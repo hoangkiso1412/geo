@@ -605,7 +605,6 @@ class Settings extends CI_Controller
         $this->load->view('settings/custom_field', $data);
         $this->load->view('fixed/footer');
     }
-
     public function add_custom_field()
     {
         $this->li_a = 'advance';
@@ -616,7 +615,7 @@ class Settings extends CI_Controller
             $f_view = $this->input->post('f_view', true);
             $f_required = $this->input->post('f_required', true);
             $f_placeholder = $this->input->post('f_placeholder', true);
-            $f_description = $this->input->post('f_description', true);
+            $f_description = $this->input->post('f_description', true) ? $this->input->post('f_description', true) : json_encode($this->input->post('f_option', true)); 
             $this->settings->custom_field_add($f_name, $f_type, $f_module, $f_view, $f_required, $f_placeholder, $f_description);
         } else {
             $head['title'] = "Custom Form Fields Settings";
@@ -626,6 +625,7 @@ class Settings extends CI_Controller
             $this->load->view('fixed/footer');
         }
     }
+
 
     public function edit_custom_field()
     {

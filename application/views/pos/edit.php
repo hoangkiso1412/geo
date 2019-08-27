@@ -24,6 +24,7 @@
                 </div>
             </div>
             <div id="saman-row-pos" class="rqw mt-1">
+                <div class="mt-1" id="alert-due"></div>
                 <div class="col-md-12">
                     <table id="pos_list" class="table-responsive tfr pos_stripe">
                         <thead>
