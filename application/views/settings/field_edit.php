@@ -53,28 +53,57 @@
                         </select>
                     </div>
                 </div>
+                <?php if ($customfields['f_type'] == 'text') { ?>
                 <div class="form-group row">
 
-                    <label class="col-sm-2 col-form-label"
-                           for="f_placeholder">PlaceHolder</label>
+                    <label class="col-sm-2 col-form-label" for="f_placeholder">PlaceHolder</label>
 
                     <div class="col-sm-6">
-                        <input type="text" placeholder="Field PlaceHolder "
-                               class="form-control margin-bottom required" name="f_placeholder"
-                               value="<?= $customfields['placeholder'] ?>">
+                        <input type="text" placeholder="Field PlaceHolder " class="form-control margin-bottom"
+                            name="f_placeholder" value="<?= $customfields['placeholder'] ?>">
                     </div>
                 </div>
                 <div class="form-group row">
 
                     <label class="col-sm-2 col-form-label"
-                           for="f_placeholder"><?php echo $this->lang->line('Description') ?></label>
+                        for="f_placeholder"><?php echo $this->lang->line('Description') ?></label>
 
                     <div class="col-sm-6">
-                        <input type="text" placeholder="Field Description "
-                               class="form-control margin-bottom" name="f_description"
-                               value="<?= $customfields['value_data'] ?>">
+                        <input type="text" placeholder="Field Description " class="form-control margin-bottom"
+                            name="f_description" value="<?= $customfields['value_data'] ?>">
                     </div>
                 </div>
+                <?php } else if ($customfields['f_type'] == 'select') { ?>
+                <?php foreach (json_decode($customfields['value_data']) as $key => $data) { ?>
+                <?php if ($key === 0) { ?> 
+                    <div class="form-group row field_wrapper options-field">
+
+                    <label class="col-sm-2 col-form-label" id="label-option"
+                        for="f_placeholder"><?php echo $this->lang->line('Option') ?></label>
+
+                    <div class="col-sm-6" id="input-option">
+                        <input type="text" placeholder="Field Option " class="form-control f-option margin-bottom"
+                            name="f_option[]" value="<?php echo $data ?>">
+                    </div>
+                    <a href="javascript:void(0);" class="btn btn-primary btn-md t_tooltip add_button">Add Options</a>
+                </div>
+                <?php } else { ?>
+                    <div class="options-array-edit">
+                        <div class="form-group row options-field">
+                            <label class="col-sm-2 col-form-label" id="label-option"
+                                for="f_placeholder"><?php echo $this->lang->line('Option') . ' ' . $i = $key + 1 ?></label>
+
+                            <div class="col-sm-6" id="input-option">
+                                <input type="text" placeholder="Field Option " class="form-control f-option margin-bottom"
+                                    name="f_option[]" value="<?php echo $data ?>">
+                            </div>
+                            <a href="javascript:void(0);" class="btn btn-danger btn-md t_tooltip remove_button">Remove</a>
+                        </div>
+                    </div>
+                    <div class="options-input"></div>
+                <?php } ?>
+                <?php }
+                }?>
                 <div class="form-group row">
 
                     <label class="col-sm-2 col-form-label"></label>
@@ -92,4 +121,44 @@
         </div>
     </div>
 </article>
+<script>
+$(document).ready(function () {
+        var maxField = 10; //Input fields increment limitation
+        var addButton = $('.add_button'); //Add button selector
+        var wrapper = $('.options-input'); //Input field wrapper
+        var arrayEdit = $('.options-array-edit'); //array edit
+        var fieldHTML =
+            `<div class="form-group row options-field">
 
+                <label class="col-sm-2 col-form-label" id="label-option"
+                    for="f_placeholder"><?php echo $this->lang->line('Option') ?></label>
+
+                <div class="col-sm-6" id="input-option">
+                    <input type="text" placeholder="Field Option " class="form-control f-option margin-bottom"
+                        name="f_option[]">
+                </div>
+                <a href="javascript:void(0);" class="btn btn-danger btn-md t_tooltip remove_button">Remove</a>
+                </div>`; //New input field html 
+        var x = 1; //Initial field counter is 1
+
+        //Once add button is clicked
+        $(addButton).click(function () {
+            //Check maximum number of input fields
+            if (x < maxField) {
+                x++; //Increment field counter
+                $(wrapper).append(fieldHTML); //Add field html
+            }
+        });
+
+        //Once remove button is clicked
+        $(wrapper).on('click', '.remove_button', function (e) {
+            e.preventDefault();
+            $(this).parent('div').remove(); //Remove field html
+            x--; //Decrement field counter
+        });
+        $(arrayEdit).on('click', '.remove_button', function (e) {
+            e.preventDefault();
+            $(this).parent('div').remove(); //Remove field html
+            x--; //Decrement field counter
+        });
+    });</script>
