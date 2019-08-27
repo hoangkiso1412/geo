@@ -150,11 +150,16 @@ class Products extends CI_Controller
         $brand = $this->input->post('brand');
         $related_product = json_encode($this->input->post('related_product'));
         $favorite = $this->input->post('favorite') ? 1 : 0;
+        $wholesale = $this->input->post('wholesale');
+        $product_status = $this->input->post('product_status');
+        $bundle_products = json_encode($this->input->post('bundle_products'));
 
         if ($catid) {
-            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite);
+            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products);
         }
     }
+
+
 
     public function delete_i()
     {
@@ -190,7 +195,7 @@ class Products extends CI_Controller
         $data['cat_ware'] = $this->categories_model->cat_ware($pid);
         $data['cat_sub'] = $this->categories_model->sub_cat($data['product']['pcat']);
         $data['cat_sub_list'] = $this->categories_model->sub_cat_list($data['product']['pcat']);
-        if ($data['product']['related_product'] != 'null') {
+        if ($data['product']['related_product'] != 'null' && $data['product']['related_product']) {
 
             $related_product_id  = implode(',', json_decode($data['product']['related_product']));
             
@@ -198,9 +203,21 @@ class Products extends CI_Controller
             $query2 = $this->db->query($query2);
             $data['rese22'] = $query2->result_array();
             
-            $query3 = "SELECT * FROM geopos_products WHERE pid not in($related_product_id)";   
+            $query3 = "SELECT * FROM geopos_products";   
             $query3 = $this->db->query($query3);
             $data['related_product'] = $query3->result_array();
+        }
+        if ($data['product']['bundle_products'] != 'null' && $data['product']['bundle_products']) {
+
+            $bundle_products_id  = implode(',', json_decode($data['product']['bundle_products']));
+            
+            $query4 = "SELECT * FROM geopos_products WHERE pid in($bundle_products_id)";   
+            $query4 = $this->db->query($query4);
+            $data['rese23'] = $query4->result_array();
+            
+            $query5 = "SELECT * FROM geopos_products WHERE pid in($bundle_products_id)";   
+            $query5 = $this->db->query($query5);
+            $data['bundle_products'] = $query5->result_array();
         }
 
         $data['warehouse'] = $this->categories_model->warehouse_list();
@@ -213,6 +230,8 @@ class Products extends CI_Controller
         $this->load->view('fixed/footer');
 
     }
+          
+
 
     public function editproduct()
     {
@@ -235,12 +254,18 @@ class Products extends CI_Controller
         $sub_cat = $this->input->post('sub_cat');
         $related_product = json_encode($this->input->post('related_product'));
         $favorite = $this->input->post('favorite') ? 1 : 0;
-        if (!$sub_cat) $sub_cat = 0;
+        $wholesale = $this->input->post('wholesale');
+        $product_status = $this->input->post('product_status');
+        $bundle_products = json_encode($this->input->post('bundle_products'));
+
+        if (!$sub_cat) $sub_cat = 0;    
         $brand = $this->input->post('brand');
         if ($pid) {
-            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite);
+            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products);
         }
     }
+
+
 
 
     public function warehouseproduct_list()

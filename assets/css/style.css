@@ -597,9 +597,6 @@ text-transform: capitalize;
     .p-mobile {
         padding: 0.3rem !important;
     }
-    .p-width {
-            width: 145% !important;
-    }
 }
 
 .form-control-sm {
@@ -610,4 +607,18 @@ text-transform: capitalize;
     font-size: 0.875rem;
     line-height: 1;
     border-radius: 0.21rem;
+}
+.favorite-products {
+    position: absolute;
+    top: 18px;
+    left: 17px;
+    font-size: 21px;
+    color: #ff7588;
+}
+.bundle-products {
+    position: absolute;
+    top: 18px;
+    right: 17px;
+    font-size: 21px;
+    color: #5a6c8d;
 }

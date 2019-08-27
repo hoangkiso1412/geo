@@ -1,14 +1,13 @@
-<?php
+<?php 
 $lang['Select Products'] = "Select Products";
 $lang['Bundle Products'] = "Bundle Products";
 $lang['New'] = "New";
 $lang['Used'] = "Used";
 $lang['Product Status'] = "Product Status";
 $lang['Wholesale-Price'] = "Wholesale Price";
-$lang['Related Product'] = "Related Product";            
-$lang['Option'] = "Option"; 
-$lang['Pay'] = "Pay";
-$lang['You have an older due the value is'] = "You have an older due the value is";
+$lang['Related Product'] = "Related Product";    
+$lang['Favorite'] = "Favorite Product";        
+$lang['Option'] = "Option";
 $lang['Date'] = "Date";
 $lang['Edit'] = "Edit";
 $lang['employee_login_panel'] = "Employee Login Panel";
@@ -104,6 +103,7 @@ $lang['Customer'] = "Customer";
 $lang['Due'] = "Due";
 $lang['Status'] = "Status";
 $lang['Amount'] = "Amount";
+$lang['Pay'] = "Pay";
 $lang['net_income'] = "Net Income";
 $lang['cashflow'] = "Cashflow";
 $lang['task_manager'] = "Task Manager";
@@ -819,6 +819,3 @@ $lang['Label'] = "Label";
 $lang['Sub'] = "Sub";
 $lang['Hours'] = "Hours";
 $lang['List'] = "List";
-$lang['Low'] = "Low";
-$lang['Medium'] = "Medium";
-$lang['High'] = "High";

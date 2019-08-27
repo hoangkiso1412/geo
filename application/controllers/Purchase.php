@@ -506,6 +506,28 @@ class Purchase extends CI_Controller
             'Purchase Order Status updated successfully!', 'pstatus' => $status));
     }
 
+    public function product_fetching()
+    {
+        $category = $this->input->get('category');
+        $sub_cat = $this->input->get('sub_cat');
+
+        $this->db->select('geopos_products.*, category.title as category_title, sub_cat.title as sub_cat_title, geopos_warehouse.title as warehouse_title');
+        $this->db->from('geopos_products');
+        if ($category > 0) {
+            $this->db->where('pcat', $category);
+        }
+        if ($sub_cat > 0) {
+            $this->db->where('sub_id', $sub_cat);
+        }
+        $this->db->join('`geopos_product_cat` `category`', 'category.id = geopos_products.pcat');
+        $this->db->join('`geopos_product_cat` `sub_cat`', 'geopos_products.sub_id=sub_cat.id AND (sub_cat.c_type=1)', 'left');
+        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
+
+        $query = $this->db->get();
+        $result = $query->result_array();
+        echo json_encode($result);
+    }
+
     public function file_handling()
     {
         if ($this->input->get('op')) {
