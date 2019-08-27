@@ -1,4 +1,8 @@
 <?php
+$lang['New'] = "New";
+$lang['Used'] = "Used";
+$lang['Product Status'] = "Product Status";
+$lang['Wholesale-Price'] = "Wholesale Price";
 $lang['Related Product'] = "Related Product";            
 $lang['Option'] = "Option"; 
 $lang['Pay'] = "Pay";

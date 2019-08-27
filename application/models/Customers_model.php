@@ -178,7 +178,7 @@ class Customers_model extends CI_Model
     }
 
 
-    public function add($name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $language = '', $create_login = true, $password = '', $docid = '', $custom = '', $discount = 0)
+    public function add($name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $language = '', $create_login = true, $password = '', $docid = '', $custom = '', $discount = 0, $wholesale = 0)
     {
         $this->db->select('email');
         $this->db->from('geopos_customers');
@@ -186,7 +186,6 @@ class Customers_model extends CI_Model
         $query = $this->db->get();
         $valid = $query->row_array();
         if (!$valid['email']) {
-
 
             if (!$discount) {
                 $this->db->select('disc_rate');
@@ -196,7 +195,6 @@ class Customers_model extends CI_Model
                 $result = $query->row_array();
                 $discount = $result['disc_rate'];
             }
-
 
             $data = array(
                 'name' => $name,
@@ -220,9 +218,9 @@ class Customers_model extends CI_Model
                 'postbox_s' => $postbox_s,
                 'docid' => $docid,
                 'custom1' => $custom,
-                'discount_c' => $discount
+                'discount_c' => $discount,
+                'wholesale' => $wholesale
             );
-
 
             if ($this->aauth->get_user()->loc) {
                 $data['loc'] = $this->aauth->get_user()->loc;
@@ -287,7 +285,7 @@ class Customers_model extends CI_Model
     }
 
 
-    public function edit($id, $name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $docid = '', $custom = '', $language = '', $discount = 0)
+    public function edit($id, $name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $docid = '', $custom = '', $language = '', $discount = 0, $wholesale = 0)
     {
         $data = array(
             'name' => $name,
@@ -311,9 +309,9 @@ class Customers_model extends CI_Model
             'postbox_s' => $postbox_s,
             'docid' => $docid,
             'custom1' => $custom,
-            'discount_c' => $discount
+            'discount_c' => $discount,
+            'wholesale' => $wholesale
         );
-
 
         $this->db->set($data);
         $this->db->where('id', $id);
@@ -341,7 +339,6 @@ class Customers_model extends CI_Model
             echo json_encode(array('status' => 'Error', 'message' =>
                 $this->lang->line('ERROR')));
         }
-
     }
 
     public function changepassword($id, $password)
