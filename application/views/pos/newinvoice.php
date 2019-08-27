@@ -1,892 +1,1118 @@
-<div id="purchase">
-        <div class="content-body">
-            <div class="card">
-                <div class="card-content">
-                    <div id="notify" class="alert alert-success" style="display:none;">
-                        <a href="#" class="close" data-dismiss="alert">&times;</a>
-                        <div class="message"></div>
+<form method="post" id="data_form" class="content-body">
+    <div class="sidebar-left sidebar-fixed bg-white">
+        <div class="sidebar">
+            <div class="sidebar-content ">
+                <div class="card-body chat-fixed-search">
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="ft-search"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="pos-customer-box"
+                               placeholder="<?php echo $this->lang->line('Enter Customer Name'); ?>"
+                               aria-describedby="button-addon2">
+                        <div class="input-group-append" id="button-addon2">
+                            <button class="btn btn-primary" type="button" data-toggle="modal"
+                                    data-target="#Pos_addCustomer"> <?php echo $this->lang->line('Add') ?></button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form method="post" id="data_form">
+                    <div id="customer-box-result" class="col-md-12"></div>
+                    <div id="customer" class="col-md-12 ml-3">
+                        <div class="clientinfo">
 
-                            <div class="row">
+                            <input type="hidden" name="customer_id" id="customer_id" value="1">
+                            <div id="customer_name"><?php echo $this->lang->line('Default'); ?>: <strong>Walk
+                                    In </strong></div>
+                        </div>
 
-                                <div class="col-sm-4">
 
-                                </div>
+                    </div>
 
-                                <div class="col-sm-3"></div>
+                </div>
+                <div>
+                    <div class="mt-1" id="alert-due"></div>
+                    <div class="users-list-padding media-list">
 
-                                <div class="col-sm-2"></div>
-
-                                <div class="col-sm-3">
-
-                                </div>
-
+                        <br>
+                        <div class="row bg-gradient-directional-purple white m-0 pt-1 pb-1">
+                            <div class="col-4 ">
+                                <i class="fa fa-briefcase"></i>
+                                <?php echo $this->lang->line('Products') ?></th>
                             </div>
+                            <div class="col-3">
+                                <i class="fa fa-money"></i><?php echo $this->lang->line('Price') ?>
+                            </div>
+                            <div class="col-3">
+                                <i
+                                        class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Total') ?>
+                            </div>
+                            <div class="col-2">
+                                <i class="fa fa-money"></i> <?php echo $this->lang->line('Pay') ?>
+                            </div>
+                        </div>
+                        <div id="saman-pos2">
+                            <div id="pos_items"></div>
+                        </div>
+                        <input type="hidden" name="total" class="form-control"
+                               id="invoiceyoghtml" readonly="">
+                        <hr class="mt-1">
+                        <div class="row m-2">
+                            <div class="col-3">
+                                <strong> <?php echo $this->lang->line('Shipping') ?></strong>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" class="form-control form-control-sm shipVal"
+                                       onkeypress="return isNumber(event)"
+                                       placeholder="Value"
+                                       name="shipping" autocomplete="off"
+                                       onkeyup="billUpyog()">
+                            </div>
+                            <div class="col-3">
+                                ( <?php echo $this->lang->line('Tax') ?> <?= $this->config->item('currency'); ?>
+                                <span id="ship_final">0</span> )
+                            </div>
+                        </div>
 
-                            <div class="row">
 
-                                <div class="col-sm-6 cmp-pnl">
-                                    <div id="customerpanel" class="inner-cmp-pnl">
-                                        <div class="form-group row">
-                                            <div class="fcol-sm-12">
-                                                <h3 class="title">
-                                                    <?php echo $this->lang->line('Bill From') ?> <a href='#'
-                                                        class="btn btn-primary btn-sm rounded" data-toggle="modal"
-                                                        data-target="#addCustomer">
-                                                        <?php echo $this->lang->line('Add Supplier') ?>
-                                                    </a>
-                                            </div>
-                                        </div>
+                        <div class="row m-2">
+                            <div class="col-3">
+                                <strong> <?php echo $this->lang->line('Total Tax') ?></strong>
+                            </div>
+                            <div class="col-3"><?php echo currency($this->aauth->get_user()->loc);
+                                ?>
+                                <span id="taxr" class="mr-1">0</span>
+                            </div>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col-3">
+                                <strong> <?php echo $this->lang->line('Total Discount') ?></strong>
+                            </div>
+                            <div class="col-9"><?php echo currency($this->aauth->get_user()->loc);
+                                ?>
+                                <span id="discs"
+                                      class="lightMode mr-1">0</span>
+                                <small>(<?php echo $this->lang->line('Products') ?>)</small>
+                            </div>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col-3">
+                                <strong> <?php echo $this->lang->line('Grand Total') ?></strong>
+                            </div>
+                            <div class="col-9"><?php echo currency($this->aauth->get_user()->loc);
+                                ?>
+                                <span class="font-medium-1 blue text-bold-600"
+                                      id="bigtotal">0.00</span>
+                            </div>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col-3">
+                                <strong> <?php echo $this->lang->line('Extra') . ' ' . $this->lang->line('Discount') ?></strong>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" class="form-control form-control-sm discVal"
+                                       onkeypress="return isNumber(event)"
+                                       placeholder="Value" value="0"
+                                       name="disc_val" autocomplete="off"
+                                       onkeyup="billUpyog()">
+                                <input type="hidden"
+                                       name="after_disc" id="after_disc" value="0">
+                            </div>
+                            <div class="col-3">
+                                ( <?= $this->config->item('currency'); ?>
+                                <span id="disc_final">0</span> )
+                            </div>
+                        </div>
 
-                                        <div class="form-group row">
-                                            <div class="frmSearch col-sm-12"><label for="cst"
-                                                    class="caption"><?php echo $this->lang->line('Search Supplier') ?>
-                                                </label>
-                                                <input type="text" class="form-control" name="cst" id="supplier-box"
-                                                    placeholder="Enter Supplier Name or Mobile Number to search"
-                                                    autocomplete="off" />
 
-                                                <div id="supplier-box-result"></div>
-                                            </div>
+                        <hr>
 
-                                        </div>
-                                        <div id="customer">
-                                            <div class="clientinfo">
-                                                <?php echo $this->lang->line('Supplier Details') ?>
-                                                <hr>
-                                                <input type="hidden" name="customer_id" id="customer_id" value="0">
-                                                <div id="customer_name"></div>
-                                            </div>
-                                            <div class="clientinfo">
+                        <div class="m-1">
 
-                                                <div id="customer_address1"></div>
-                                            </div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-primary  mr-1 mb-1" id="base-tab1" data-toggle="tab"
+                                       aria-controls="tab1" href="#tab1" role="tab" aria-selected="false"><i
+                                                class="fa fa-trophy"></i>
+                                        <?php echo $this->lang->line('Coupon') ?></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-secondary mr-1 mb-1" id="base-tab2" data-toggle="tab"
+                                       aria-controls="tab2" href="#tab2" role="tab" aria-selected="false"><i
+                                                class="icon-handbag"></i>
+                                        <?php echo $this->lang->line('POS') . ' ' . $this->lang->line('Settings') ?></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-danger  mr-1 mb-1" id="base-tab3" data-toggle="tab"
+                                       aria-controls="tab3" href="#tab3" role="tab" aria-selected="false"><i
+                                                class="fa fa-save"></i> <?php echo $this->lang->line('Draft') ?>(s)</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-success mb-1" id="base-tab4" data-toggle="tab"
+                                       aria-controls="tab4" href="#tab4" role="tab" aria-selected="false"><i
+                                                class="fa fa-cogs"></i>
+                                        <?php echo $this->lang->line('Invoice Properties') ?></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content px-1 pt-1">
+                                <div class="tab-pane" id="tab1" role="tabpanel" aria-labelledby="base-tab1">
+                                    <div class="input-group">
 
-                                            <div class="clientinfo">
+                                        <input type="text" class="form-control"
+                                               id="coupon" name="coupon"><input type="hidden"
+                                                                                name="coupon_amount"
+                                                                                id="coupon_amount"
+                                                                                value="0"><span
+                                                class="input-group-addon round"> <button
+                                                    class="apply_coupon btn btn-small btn-primary sub-btn"><?php echo $this->lang->line('Apply') ?></button></span>
 
-                                                <div type="text" id="customer_phone"></div>
-                                            </div>
-                                            <hr><?php echo $this->lang->line('Warehouse') ?> <select id="s_warehouses"
-                                                class="selectpicker form-control">
+
+                                    </div>
+                                    <input type="hidden" class="text-info" name="i_coupon" id="i_coupon"
+                                           value="">
+                                    <span class="text-primary text-bold-600" id="r_coupon"></span>
+                                </div>
+                                <div class="tab-pane" id="tab2" role="tabpanel" aria-labelledby="base-tab2">
+                                    <div class="row">
+                                        <div class="col-4 blue text-xs-center"><?php echo $this->lang->line('Warehouse') ?>
+                                            <select
+                                                    id="v2_warehouses"
+                                                    class="selectpicker form-control round teal">
                                                 <?php echo $this->common->default_warehouse();
                                                 echo '<option value="0">' . $this->lang->line('All') ?></option><?php foreach ($warehouse as $row) {
                                                     echo '<option value="' . $row['id'] . '">' . $row['title'] . '</option>';
                                                 } ?>
 
+                                            </select></div>
+                                        <div class="col-4 blue text-xs-center"><?php echo $this->lang->line('Tax') ?>
+                                            <select class="form-control round"
+                                                    onchange="changeTaxFormat(this.value)"
+                                                    id="taxformat">
+                                                <?php echo $taxlist; ?>
+                                            </select></div>
+                                        <div class="col-4 blue text-xs-center">  <?php echo $this->lang->line('Discount') ?>
+                                            <select class="form-control round teal"
+                                                    onchange="changeDiscountFormat(this.value)"
+                                                    id="discountFormat">
+
+                                                <?php echo $this->common->disclist() ?>
+                                            </select></div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab3" role="tabpanel" aria-labelledby="base-tab3">
+                                    <?php foreach ($draft_list as $rowd) {
+                                        echo '<li class="indigo p-1"><a href="' . base_url() . 'pos_invoices/draft?id=' . $rowd['id'] . '"> #' . $rowd['tid'] . ' (' . $rowd['invoicedate'] . ')</a></li>';
+                                    } ?>
+                                </div>
+                                <div class="tab-pane" id="tab4" role="tabpanel" aria-labelledby="base-tab4">
+                                    <div class="form-group row">
+                                        <div class="col-sm-3"><label for="invocieno"
+                                                                     class="caption"><?php echo $this->lang->line('Invoice Number') ?></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><span class="icon-file-text-o"
+                                                                                     aria-hidden="true"></span>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Invoice #"
+                                                       name="invocieno" id="invocieno"
+                                                       value="<?php echo $lastinvoice + 1 ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3"><label for="invocieno"
+                                                                     class="caption"><?php echo $this->lang->line('Reference') ?></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><span class="icon-bookmark-o"
+                                                                                     aria-hidden="true"></span>
+                                                </div>
+                                                <input type="text" class="form-control"
+                                                       placeholder="Reference #"
+                                                       name="refer">
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-sm-3"><label for="invociedate"
+                                                                     class="caption"><?php echo $this->lang->line('Invoice Date'); ?></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><span class="icon-calendar4"
+                                                                                     aria-hidden="true"></span>
+                                                </div>
+                                                <input type="text" class="form-control required"
+                                                       placeholder="Billing Date" name="invoicedate"
+                                                       data-toggle="datepicker"
+                                                       autocomplete="false">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3"><label for="invocieduedate"
+                                                                     class="caption"><?php echo $this->lang->line('Invoice Due Date') ?></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><span class="icon-calendar-o"
+                                                                                     aria-hidden="true"></span>
+                                                </div>
+                                                <input type="text" class="form-control required" id="tsn_due"
+                                                       name="invocieduedate"
+                                                       placeholder="Due Date" data-toggle="datepicker"
+                                                       autocomplete="false">
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <?php echo $this->lang->line('Payment Terms') ?> <select
+                                                    name="pterms"
+                                                    class="selectpicker form-control"><?php foreach ($terms as $row) {
+                                                    echo '<option value="' . $row['id'] . '">' . $row['title'] . '</option>';
+                                                } ?>
+
                                             </select>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 cmp-pnl">
-                                    <div class="inner-cmp-pnl">
-
-                                        <div class="form-group row">
-
-                                            <div class="col-sm-12">
-                                                <h3 class="title"><?php echo $this->lang->line('Purchase Order') ?>
-                                                </h3>
-                                            </div>
-
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-sm-6"><label for="invocieno"
-                                                    class="caption"><?php echo $this->lang->line('Order Number') ?>
-                                                </label>
-
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><span class="icon-file-text-o"
-                                                            aria-hidden="true"></span></div>
-                                                    <input type="text" class="form-control" placeholder="Invoice #"
-                                                        name="invocieno" value="<?php echo $lastinvoice + 1 ?>">
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6"><label for="invocieno"
-                                                    class="caption"><?php echo $this->lang->line('Reference') ?>
-                                                </label>
-
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><span class="icon-bookmark-o"
-                                                            aria-hidden="true"></span></div>
-                                                    <input type="text" class="form-control" placeholder="Reference #"
-                                                        name="refer">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-
-                                            <div class="col-sm-6"><label for="invociedate"
-                                                    class="caption"><?php echo $this->lang->line('Order Date') ?>
-                                                </label>
-
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><span class="icon-calendar4"
-                                                            aria-hidden="true"></span></div>
-                                                    <input type="text" class="form-control required"
-                                                        placeholder="Billing Date" name="invoicedate"
-                                                        data-toggle="datepicker" autocomplete="false">
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6"><label for="invocieduedate"
-                                                    class="caption"><?php echo $this->lang->line('Order Due Date') ?>
-                                                </label>
-
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><span class="icon-calendar-o"
-                                                            aria-hidden="true"></span></div>
-                                                    <input type="text" class="form-control required" id="tsn_due"
-                                                        name="invocieduedate" placeholder="Due Date"
-                                                        data-toggle="datepicker" autocomplete="false">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <div class="col-sm-6">
-                                                <label for="taxformat"
-                                                    class="caption"><?php echo $this->lang->line('Tax') ?> </label>
-                                                <select class="form-control round"
-                                                    onchange="changeTaxFormat(this.value)" id="taxformat">
-                                                    <?php echo $taxlist; ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-sm-6">
-
-                                                <div class="form-group">
-                                                    <label for="discountFormat"
-                                                        class="caption"><?php echo $this->lang->line('Discount') ?></label>
-                                                    <select class="form-control"
-                                                        onchange="changeDiscountFormat(this.value)" id="discountFormat">
-                                                        <?php echo $this->common->disclist() ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-sm-12">
-                                                <label for="toAddInfo"
-                                                    class="caption"><?php echo $this->lang->line('Order Note') ?>
-                                                </label>
-                                                <textarea class="form-control" name="notes" rows="2"></textarea></div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div id="saman-row">
-                                <a href="#" class="btn btn-info mb-2" data-toggle="modal"
-                                    data-target="#selectProducts">Select Products</a>
-                                <table class="table-responsive tfr my_stripe">
-                                    <thead>
-
-                                        <tr class="item_header bg-gradient-directional-amber">
-                                            <th width="30%" class="text-center">
-                                                <?php echo $this->lang->line('Item Name') ?>
-                                            </th>
-                                            <th width="8%" class="text-center">
-                                                <?php echo $this->lang->line('Quantity') ?>
-                                            </th>
-                                            <th width="10%" class="text-center"><?php echo $this->lang->line('Rate') ?>
-                                            </th>
-                                            <th width="10%" class="text-center">
-                                                <?php echo $this->lang->line('Tax') ?>(%)
-                                            </th>
-                                            <th width="10%" class="text-center"><?php echo $this->lang->line('Tax') ?>
-                                            </th>
-                                            <th width="7%" class="text-center">
-                                                <?php echo $this->lang->line('Discount') ?>
-                                            </th>
-                                            <th width="10%" class="text-center">
-                                                <?php echo $this->lang->line('Amount') ?>
-                                                (<?php echo $this->config->item('currency'); ?>)
-                                            </th>
-                                            <th width="5%" class="text-center"><?php echo $this->lang->line('Action') ?>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="jquery-tbody" v-show="checkProducts.length == 0">
-                                        <tr>
-                                            <td><input type="text" class="form-control text-center"
-                                                    name="product_name[]"
-                                                    placeholder="<?php echo $this->lang->line('Enter Product name') ?>"
-                                                    id='productname-0'>
-                                            </td>
-                                            <td><input type="text" class="form-control req amnt" name="product_qty[]"
-                                                    id="amount-0" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" value="1">
-                                            </td>
-                                            <td><input type="text" class="form-control req prc" name="product_price[]"
-                                                    id="price-0" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off"></td>
-                                            <td><input type="text" class="form-control vat " name="product_tax[]"
-                                                    id="vat-0" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off"></td>
-                                            <td class="text-center" id="texttaxa-0">0</td>
-                                            <td><input type="text" class="form-control discount"
-                                                    name="product_discount[]" onkeypress="return isNumber(event)"
-                                                    id="discount-0" onkeyup="rowTotal('0'), billUpyog()"
-                                                    autocomplete="off"></td>
-                                            <td><span
-                                                    class="currenty"><?php echo $this->config->item('currency'); ?></span>
-                                                <strong><span class='ttlText' id="result-0">0</span></strong></td>
-                                            <td class="text-center">
-
-                                            </td>
-                                            <input type="hidden" name="taxa[]" id="taxa-0" value="0">
-                                            <input type="hidden" name="disca[]" id="disca-0" value="0">
-                                            <input type="hidden" class="ttInput" name="product_subtotal[]" id="total-0"
-                                                value="0">
-                                            <input type="hidden" class="pdIn" name="pid[]" id="pid-0" value="0">
-                                            <input type="hidden" name="unit[]" id="unit-0" value=""><input type="hidden"
-                                                name="hsn[]" id="hsn-0" value="">
-                                        </tr>
-                                        <tr>
-                                            <td colspan="8"><textarea id="dpid-0" class="form-control"
-                                                    name="product_description[]"
-                                                    placeholder="<?php echo $this->lang->line('Enter Product description'); ?>"
-                                                    autocomplete="off"></textarea><br></td>
-                                        </tr>
-
-                                        <tr class="last-item-row">
-                                            <td class="add-row">
-                                                <button type="button" class="btn btn-success" aria-label="Left Align"
-                                                    id="addproduct">
-                                                    <i class="fa fa-plus-square"></i>
-                                                    <?php echo $this->lang->line('Add Row') ?>
-                                                </button>
-                                            </td>
-                                            <td colspan="7"></td>
-                                        </tr>
-
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="6" align="right"><input type="hidden" value="0" id="subttlform"
-                                                    name="subtotal"><strong><?php echo $this->lang->line('Total Tax') ?></strong>
-                                            </td>
-                                            <td align="left" colspan="2"><span
-                                                    class="currenty lightMode"><?php echo $this->config->item('currency'); ?></span>
-                                                <span id="taxr" class="lightMode">0</span></td>
-                                        </tr>
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="6" align="right">
-                                                <strong><?php echo $this->lang->line('Total Discount') ?></strong></td>
-                                            <td align="left" colspan="2"><span
-                                                    class="currenty lightMode"><?php echo $this->config->item('currency'); ?></span>
-                                                <span id="discs" class="lightMode">0</span></td>
-                                        </tr>
-
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="6" align="right">
-                                                <strong><?php echo $this->lang->line('Shipping') ?></strong></td>
-                                            <td align="left" colspan="2"><input type="text" class="form-control shipVal"
-                                                    onkeypress="return isNumber(event)" placeholder="Value"
-                                                    name="shipping" autocomplete="off" onkeyup="billUpyog();" >
-                                                ( <?php echo $this->lang->line('Tax') ?>
-                                                <?= $this->config->item('currency'); ?>
-                                                <span id="ship_final">0</span> )
-                                            </td>
-                                        </tr>
-
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="2">
-                                                <?php if ($exchange['active'] == 1){
-                                            echo $this->lang->line('Payment Currency client') . ' <small>' . $this->lang->line('based on live market') ?></small>
-                                                <select name="mcurrency" class="selectpicker form-control">
-                                                    <option value="0">Default</option>
-                                                    <?php foreach ($currency as $row) {
+                                            <?php if ($exchange['active'] == 1) {
+                                                echo $this->lang->line('Payment Currency client') ?>
+                                            <?php } ?>
+                                            <?php if ($exchange['active'] == 1) {
+                                                ?>
+                                                <select name="mcurrency"
+                                                        class="selectpicker form-control">
+                                                <option value="0">Default</option>
+                                                <?php foreach ($currency as $row) {
                                                     echo '<option value="' . $row['id'] . '">' . $row['symbol'] . ' (' . $row['code'] . ')</option>';
                                                 } ?>
 
-                                                </select><?php } ?></td>
-                                            <td colspan="4" align="right">
-                                                <strong><?php echo $this->lang->line('Grand Total') ?>
-                                                    (<span
-                                                        class="currenty lightMode"><?php echo $this->config->item('currency'); ?></span>)</strong>
-                                            </td>
-                                            <td align="left" colspan="2"><input type="text" name="total"
-                                                    class="form-control" id="invoiceyoghtml" readonly="" value="10">
+                                                </select><?php } ?>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="toAddInfo"
+                                                   class="caption"><?php echo $this->lang->line('Invoice Note') ?></label>
+                                            <textarea class="form-control" name="notes" rows="2"></textarea>
+                                        </div>
+                                    </div>
 
-                                            </td>
-                                        </tr>
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="2"><?php echo $this->lang->line('Payment Terms') ?> <select
-                                                    name="pterms" class="selectpicker form-control"><?php foreach ($terms as $row) {
-                                                    echo '<option value="' . $row['id'] . '">' . $row['title'] . '</option>';
-                                                } ?>
 
-                                                </select></td>
-                                            <td colspan="2">
-                                                <div>
-                                                    <label><?php echo $this->lang->line('Update Stock') ?></label>
-                                                    <fieldset class="right-radio">
-                                                        <div class="custom-control custom-radio">
-                                                            <input type="radio" class="custom-control-input"
-                                                                name="update_stock" id="customRadioRight1" value="yes"
-                                                                checked="">
-                                                            <label class="custom-control-label"
-                                                                for="customRadioRight1"><?php echo $this->lang->line('Yes') ?></label>
-                                                        </div>
-                                                    </fieldset>
-                                                    <fieldset class="right-radio">
-                                                        <div class="custom-control custom-radio">
-                                                            <input type="radio" class="custom-control-input"
-                                                                name="update_stock" id="customRadioRight2" value="no">
-                                                            <label class="custom-control-label"
-                                                                for="customRadioRight2"><?php echo $this->lang->line('No') ?></label>
-                                                        </div>
-                                                    </fieldset>
-
-                                                </div>
-                                            </td>
-                                            <td align="right" colspan="4"><input type="submit"
-                                                    class="btn btn-success sub-btn"
-                                                    value="<?php echo $this->lang->line('Generate Order') ?>"
-                                                    id="submit-data" @click="normalSubmit" data-loading-text="Creating...">
-
-                                            </td>
-                                        </tr>
-
-                                    </tbody>
-                                    <tbody id="vue-tbody" v-show="checkProducts.length != 0">
-                                        <template v-for="(product, key) in checkProducts">
-                                        <tr>
-                                            <td><input type="text" class="form-control text-center"
-                                                    name="product_name[]"
-                                                    placeholder="<?php echo $this->lang->line('Enter Product name') ?>"
-                                                    :id="'productname-'+key" :value="product.product_name">
-                                            </td>
-                                            <td><input type="text" class="form-control req amnt" name="product_qty[]"
-                                                    :id="'amount-'+key" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" value="1">
-                                            </td>
-                                            <td><input type="text" class="form-control req prc" name="product_price[]"
-                                                    :id="'price-'+key" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" :value="product.fproduct_price"></td>
-                                            <td><input type="text" class="form-control vat " name="product_tax[]"
-                                                    :id="'vat-'+key" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" :value="product.taxrate"></td>
-                                            <td class="text-center" :id="'texttaxa-'+key" v-html="((product.fproduct_price * product.taxrate) / 100).toFixed(2)"></td>
-                                            <td><input type="text" class="form-control discount"
-                                                    name="product_discount[]" onkeypress="return isNumber(event)"
-                                                    :id="'discount-'+key" onkeyup="rowTotal('0'), billUpyog()"
-                                                    autocomplete="off" :value="product.disrate"></td>
-                                            <td><span
-                                                    class="currenty"><?php echo $this->config->item('currency'); ?></span>
-                                                <strong><span class='ttlText' :id="'result-'+key" v-html="((((product.fproduct_price * product.taxrate) / 100) + + product.fproduct_price) - (((((product.fproduct_price * product.taxrate) / 100) + + product.fproduct_price) * product.disrate) / 100)).toFixed(2)">0</span></strong></td>
-                                            <td class="text-center">
-
-                                            </td>
-                                            <input type="hidden" name="taxa[]" :id="'taxa-'+key" :value="((product.fproduct_price * product.taxrate) / 100).toFixed(2)">
-                                            <input type="hidden" name="disca[]" :id="'disca-'+key" :value="((((((product.fproduct_price * product.taxrate) / 100) + + product.fproduct_price) * product.disrate) / 100)).toFixed(2)">
-                                            <input type="hidden" class="ttInput" name="product_subtotal[]" :id="'total-'+key"
-                                                :value="((((product.fproduct_price * product.taxrate) / 100) + + product.fproduct_price) - (((((product.fproduct_price * product.taxrate) / 100) + + product.fproduct_price) * product.disrate) / 100)).toFixed(2)">
-                                            <input type="hidden" class="pdIn" name="pid[]" :id="'pid-'+key" :value="product.pid">
-                                            <input type="hidden" name="unit[]" :id="'unit-'+key" :value="product.unit"><input type="hidden"
-                                                name="hsn[]" :id="'hsn-'+key" :value="product.product_code">
-                                        </tr>
-                                        <tr>
-                                            <td colspan="8"><textarea id="dpid-0" class="form-control"
-                                                    name="product_description[]"
-                                                    placeholder="<?php echo $this->lang->line('Enter Product description'); ?>"
-                                                    autocomplete="off"></textarea><br></td>
-                                        </tr>
-                                        </template>
-
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="6" align="right"><input type="hidden" :value="totalAmount" id="subttlform"
-                                                    name="subtotal"><strong><?php echo $this->lang->line('Total Tax') ?></strong>
-                                            </td>
-                                            <td align="left" colspan="2"><span
-                                                    class="currenty lightMode"><?php echo $this->config->item('currency'); ?></span>
-                                                <span id="taxr" class="lightMode" v-html="totalTax">0</span></td>
-                                        </tr>
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="6" align="right">
-                                                <strong><?php echo $this->lang->line('Total Discount') ?></strong></td>
-                                            <td align="left" colspan="2"><span
-                                                    class="currenty lightMode"><?php echo $this->config->item('currency'); ?></span>
-                                                <span id="discs" class="lightMode" v-html="totalDiscount">0</span></td>
-                                        </tr>
-
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="6" align="right">
-                                                <strong><?php echo $this->lang->line('Shipping') ?></strong></td>
-                                            <td align="left" colspan="2"><input type="text" class="form-control shipVal"
-                                                    onkeypress="return isNumber(event)" placeholder="Value"
-                                                    name="shipping" autocomplete="off" onkeyup="billUpyog();" v-model="shipValue">
-                                                ( <?php echo $this->lang->line('Tax') ?>
-                                                <?= $this->config->item('currency'); ?>
-                                                <span id="ship_final" v-html="shipFinal">0</span> )
-                                            </td>
-                                        </tr>
-
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="2">
-                                                <?php if ($exchange['active'] == 1){
-                                            echo $this->lang->line('Payment Currency client') . ' <small>' . $this->lang->line('based on live market') ?></small>
-                                                <select name="mcurrency" class="selectpicker form-control">
-                                                    <option value="0">Default</option>
-                                                    <?php foreach ($currency as $row) {
-                                                    echo '<option value="' . $row['id'] . '">' . $row['symbol'] . ' (' . $row['code'] . ')</option>';
-                                                } ?>
-
-                                                </select><?php } ?></td>
-                                            <td colspan="4" align="right">
-                                                <strong><?php echo $this->lang->line('Grand Total') ?>
-                                                    (<span
-                                                        class="currenty lightMode"><?php echo $this->config->item('currency'); ?></span>)</strong>
-                                            </td>
-                                            <td align="left" colspan="2"><input type="text" name="total"
-                                                    class="form-control" id="invoiceyoghtml" :value="totalAmount" readonly="">
-
-                                            </td>
-                                        </tr>
-                                        <tr class="sub_c" style="display: table-row;">
-                                            <td colspan="2"><?php echo $this->lang->line('Payment Terms') ?> <select
-                                                    name="pterms" class="selectpicker form-control"><?php foreach ($terms as $row) {
-                                                    echo '<option value="' . $row['id'] . '">' . $row['title'] . '</option>';
-                                                } ?>
-
-                                                </select></td>
-                                            <td colspan="2">
-                                                <div>
-                                                    <label><?php echo $this->lang->line('Update Stock') ?></label>
-                                                    <fieldset class="right-radio">
-                                                        <div class="custom-control custom-radio">
-                                                            <input type="radio" class="custom-control-input"
-                                                                name="update_stock" id="customRadioRight3" value="yes"
-                                                                checked="">
-                                                            <label class="custom-control-label"
-                                                                for="customRadioRight3"><?php echo $this->lang->line('Yes') ?></label>
-                                                        </div>
-                                                    </fieldset>
-                                                    <fieldset class="right-radio">
-                                                        <div class="custom-control custom-radio">
-                                                            <input type="radio" class="custom-control-input"
-                                                                name="update_stock" id="customRadioRight4" value="no">
-                                                            <label class="custom-control-label"
-                                                                for="customRadioRight4"><?php echo $this->lang->line('No') ?></label>
-                                                        </div>
-                                                    </fieldset>
-
-                                                </div>
-                                            </td>
-                                            <td align="right" colspan="4"><input type="submit"
-                                                    class="btn btn-success sub-btn"
-                                                    value="<?php echo $this->lang->line('Generate Order') ?>"
-                                                    id="submit-data-vue" @click="submit" data-loading-text="Creating...">
-
-                                            </td>
-                                        </tr>
-
-                                    </tbody>
-                                </table>
+                                </div>
                             </div>
+                        </div>
 
-                            <input type="hidden" value="purchase/action" id="action-url">
-                            <input type="hidden" value="puchase_search" id="billtype">
-                            <input type="hidden" value="0" name="counter" id="ganak">
-                            <input type="hidden" value="<?php echo $this->config->item('currency'); ?>" name="currency">
-                            <input type="hidden" value="<?= $taxdetails['handle']; ?>" name="taxformat" id="tax_format">
 
-                            <input type="hidden" value="<?= $taxdetails['format']; ?>" name="tax_handle"
-                                id="tax_status">
-                            <input type="hidden" value="yes" name="applyDiscount" id="discount_handle">
+                    </div>
+                </div>
+            </div>
 
-                            <input type="hidden" value="<?= $this->common->disc_status()['disc_format']; ?>"
-                                name="discountFormat" id="discount_format">
-                            <input type="hidden"
-                                value="<?= amountFormat_general($this->common->disc_status()['ship_rate']); ?>"
-                                name="shipRate" id="ship_rate">
-                            <input type="hidden" value="<?= $this->common->disc_status()['ship_tax']; ?>"
-                                name="ship_taxtype" id="ship_taxtype">
-                            <input type="hidden" value="0" name="ship_tax" id="ship_tax">
+        </div>
+    </div>
+    <div class="content-right">
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body">
+                <section class="chat-app-window">
+                    <div class="row ">
 
-                        </form>
+
+                        <div class="col-sm-9">
+
+
+                            <div class="position-relative has-icon-left">
+                                <input type="text" class="form-control text-center round mousetrap"
+                                       name="product_barcode"
+                                       placeholder="Enter Product name, code or scan barcode" id="v2_search_bar"
+                                       autocomplete="off" autofocus="autofocus">
+                                <div class="form-control-position">
+                                    <i class="icon-barcode2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3  grey text-xs-center"><select
+                                    id="v2_categories"
+                                    class="selectpicker form-control round teal">
+                                <option value="0"><?php echo $this->lang->line('All') ?></option><?php
+                                foreach ($cat as $row) {
+                                    $cid = $row['id'];
+                                    $title = $row['title'];
+                                    echo "<option value='$cid'>$title</option>";
+                                }
+                                ?>
+                            </select></div>
+
+
+                    </div>
+                    <hr class="white">
+
+
+                    <div class="row m-0">
+                        <div class="col-md-12 pt-0 " id="pos_item">
+                            <!-- pos items -->
+                        </div>
+                    </div>
+                </section>
+                <section class="chat-app-form">
+                    <div class="form-group text-center">
+                        <!-- Button Group with Icons in different sizes -->
+                        <div class="btn-group btn-group-lg" role="group">
+                            <button type="button" class="possubmit btn btn-warning"><i
+                                        class="fa fa-save"></i> <?php echo $this->lang->line('Draft') ?> </button>
+                            <button type="button" class="btn btn-success possubmit3" data-type="6" data-toggle="modal"
+                                    data-target="#basicPay"><i
+                                        class="fa fa-money"></i> <?php echo $this->lang->line('Payment') ?>
+                            </button> <?php
+
+                            if ($enable_card['url']) { ?>
+                                <button type="button" class="btn btn-primary possubmit2" data-type="4"
+                                        data-toggle="modal" data-target="#cardPay"><i
+                                            class="fa fa-credit-card"></i> <?php echo $this->lang->line('Card') ?>
+                                </button>     <?php } ?>
+
+
+                        </div>
+                        <a href="<?= base_url('stockreturn/create_client') ?>" class="red float-right"><i
+                                    class="fa fa-reply-all"></i></a>
                     </div>
 
-                </div>
-            </div>
-        </div>
 
-        <div class="modal fade" id="addCustomer" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form method="post" id="product_action" class="form-horizontal">
-                        <!-- Modal Header -->
-                        <div class="modal-header bg-gradient-directional-success white">
-
-                            <h4 class="modal-title" id="myModalLabel"><?php echo $this->lang->line('Add Supplier') ?>
-                            </h4>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span aria-hidden="true">&times;</span>
-                                <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
-                            </button>
-                        </div>
-
-                        <!-- Modal Body -->
-                        <div class="modal-body">
-                            <p id="statusMsg"></p><input type="hidden" name="mcustomer_id" id="mcustomer_id" value="0">
-
-                            <div class="form-group row">
-
-                                <label class="col-sm-2 col-form-label"
-                                    for="name"><?php echo $this->lang->line('Name') ?></label>
-
-                                <div class="col-sm-10">
-                                    <input type="text" placeholder="Name" class="form-control margin-bottom"
-                                        id="mcustomer_name" name="name" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-
-                                <label class="col-sm-2 col-form-label"
-                                    for="phone"><?php echo $this->lang->line('Phone') ?></label>
-
-                                <div class="col-sm-10">
-                                    <input type="text" placeholder="Phone" class="form-control margin-bottom"
-                                        name="phone" id="mcustomer_phone">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-
-                                <label class="col-sm-2 col-form-label" for="email">Email</label>
-
-                                <div class="col-sm-10">
-                                    <input type="email" placeholder="Email" class="form-control margin-bottom crequired"
-                                        name="email" id="mcustomer_email">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-
-                                <label class="col-sm-2 col-form-label"
-                                    for="address"><?php echo $this->lang->line('Address') ?></label>
-
-                                <div class="col-sm-10">
-                                    <input type="text" placeholder="Address" class="form-control margin-bottom "
-                                        name="address" id="mcustomer_address1">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-
-                                <div class="col-sm-4">
-                                    <input type="text" placeholder="City" class="form-control margin-bottom" name="city"
-                                        id="mcustomer_city">
-                                </div>
-                                <div class="col-sm-4">
-                                    <input type="text" placeholder="Region" class="form-control margin-bottom"
-                                        name="region">
-                                </div>
-                                <div class="col-sm-4">
-                                    <input type="text" placeholder="Country" class="form-control margin-bottom"
-                                        name="country" id="mcustomer_country">
-                                </div>
-
-                            </div>
-
-                            <div class="form-group row">
-
-                                <div class="col-sm-6">
-                                    <input type="text" placeholder="PostBox" class="form-control margin-bottom"
-                                        name="postbox">
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" placeholder="TAX ID" class="form-control margin-bottom"
-                                        name="taxid" id="tax_id">
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default"
-                                data-dismiss="modal"><?php echo $this->lang->line('Close') ?></button>
-                            <input type="submit" id="msupplier_add" class="btn btn-primary submitBtn"
-                                value="<?php echo $this->lang->line('ADD') ?>" />
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="selectProducts" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <form method="post" action.prevent="" class="form-horizontal">
-                        <!-- Modal Header -->
-                        <div class="modal-header bg-gradient-directional-info white">
-
-                            <h4 class="modal-title" id="myModalLabel"><?php echo $this->lang->line('Select Products') ?>
-                            </h4>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span aria-hidden="true">&times;</span>
-                                <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
-                            </button>
-                        </div>
-
-                        <!-- Modal Body -->
-                        <div class="modal-body">
-                            <p id="statusMsg"></p><input type="hidden" name="mcustomer_id" id="mcustomer_id" value="0">
-
-                            <div class="row">
-                                <div class="form-group col-md-6">
-                                    <label for="product_cat"
-                                        class="caption"><?php echo $this->lang->line('Category') ?></label>
-                                    <select v-model="category" @change="categoryChange" class="form-control" id="product_cat">
-                                        <option value="0">All</option>
-                                        <?php
-                                            foreach ($cat as $row) {
-                                                $cid = $row['id'];
-                                                $title = $row['title'];
-                                                echo "<option value='$cid'>$title</option>";
-                                            }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="sub_cat"
-                                        class="caption"><?php echo $this->lang->line('Sub') ?><?php echo $this->lang->line('Category') ?></label>
-                                    <select id="sub_cat" name="sub_cat" v-on:change="fetch" v-model='sub_cat' v-select='sub_cat' class="form-control required select-box">
-
-                                    </select>
-                                </div>
-                            </div>
-
-                            <table class="table table-responsive">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <label class="form-checkbox">
-                                                <input type="checkbox" v-model="selectAll" @click="select">
-                                                <i class="form-icon"></i>
-                                            </label>
-                                        </th>
-                                        <th scope="col"><?php echo $this->lang->line('Product Name') ?></th>
-                                        <th scope="col"><?php echo $this->lang->line('Category') ?></th>
-                                        <th scope="col">
-                                            <?php echo $this->lang->line('Sub') ?><?php echo $this->lang->line('Category') ?>
-                                        </th>
-                                        <th scope="col"><?php echo $this->lang->line('Warehouse') ?></th>
-                                        <th scope="col"><?php echo $this->lang->line('Stock Units') ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="product in products" :key="product.pid">
-                                        <th scope="row"><input type="checkbox" v-model="checkProducts"
-                                                :value="product"></th>
-                                        <td v-html="product.product_name"></td>
-                                        <td v-html="product.category_title"></td>
-                                        <td v-html="product.sub_cat_title"></td>
-                                        <td v-html="product.warehouse_title"></td>
-                                        <td v-html="Math.round(product.qty)"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-
-                        <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default"
-                                data-dismiss="modal" @click="emptySelect"><?php echo $this->lang->line('Close') ?></button>
-                            <input type="submit" class="btn btn-primary"
-                            data-dismiss="modal" value="<?php echo $this->lang->line('ADD') ?>" />
-                        </div>
-                    </form>
-                </div>
+                </section>
             </div>
         </div>
     </div>
-    <script src="https://unpkg.com/vue"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"></script>
-    <script>
-        Vue.directive('select', {
-        twoWay: true,
-        bind: function (el, binding, vnode) {
-            $(el).select2().on("select2:select", (e) => {
-            // v-model looks for
-            //  - an event named "change"
-            //  - a value with property path "$event.target.value"
-            el.dispatchEvent(new Event('change', { target: e.target }));
-            });
-        },
-        });
-        const app = new Vue({
-            el: '#purchase',
-            data: {
-                products: [],
-                checkProducts: [],
-                selectAll: false,
-                sub_cat: 0,
-                category: 0,
-                shipValue: 0,
-            },
-            computed: {
-                totalAmount: function () {
-                    var sum = 0;
-                    this.checkProducts.forEach(e => {
-                        total = ((((e.fproduct_price * e.taxrate) / 100) + + e.fproduct_price) - (((((e.fproduct_price * e.taxrate) / 100) + + e.fproduct_price) * e.disrate) / 100)).toFixed(2)
-                        sum = sum + + total;
-                    });
-                    sum = sum + + this.shipValue
-                    return sum.toFixed(2)
-                },
-                totalTax: function () {
-                    var tax = 0;
-                    this.checkProducts.forEach(e => {
-                        totalTax = ((e.fproduct_price * e.taxrate) / 100).toFixed(2)
-                        tax = tax + + totalTax;
-                    });
-                    return tax.toFixed(2)
-                },
-                totalDiscount: function () {
-                    var discount = 0;
-                    this.checkProducts.forEach(e => {
-                        totalDicsount = ((((((e.fproduct_price * e.taxrate) / 100) + + e.fproduct_price) * e.disrate) / 100)).toFixed(2)
-                        discount = discount + + totalDicsount;
-                    });
-                    return discount.toFixed(2) 
-                },
-                shipFinal: function () {
-                    var tax_status = $("#ship_taxtype").val();
-                    var ship_rate = $("#ship_rate").val();
-                    var shipFinal = 0;
-                    if (tax_status == 'excl') {
-                        shipFinal = ((ship_rate * this.shipValue) / 100)
+    <input type="hidden" value="pos_invoices/action" id="action-url">
+    <input type="hidden" value="0" id="subttlform"
+           name="subtotal">
+    <input type="hidden" value="search" id="billtype">
+    <input type="hidden" value="0" name="counter" id="ganak">
+    <input type="hidden" value="0" id="custom_discount">
+    <input type="hidden" value="<?php echo currency($this->aauth->get_user()->loc); ?>" name="currency">
+    <input type="hidden" value="<?= $taxdetails['handle']; ?>" name="taxformat" id="tax_format">
+    <input type="hidden" value="<?= $taxdetails['format']; ?>" name="tax_handle" id="tax_status">
+    <input type="hidden" value="yes" name="applyDiscount" id="discount_handle">
+    <input type="hidden" value="<?= $this->common->disc_status()['disc_format']; ?>" name="discountFormat"
+           id="discount_format">
+    <input type="hidden" value="<?= amountFormat_general($this->common->disc_status()['ship_rate']); ?>" name="shipRate"
+           id="ship_rate">
+    <input type="hidden" value="<?= $this->common->disc_status()['ship_tax']; ?>" name="ship_taxtype"
+           id="ship_taxtype">
+    <input type="hidden" value="0" name="ship_tax" id="ship_tax">
+</form>
+<audio id="beep" src="<?= assets_url() ?>assets/js/beep.wav" autoplay="false"></audio>
 
-                    } else if (tax_status == 'incl') {
-                        
-                        shipFinal = ((ship_rate * this.shipValue) / (100 + + ship_rate))
+<div class="modal fade" id="Pos_addCustomer" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <form method="post" id="product_action" class="form-horizontal">
+                <!-- Modal Header -->
+                <div class="modal-header bg-gradient-directional-blue white">
+                    <i class="icon-user-plus"></i> <?php echo $this->lang->line('Add Customer') ?></h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <p id="statusMsg"></p><input type="hidden" name="mcustomer_id" id="mcustomer_id" value="0">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h5><?php echo $this->lang->line('Billing Address') ?></h5>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"
+                                       for="name"><?php echo $this->lang->line('Name') ?></label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="Name"
+                                           class="form-control margin-bottom" id="mcustomer_name" name="name"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"
+                                       for="phone"><?php echo $this->lang->line('Phone') ?></label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="Phone"
+                                           class="form-control margin-bottom" name="phone" id="mcustomer_phone">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"
+                                       for="email"><?php echo $this->lang->line('Email') ?></label>
+                                <div class="col-sm-10">
+                                    <input type="email" placeholder="Email"
+                                           class="form-control margin-bottom" name="email"
+                                           id="mcustomer_email">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"
+                                       for="address"><?php echo $this->lang->line('Address') ?></label>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="Address"
+                                           class="form-control margin-bottom " name="address"
+                                           id="mcustomer_address1">
+                                </div>
+                            </div>
 
-                    }
-                    return shipFinal.toFixed(2)
-                }
-            },
-            mounted() {
-                this.fetch()
-            },
-            methods: {
-                emptySelect() {
-                    this.checkProducts = []
-                },
-                select() {
-                    this.checkProducts = [];
-                    if (!this.selectAll) {
-                        for (let i in this.products) {
-                            this.checkProducts.push(this.products[i]);
-                        }
-                    }
-                },
-                fetch() {
-                    var self = this;
-                    $.ajax({
-                        url: baseurl + 'purchase/product_fetching?category=' + self.category + '&sub_cat=' + self.sub_cat,
-                        method: "POST",
-                        data: function () {
-                            return {
-                                '<?=$this->security->get_csrf_token_name()?>': crsf_hash
-                            };
-                        },
-                        success: function (response) {
-                            self.products = JSON.parse(response)
-                        }
-                    })
-                },
-                categoryChange() {
-                    this.sub_cat = 0
-                    this.fetch()
-                },
-                submit() {
-                    $('#jquery-tbody').empty()
-                },
-                normalSubmit() {
-                    $('#vue-tbody').empty()
-                }
-            }
-        })
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"
+                                       for="customergroup"><?php echo $this->lang->line('Group') ?></label>
+                                <div class="col-sm-10">
+                                    <select name="customergroup" class="form-control">
+                                        <?php
+                                        foreach ($customergrouplist as $row) {
+                                            $cid = $row['id'];
+                                            $title = $row['title'];
+                                            echo "<option value='$cid'>$title</option>";
+                                        }
+                                        ?>
+                                    </select>
 
-    </script>
-    <script>
-        $("#sub_cat").select2();
-        $(".select2-container--default").width('100%');
-        $("#product_cat").on('change', function () {
-            $("#sub_cat").val('').trigger('change');
-            var tips = $('#product_cat').val();
-            $("#sub_cat").select2({
 
-                ajax: {
-                    url: baseurl + 'products/sub_cat?id=' + tips,
-                    dataType: 'json',
-                    type: 'POST',
-                    quietMillis: 50,
-                    data: function (product) {
-                        return {
-                            product: product,
-                            '<?=$this->security->get_csrf_token_name()?>': crsf_hash
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: $.map(data, function (item) {
-                                return {
-                                    text: item.title,
-                                    id: item.id
-                                }
-                            })
-                        };
-                    },
-                }
-            });
-        });
-        //universal create
-        $("#submit-data-vue").on("click", function (e) {
-                        e.preventDefault();
-                        var o_data = $("#data_form").serialize();
-                        var action_url = $('#action-url').val();
-                        addObject(o_data, action_url);
-                    });
-        
+                                </div>
+                            </div>
 
-                    function addObject(action, action_url) {
-                        var errorNum = farmCheck();
-                        var $btn;
-                        if ($("#notify").length == 0) {
-                            $("#c_body").html('<div id="notify" class="alert" style="display:none;"><a href="#" class="close" data-dismiss="alert">&times;</a><div class="message"></div></div>');
-                        }
-                        if (errorNum > 0) {
-                            $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
-                            $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to complete something!");
-                            $("html, body").scrollTop($("body").offset().top);
-                        } else {
-                            jQuery.ajax({
-                                url: baseurl + action_url,
-                                type: 'POST',
-                                data: action + '&' + crsf_token + '=' + crsf_hash,
-                                dataType: 'json',
-                                success: function (data) {
 
-                                    if (data.status == "Success") {
-                                        $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
-                                        $("#notify").removeClass("alert-danger").addClass("alert-success").fadeIn();
-                                        $("html, body").scrollTop($("body").offset().top);
-                                        $("#data_form").remove();
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal"><?php echo $this->lang->line('Close') ?></button>
+                    <input type="submit" id="mclient_add" class="btn btn-primary submitBtn" value="ADD"/ >
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--card-->
+<div class="modal fade" id="cardPay" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><?php echo $this->lang->line('Make Payment') ?></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
+
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body ">
+                <p id="statusMsg"></p>
+                <form role="form" id="card_data">
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="cardNumber"><?php echo $this->lang->line('Payment Gateways') ?></label>
+                            <select class="form-control" name="gateway"><?php
+                                $surcharge_t = false;
+                                foreach ($gateway as $row) {
+                                    $cid = $row['id'];
+                                    $title = $row['name'];
+                                    if ($row['surcharge'] > 0) {
+                                        $surcharge_t = true;
+                                        $fee = '(<span class="gate_total"></span>+' . amountFormat_s($row['surcharge']) . ' %)';
                                     } else {
-                                        $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
-                                        $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
-                                        $("html, body").scrollTop($("body").offset().top);
+                                        $fee = '';
                                     }
-                                },
-                                error: function (data) {
-                                    $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
-                                    $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
-                                    $("html, body").scrollTop($("body").offset().top);
+                                    echo "<option value='$cid'>$title $fee</option>";
                                 }
-                            });
-                        }
-                    }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-4"><br><img class="img-responsive pull-right"
+                                                    src="<?php echo assets_url('assets/images/accepted_c22e0.png') ?>">
+                        </div>
+                    </div>
 
-    </script>
+
+                    <div class="row mt-1">
+                        <div class="col">
+                            <button class="btn btn-success btn-lg"
+                                    type="submit"
+                                    id="pos_card_pay"
+                                    data-type="2"><i
+                                        class="fa fa-credit-card"></i> <?php echo $this->lang->line('Paynow') ?>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                        <?php if ($surcharge_t) echo '<br>' . $this->lang->line('Note: Payment Processing'); ?>
+
+                    </div>
+                    <div class="row" style="display:none;">
+                        <div class="col-xs-12">
+                            <p class="payment-errors"></p>
+                        </div>
+                    </div>
+
+                    <input type="hidden" value="pos_invoices/action" id="pos_action-url">
+                </form>
+
+                <!-- shipping -->
+
+
+            </div>
+            <!-- Modal Footer -->
+
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="basicPay" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <form method="post" id="basicpay_data" class="form-horizontal">
+                <!-- Modal Header -->
+                <div class="modal-header">
+
+                    <h4 class="modal-title"><?php echo $this->lang->line('Make Payment') ?></h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <p id="statusMsg"></p>
+
+                    <div class="text-center"><h1 id="b_total"></h1></div>
+                    <div class="row">
+
+
+                        <div class="col-6">
+                            <div class="card-title">
+                                <label for="cardNumber"><?php echo $this->lang->line('Amount') ?></label>
+                                <div class="input-group">
+                                    <input
+                                            type="text"
+                                            class="form-control  text-bold-600 blue-grey"
+                                            name="p_amount"
+                                            placeholder="Amount" onkeypress="return isNumber(event)"
+                                            id="p_amount" onkeyup="update_pay_pos()"
+                                    />
+                                    <span class="input-group-addon"><i
+                                                class="icon icon-cash"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card-title">
+                                <label for="cardNumber"><?php echo $this->lang->line('Payment Method') ?></label>
+                                <select class="form-control" name="p_method" id="p_method">
+                                    <option value='Cash'><?php echo $this->lang->line('Cash') ?></option>
+                                    <option value='Card Swipe'><?php echo $this->lang->line('Card Swipe') ?></option>
+                                    <option value='Bank'><?php echo $this->lang->line('Bank') ?></option>
+
+                                </select></div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group  text-bold-600 red">
+                                <label for="amount"><?php echo $this->lang->line('Balance Due') ?>
+                                </label>
+                                <input type="text" class="form-control red" name="amount" id="balance1"
+                                       onkeypress="return isNumber(event)"
+                                       value="0.00"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group text-bold-600 text-g">
+                                <label for="b_change"><?php echo $this->lang->line('Change') ?></label>
+                                <input
+                                        type="text" onkeypress="return isNumber(event)"
+                                        class="form-control green"
+                                        name="b_change" id="change_p" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <?php if(PAC) { ?>
+                      <div class="col"> <div class="form-group text-bold-600 text-g">
+                    <label for="account_p"><?php echo $this->lang->line('Account') ?></label>
+
+                            <select name="p_account" id="p_account" class="form-control">
+                                <?php foreach ($acc_list as $row) {
+                                    echo '<option value="' . $row['id'] . '">' . $row['holder'] . ' / ' . $row['acn'] . '</option>';
+                                }
+                                ?>
+                            </select></div></div>
+                    <?php } ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn btn-success btn-lg btn-block mb-1"
+                                    type="submit"
+                                    id="pos_basic_pay" data-type="4"><i
+                                        class="fa fa-arrow-circle-o-right"></i> <?php echo $this->lang->line('Paynow') ?>
+                            </button>
+                            <button class="btn btn-info btn-lg btn-block"
+                                    type="submit"
+                                    id="pos_basic_print" data-type="4"><i
+                                        class="fa fa-print"></i> <?php echo $this->lang->line('Paynow') ?>
+                                + <?php echo $this->lang->line('Print') ?></button>
+                        </div>
+                    </div>
+
+                    <div class="row" style="display:none;">
+                        <div class="col-xs-12">
+                            <p class="payment-errors"></p>
+                        </div>
+                    </div>
+
+
+                    <!-- shipping -->
+
+
+                </div>
+                <!-- Modal Footer -->
+
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="register" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+
+                <h4 class="modal-title"><?php echo $this->lang->line('Your Register') ?></h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
+                </button>
+
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="text-center m-1"><?php echo $this->lang->line('Active') ?> - <span id="r_date"></span></div>
+
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group  text-bold-600 green">
+                            <label for="amount"><?php echo $this->lang->line('Cash') ?>
+                                (<?= $this->config->item('currency'); ?>)
+                            </label>
+                            <input type="number" class="form-control green" id="r_cash"
+                                   value="0.00"
+                                   readonly>
+                        </div>
+                    </div>
+                    <div class="col-5 col-md-5 pull-right">
+                        <div class="form-group text-bold-600 blue">
+                            <label for="b_change blue"><?php echo $this->lang->line('Card') ?></label>
+                            <input
+                                    type="number"
+                                    class="form-control blue"
+                                    id="r_card" value="0" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group  text-bold-600 indigo">
+                            <label for="amount"><?php echo $this->lang->line('Bank') ?>
+                            </label>
+                            <input type="number" class="form-control indigo" id="r_bank"
+                                   value="0.00"
+                                   readonly>
+                        </div>
+                    </div>
+                    <div class="col-5 col-md-5 pull-right">
+                        <div class="form-group text-bold-600 red">
+                            <label for="b_change"><?php echo $this->lang->line('Change') ?>(-)</label>
+                            <input
+                                    type="number"
+                                    class="form-control red"
+                                    id="r_change" value="0" readonly>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" style="display:none;">
+                    <div class="col-xs-12">
+                        <p class="payment-errors"></p>
+                    </div>
+                </div>
+
+
+                <!-- shipping -->
+
+
+            </div>
+            <!-- Modal Footer -->
+
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="close_register" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+
+                <h4 class="modal-title"><?php echo $this->lang->line('Close') ?><?php echo $this->lang->line('Your Register') ?></h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                        <a href="<?= base_url() ?>/register/close" class="btn btn-danger btn-lg btn-block"
+                           type="submit"
+                        ><i class="icon icon-arrow-circle-o-right"></i> <?php echo $this->lang->line('Yes') ?></a>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+
+            </div>
+            <!-- Modal Footer -->
+
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="stock_alert" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+
+                <h4 class="modal-title"><?php echo $this->lang->line('Stock Alert') ?> !</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="row p-1">
+                    <div class="alert alert-danger mb-2" role="alert">
+                        <strong>Oh snap!</strong> <?php echo $this->lang->line('order or edit the stock') ?>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Modal Footer -->
+
+
+        </div>
+    </div>
+</div>
+<div id="shortkeyboard" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h4 class="modal-title">ShortCuts</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <td>Alt+X</td>
+                        <td>Focus to products search</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+C</td>
+                        <td>Focus to customer search</td>
+                    </tr>
+
+                    <tr>
+                        <td>Alt+S (twice)</td>
+                        <td>PayNow + Thermal Print</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+Z</td>
+                        <td>Make Card Payment</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+Q</td>
+                        <td>Select First product</td>
+                    </tr>
+                    <tr>
+                        <td>Alt+N</td>
+                        <td>Create New Invoice</td>
+                    </tr>
+
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $.ajax({
+        url: baseurl + 'search_products/v2_pos_search',
+        dataType: 'html',
+        method: 'POST',
+        data: 'cid=' + $('#v2_categories').val() + '&wid=' + $('#v2_warehouses option:selected').val() + '&' + crsf_token + '=' + crsf_hash,
+        success: function (data) {
+            $('#pos_item').html(data);
+        }
+    });
+
+    function update_register() {
+        $.ajax({
+            url: baseurl + 'register/status',
+            dataType: 'json',
+            data: crsf_token + '=' + crsf_hash,
+            success: function (data) {
+                $('#r_cash').val(data.cash);
+                $('#r_card').val(data.card);
+                $('#r_bank').val(data.bank);
+                $('#r_change').val(data.change);
+                $('#r_date').text(data.date);
+            }
+        });
+    }
+
+    update_register();
+    $(".possubmit").on("click", function (e) {
+        e.preventDefault();
+        var o_data = $("#data_form").serialize() + '&type=' + $(this).attr('data-type');
+        var action_url = $('#action-url').val();
+        addObject(o_data, action_url);
+    });
+
+    $(".possubmit2").on("click", function (e) {
+        e.preventDefault();
+        $('#card_total').val(accounting.unformat($('#invoiceyoghtml').val(), accounting.settings.number.decimal));
+    });
+
+    $(".possubmit3").on("click", function (e) {
+        e.preventDefault();
+        var roundoff = parseFloat(accounting.unformat($('#invoiceyoghtml').val(), accounting.settings.number.decimal)).toFixed(two_fixed);
+
+        <?php
+        $round_off = $this->custom->api_config(4);
+        if ($round_off['other'] == 'PHP_ROUND_HALF_UP') {
+            echo ' roundoff=Math.ceil(roundoff);';
+        } elseif ($round_off['other'] == 'PHP_ROUND_HALF_DOWN') {
+            echo ' roundoff=Math.floor(roundoff);';
+        }
+        ?>
+        $('#b_total').html(' <?= $this->config->item('currency'); ?> ' + accounting.formatNumber(roundoff));
+        $('#p_amount').val(accounting.formatNumber(roundoff));
+
+    });
+
+    function update_pay_pos() {
+        var am_pos = accounting.unformat($('#p_amount').val(), accounting.settings.number.decimal);
+        var ttl_pos = accounting.unformat($('#invoiceyoghtml').val(), accounting.settings.number.decimal);
+        <?php
+        $round_off = $this->custom->api_config(4);
+        if ($round_off['other'] == 'PHP_ROUND_HALF_UP') {
+            echo ' ttl_pos=Math.ceil(ttl_pos);';
+        } elseif ($round_off['other'] == 'PHP_ROUND_HALF_DOWN') {
+            echo ' ttl_pos=Math.floor(ttl_pos);';
+        }
+        ?>
+
+        var due = parseFloat(ttl_pos - am_pos).toFixed(two_fixed);
+
+        if (due >= 0) {
+            $('#balance1').val(accounting.formatNumber(due));
+            $('#change_p').val(0);
+        } else {
+            due = due * (-1)
+            $('#balance1').val(0);
+            $('#change_p').val(accounting.formatNumber(due));
+        }
+    }
+
+    $('#pos_card_pay').on("click", function (e) {
+        e.preventDefault();
+        $('#cardPay').modal('toggle');
+        $("#notify .message").html("<strong>Processing</strong>: .....");
+        $("#notify").removeClass("alert-danger").addClass("alert-primary").fadeIn();
+        $("html, body").animate({scrollTop: $('body').offset().top - 100}, 1000);
+        var o_data = $("#data_form").serialize() + '&' + $("#card_data").serialize() + '&type=' + $(this).attr('data-type');
+        var action_url = $('#action-url').val();
+        addObject(o_data, action_url);
+        update_register();
+    });
+    $('#pos_basic_pay').on("click", function (e) {
+        e.preventDefault();
+        $('#basicPay').modal('toggle');
+        $("#notify .message").html("<strong>Processing</strong>: .....");
+        $("#notify").removeClass("alert-danger").addClass("alert-primary").fadeIn();
+        $("html, body").animate({scrollTop: $('body').offset().top - 100}, 1000);
+        var o_data = $("#data_form").serialize() + '&p_amount=' + accounting.unformat($('#p_amount').val(), accounting.settings.number.decimal) + '&p_method=' + $("#p_method option:selected").val() + '&type=' + $(this).attr('data-type') + '&account=' + $("#p_account option:selected").val();
+        var action_url = $('#action-url').val();
+        addObject(o_data, action_url);
+        setTimeout(
+            function () {
+                update_register();
+            }, 3000);
+    });
+
+    $('#pos_basic_print').on("click", function (e) {
+        e.preventDefault();
+        $('#basicPay').modal('toggle');
+        $("#notify .message").html("<strong>Processing</strong>: .....");
+        $("#notify").removeClass("alert-danger").addClass("alert-primary").fadeIn();
+        $("html, body").animate({scrollTop: $('body').offset().top - 100}, 1000);
+        var o_data = $("#data_form").serialize() + '&p_amount=' + accounting.unformat($('#p_amount').val(), accounting.settings.number.decimal) + '&p_method=' + $("#p_method option:selected").val() + '&type=' + $(this).attr('data-type') + '&printnow=1'+ '&account=' + $("#p_account option:selected").val() ;
+        var action_url = $('#action-url').val();
+        addObject(o_data, action_url);
+        setTimeout(
+            function () {
+                update_register();
+            }, 3000);
+    });
+</script>
+
+<!-- Vendor libraries -->
+<script type="text/javascript">
+    var $form = $('#payment-form');
+    $form.on('submit', payWithCard);
+
+    /* If you're using Stripe for payments */
+    function payWithCard(e) {
+        e.preventDefault();
+
+        /* Visual feedback */
+        $form.find('[type=submit]').html('Processing <i class="fa fa-spinner fa-pulse"></i>')
+            .prop('disabled', true);
+
+        jQuery.ajax({
+            url: '<?php echo base_url('billing/process_card') ?>',
+            type: 'POST',
+            data: $('#payment-form').serialize() + '&' + crsf_token + '=' + crsf_hash,
+            dataType: 'json',
+            success: function (data) {
+                $form.find('[type=submit]').html('Payment successful <i class="fa fa-check"></i>').prop('disabled', true);
+                $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
+                $("#notify").removeClass("alert-danger").addClass("alert-success").fadeIn();
+                $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+            },
+            error: function () {
+                $form.find('[type=submit]').html('There was a problem').removeClass('success').addClass('error');
+                /* Show Stripe errors on the form */
+                $form.find('.payment-errors').text('Try refreshing the page and trying again.');
+                $form.find('.payment-errors').closest('.row').show();
+                $form.find('[type=submit]').html('Error! <i class="fa fa-exclamation-circle"></i>')
+                    .prop('disabled', true);
+                $("#notify .message").html("<strong>Error</strong>: Please try again!");
+            }
+        });
+    }
+
+
+    $('#v2_categories').change(function () {
+        var whr = $('#v2_warehouses option:selected').val();
+        var cat = $('#v2_categories option:selected').val();
+        $.ajax({
+            type: "POST",
+            url: baseurl + 'search_products/v2_pos_search',
+            data: 'wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            beforeSend: function () {
+                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
+            },
+            success: function (data) {
+
+                $("#pos_item").html(data);
+
+            }
+        });
+    });
+    $('#v2_warehouses').change(function () {
+        var whr = $('#v2_warehouses option:selected').val();
+        var cat = $('#v2_categories option:selected').val();
+        $.ajax({
+            type: "POST",
+            url: baseurl + 'search_products/v2_pos_search',
+            data: 'wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            beforeSend: function () {
+                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
+            },
+            success: function (data) {
+
+                $("#pos_item").html(data);
+
+            }
+        });
+    })
+    $(document).ready(function () {
+        Mousetrap.bind('alt+x', function () {
+            $('#v2_search_bar').focus();
+        });
+        Mousetrap.bind('alt+c', function () {
+            $('#pos-customer-box').focus();
+        });
+
+        Mousetrap.bind('alt+z', function () {
+            $('.possubmit2').click();
+        });
+        Mousetrap.bind('alt+n', function () {
+            window.location.href = "<?=base_url('pos_invoices/create') ?>";
+        });
+        Mousetrap.bind('alt+q', function () {
+            $('#posp0').click();
+            $('#v2_search_bar').val('');
+        });
+        Mousetrap.bind('alt+s', function () {
+            if ($('#basicPay').hasClass('show')) {
+                $('#pos_basic_print').click();
+            } else {
+                $('.possubmit3').click();
+            }
+
+        });
+        $('#v2_search_bar').keypress(function (event) {
+            if (event.keyCode == 13) {
+                setTimeout(
+                    function () {
+                        $('#posp0').click();
+                        $('#v2_search_bar').val('');
+                        $('#v2_search_bar').focus();
+						   var whr = $('#v2_warehouses option:selected').val();
+        var cat = $('#v2_categories option:selected').val();
+        $.ajax({
+            type: "POST",
+            url: baseurl + 'search_products/v2_pos_search',
+            data: 'wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            beforeSend: function () {
+                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
+            },
+            success: function (data) {
+
+                $("#pos_item").html(data);
+
+            }
+        });
+                    }, 700);
+            }
+        });
+    });
+</script>
