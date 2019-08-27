@@ -605,6 +605,7 @@ class Settings extends CI_Controller
         $this->load->view('settings/custom_field', $data);
         $this->load->view('fixed/footer');
     }
+
     public function add_custom_field()
     {
         $this->li_a = 'advance';
@@ -626,7 +627,6 @@ class Settings extends CI_Controller
         }
     }
 
-
     public function edit_custom_field()
     {
         $this->li_a = 'advance';
@@ -635,7 +635,7 @@ class Settings extends CI_Controller
             $f_view = $this->input->post('f_view', true);
             $f_required = $this->input->post('f_required', true);
             $f_placeholder = $this->input->post('f_placeholder', true);
-            $f_description = $this->input->post('f_description', true);
+            $f_description = $this->input->post('f_description', true) ? $this->input->post('f_description', true) : json_encode($this->input->post('f_option', true));
             $id = $this->input->post('fid');
             $this->settings->custom_field_edit($id, $f_name, $f_view, $f_required, $f_placeholder, $f_description);
         } else {
@@ -764,7 +764,7 @@ FROM geopos_invoices AS i LEFT JOIN geopos_customers AS c ON i.csd=c.id GROUP BY
         }
         $result = $query->result_array();
     }
-
+    
     public function switch_location()
     {
         $id = $this->input->get('id', true);

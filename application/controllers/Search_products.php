@@ -254,8 +254,7 @@ class Search_products extends CI_Controller
 
             $bar = " OR (geopos_products.barcode LIKE '" . (substr($barcode, 0, -1)) . "%' OR geopos_products.barcode LIKE '" . $name . "%')";
         }
-        $query = "SELECT geopos_products.* FROM geopos_products $join WHERE " . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) LIMIT 16";
-
+        $query = "SELECT geopos_products.*,geopos_custom_data.* FROM geopos_products LEFT JOIN geopos_custom_data ON geopos_custom_data.rid=geopos_products.pid AND (geopos_custom_data.module=4) $join WHERE " . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%' OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%'OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) GROUP BY pid LIMIT 16";
 
         $query = $this->db->query($query);
 
@@ -284,6 +283,7 @@ class Search_products extends CI_Controller
         echo $out;
 
     }
+
 
     public function v2_pos_search()
     {
@@ -321,15 +321,14 @@ class Search_products extends CI_Controller
             $bar = " OR (geopos_products.barcode LIKE '" . (substr($barcode, 0, -1)) . "%' OR geopos_products.barcode LIKE '" . $name . "%')";
             //  $query = "SELECT geopos_products.* FROM geopos_products $join WHERE " . $qw . " $bar AND (geopos_products.qty>0) LIMIT 16";
         }
-        $query = "SELECT geopos_products.* FROM geopos_products $join WHERE " . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) ORDER BY geopos_products.product_name LIMIT 18";
-
+        $query = "SELECT geopos_products.*,geopos_custom_data.* FROM geopos_products LEFT JOIN geopos_custom_data ON geopos_custom_data.rid=geopos_products.pid AND (geopos_custom_data.module=4) $join WHERE " . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%' OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) GROUP BY pid ORDER BY geopos_products.product_name LIMIT 18";
         $query = $this->db->query($query);
         $result = $query->result_array();
         $i = 0;
         echo '<div class="row match-height">';
         foreach ($result as $row) {
 
-            $out .= '    <div class="col-2 border mb-1"  ><div class=" rounded" >
+            $out .= '    <div class="col-2 border mb-1"  ><div class="text-center mt-2 rounded" >
                                  <a  id="posp' . $i . '"  class="v2_select_pos_item round"   data-name="' . $row['product_name'] . '"  data-price="' . amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) . '"  data-tax="' . amountFormat_general($row['taxrate']) . '"  data-discount="' . amountFormat_general($row['disrate']) . '" data-pcode="' . $row['product_code'] . '"   data-pid="' . $row['pid'] . '"  data-stock="' . amountFormat_general($row['qty']) . '" data-unit="' . $row['unit'] . '" >
                                         <img class="round"
                                              src="' . base_url('userfiles/product/' . $row['image']) . '"  style="max-height: 100%;max-width: 100%">
@@ -349,4 +348,5 @@ class Search_products extends CI_Controller
         echo $out;
 
     }
+
 }
