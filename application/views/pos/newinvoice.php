@@ -30,15 +30,16 @@
 
                 </div>
                 <div>
+                    <div class="mt-1" id="alert-due"></div>
                     <div class="users-list-padding media-list">
 
                         <br>
                         <div class="row bg-gradient-directional-purple white m-0 pt-1 pb-1">
-                            <div class="col-5 ">
+                            <div class="col-4 ">
                                 <i class="fa fa-briefcase"></i>
                                 <?php echo $this->lang->line('Products') ?></th>
                             </div>
-                            <div class="col-2">
+                            <div class="col-3">
                                 <i class="fa fa-money"></i><?php echo $this->lang->line('Price') ?>
                             </div>
                             <div class="col-3">
@@ -46,7 +47,7 @@
                                         class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Total') ?>
                             </div>
                             <div class="col-2">
-                                <i class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Pay') ?>
+                                <i class="fa fa-money"></i> <?php echo $this->lang->line('Pay') ?>
                             </div>
                         </div>
                         <div id="saman-pos2">

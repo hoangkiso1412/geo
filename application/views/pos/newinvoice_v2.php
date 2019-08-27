@@ -51,6 +51,9 @@
                             <th width="10%" class="text-center">
                                 <?php echo $this->lang->line('Amount') ?>
                             </th>
+                            <th width="10%" class="text-center">
+                                <?php echo $this->lang->line('Pay') ?>
+                            </th>
                             <th width="5%"
                                 class="text-center"><?php echo $this->lang->line('Action') ?></th>
                         </tr>

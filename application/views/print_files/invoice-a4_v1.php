@@ -238,6 +238,9 @@
             <td class="t_center">
                 <?php echo $this->lang->line('SubTotal') ?>
             </td>
+            <td>
+                <?php echo $this->lang->line('Pay') ?>
+            </td>
         </tr>
         <?php
         $fill = true;
@@ -267,6 +270,7 @@
                 echo ' <td style="width:16%;">' . amountExchange($row['totaldiscount'], $invoice['multi'], $invoice['loc']) . '</td>';
             }
             echo '<td class="t_center">' . amountExchange($row['subtotal'], $invoice['multi'], $invoice['loc']) . '</td></tr>';
+            echo '<td style="text-align: center;">'; echo $row['pay'] == 1 ? 'Yes' : 'No'; echo '</td>';
 
             if ($row['product_des']) {
                 $cc = $cols++;
