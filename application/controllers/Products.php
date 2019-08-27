@@ -148,31 +148,34 @@ class Products extends CI_Controller
         $code_type = $this->input->post('code_type');
         $sub_cat = $this->input->post('sub_cat');
         $brand = $this->input->post('brand');
+        $related_product = json_encode($this->input->post('related_product'));
+
         if ($catid) {
-            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand);
+            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product);
         }
+
     }
 
     public function delete_i()
     {
-         if ($this->aauth->premission(11)) {
-             $id = $this->input->post('deleteid');
-             if ($id) {
-                 $this->db->delete('geopos_products', array('pid' => $id));
-                 $this->db->delete('geopos_products', array('sub' => $id, 'merge' => 1));
-                 $this->db->delete('geopos_movers', array('d_type' => 1, 'rid1' => $id));
-                 $this->db->set('merge', 0);
-                 $this->db->where('sub', $id);
-                 $this->db->update('geopos_products');
-                 echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('DELETED')));
-             } else {
-                 echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('ERROR')));
-             }
-         }
-         else {
-                echo json_encode(array('status' => 'Error', 'message' =>
-                    $this->lang->line('ERROR')));
+        if ($this->aauth->premission(11)) {
+            $id = $this->input->post('deleteid');
+            if ($id) {
+                $this->db->delete('geopos_products', array('pid' => $id));
+                $this->db->delete('geopos_products', array('sub' => $id, 'merge' => 1));
+                $this->db->delete('geopos_movers', array('d_type' => 1, 'rid1' => $id));
+                $this->db->set('merge', 0);
+                $this->db->where('sub', $id);
+                $this->db->update('geopos_products');
+                echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('DELETED')));
+            } else {
+                echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('ERROR')));
             }
+        }
+        else {
+               echo json_encode(array('status' => 'Error', 'message' =>
+                   $this->lang->line('ERROR')));
+           }
     }
 
     public function edit()
@@ -187,6 +190,16 @@ class Products extends CI_Controller
         $data['cat_ware'] = $this->categories_model->cat_ware($pid);
         $data['cat_sub'] = $this->categories_model->sub_cat($data['product']['pcat']);
         $data['cat_sub_list'] = $this->categories_model->sub_cat_list($data['product']['pcat']);
+        $related_product_id  = implode(',', json_decode($data['product']['related_product']));
+        
+        $query2 = "SELECT * FROM geopos_products WHERE pid in($related_product_id)";   
+        $query2 = $this->db->query($query2);
+        $data['rese22'] = $query2->result_array();
+        
+        $query3 = "SELECT * FROM geopos_products WHERE pid not in($related_product_id)";   
+        $query3 = $this->db->query($query3);
+        $data['related_product'] = $query3->result_array();
+
         $data['warehouse'] = $this->categories_model->warehouse_list();
         $data['cat'] = $this->categories_model->category_list();
         $data['custom_fields'] = $this->custom->view_edit_fields($pid, 4);
@@ -217,10 +230,11 @@ class Products extends CI_Controller
         $barcode = $this->input->post('barcode');
         $code_type = $this->input->post('code_type');
         $sub_cat = $this->input->post('sub_cat');
+        $related_product = json_encode($this->input->post('related_product'));
         if (!$sub_cat) $sub_cat = 0;
         $brand = $this->input->post('brand');
         if ($pid) {
-            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand);
+            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product);
         }
     }
 

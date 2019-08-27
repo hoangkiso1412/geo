@@ -76,6 +76,7 @@
 
                     <div class="col-sm-6">
                     <select name="product_warehouse" id="wfrom" class="form-control">
+                            <option value='0'>Select</option>
                             <?php
                             foreach ($warehouse as $row) {
                                 $cid = $row['id'];
@@ -232,15 +233,16 @@
                     <small>Do not change if not applicable</small>
                 </div>
                 <div class="form-group row"><label class="col-sm-2 col-form-label"
-                        for="related_product"><?php echo $this->lang->line('Related Product') ?></label>
-                        <div class="col-sm-6">
-                    <select id="related_product" name="related_product[]" class="form-control required select-box"
-                                multiple="multiple">
+                            for="related_product"><?php echo $this->lang->line('Related Product') ?></label>
+                            <div class="col-sm-6">
+                        <select id="related_product" name="related_product[]" class="form-control required select-box"
+                                    multiple="multiple">
 
-                    </select>
-                        </div>
+                        </select>
+                            </div>
 
-                </div>
+                    </div>
+
 
                 <?php
                 foreach ($custom_fields as $row) {
