@@ -31,12 +31,16 @@ class Custom
 
     function save_fields_data($rid = 0, $r_type = 0)
     {
+        
         $custom = $this->PI->input->post('custom', true);
-         if(is_array($custom)) {
+        $images = $this->PI->input->post('images', true);
+         if(is_array($custom) || is_array($images)) {
              $datalist = array();
              $dindex = 0;
+             $datalistImage = array();
+             $dindexImage = 0;
              foreach ($custom as $key => $value) {
-                 if ($value) {
+                if ($value) {
                      $data = array(
                          'field_id' => $key,
                          'rid' => $rid,
@@ -45,18 +49,37 @@ class Custom
                      );
                      $datalist[$dindex] = $data;
                      $dindex++;
-                 }
+                }
+                 
+             }
+             foreach ($images as $keyImage => $image) {
+                if ($image) {
+                    $dataImage = array(
+                        'field_id' => $keyImage,
+                        'rid' => $rid,
+                        'module' => $r_type,
+                        'data' => json_encode($image)
+                    );
+                    $datalistImage[$dindexImage] = $dataImage;
+                    $dindexImage++;
+                }
              }
             if($dindex) $this->PI->db->insert_batch('geopos_custom_data', $datalist);
+            if($dindexImage) $this->PI->db->insert_batch('geopos_custom_data', $datalistImage);
          }
     }
 
-        function edit_save_fields_data($rid = 0, $r_type = 0)
+
+    function edit_save_fields_data($rid = 0, $r_type = 0)
     {
         $custom = $this->PI->input->post('custom', true);
-         if(is_array($custom)) {
+        $images = $this->PI->input->post('images', true);
+
+        if(is_array($custom) || is_array($images)) {
              $datalist = array();
              $dindex = 0;
+             $datalistImage = array();
+             $dindexImage = 0;
              $this->PI->db->delete('geopos_custom_data', array('rid' => $rid, 'module' => $r_type));
              foreach ($custom as $key => $value) {
                  if ($value) {
@@ -70,10 +93,24 @@ class Custom
                      $dindex++;
                  }
              }
+             foreach ($images as $keyImage => $image) {
+                if ($image) {
+                    $dataImage = array(
+                        'field_id' => $keyImage,
+                        'rid' => $rid,
+                        'module' => $r_type,
+                        'data' => json_encode($image)
+                    );
+                    $datalistImage[$dindexImage] = $dataImage;
+                    $dindexImage++;
+                }
+             }
 
              if($dindex) $this->PI->db->insert_batch('geopos_custom_data', $datalist);
+             if($dindexImage) $this->PI->db->insert_batch('geopos_custom_data', $datalistImage);    
          }
     }
+
 
     function view_fields_data($rid = 0,$r_type = 0,$view = 0)
     {

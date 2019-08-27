@@ -376,7 +376,9 @@
 
                 </div>
                 <div class="form-group row">
+
                     <label class="col-sm-2 col-form-label"></label>
+
                     <div class="col-sm-4">
                         <input type="submit" id="submit-data" class="btn btn-success margin-bottom"
                                value="Update customer" data-loading-text="Updating...">
@@ -469,4 +471,3 @@
     });
 <?php } ?>
 </script>
-

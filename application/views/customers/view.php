@@ -307,25 +307,25 @@
                                                     <?php echo $details['custom1'] ?>
                                                 </div>
                                             </div>
-                                            <?php foreach ($custom_fields as $row) {
-                                                ?>
+                                            <?php foreach ($custom_fields as $row) { ?>
                                                 <hr>
+                                                <?php if ($row['f_type'] == 'image') { ?>
                                                 <div class="row m-t-lg">
-                                                    <div class="col-md-2">
-                                                        <strong><?php echo $row['name'] ?></strong>
-                                                    </div>
-                                                    <div class="col-md-10">
-                                                        <?php echo $row['data'] ?>
-                                                    </div>
-
+                                                    <div class="col-md-2"><strong><?php echo $row['name'] ?></strong></div>
+                                                    <div class="col-md-10"><img  class="image_display" src="<?php echo base_url() ?>userfiles/custom_images/<?php $row['data'] ?>" alt=""></div>
                                                 </div>
-
-
-                                                <?php
-
-
-                                            }
-                                            ?>
+                                                <?php } else if ($row['f_type'] == 'images') { ?>
+                                                <div class="row m-t-lg">
+                                                    <div class="col-md-2"><strong><?php echo $row['name'] ?></strong></div>
+                                                    <div class="col-md-10">
+                                                    <?php foreach (json_decode($row['data']) as $image) { ?>
+                                                        <img class="images_display" src="<?php echo base_url() ?>userfiles/custom_images/<?php echo $image ?>" width="200px" alt="">
+                                                    <?php } ?>
+                                                    </div></div>
+                                                <?php } else { ?>
+                                                    <div class="col-md-2"><strong><?php echo $row['name'] ?></strong></div>
+                                                    <div class="col-md-10"><?php $row['data'] ?></div>
+                                                <?php } } ?>
 
 
                                         </div>
