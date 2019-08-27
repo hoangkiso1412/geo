@@ -92,6 +92,17 @@
 
 
                         </div>
+                        <div class="col-sm-1"></div>
+                            <div class="col-sm-3">
+                                <div class="input-group mt-1">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" <?php echo ($product['favorite'] ? 'checked' : '') ?> name="favorite" id="copy_address">
+                                        <label class="custom-control-label" for="copy_address"><?php echo $this->lang->line('Favorite') ?></label>
+                                    </div>
+
+                                </div>
+
+                            </div>
                     </div>
                     <div class="form-group row">
 
@@ -262,22 +273,26 @@
                         </div>
                         <small>Do not change if not applicable</small>
                     </div>
+                    
+                    
                     <div class="form-group row"><label class="col-sm-2 col-form-label"
                             for="related_product"><?php echo $this->lang->line('Related Product') ?></label>
-                        <div class="col-sm-6">
-                            <select id="related_product" name="related_product[]" class="form-control required select-box"
-                                        multiple="multiple">
-                                        <?php
+                            <div class="col-sm-6">
+						<select id="related_product" name="related_product[]" class="form-control required select-box"
+                                    multiple="multiple">
+                                    <?php
 
-                                        foreach ($related_product as $row) {
-                                            $cid = $row['pid'];
-                                            $title = $row['product_name'];
-                                            echo "<option value='$cid'>$title</option>";
-                                        }
-                                        ?>
+                                    foreach ($related_product as $row) {
+                                        $cid = $row['pid'];
+                                        $title = $row['product_name'];
+                                        echo "<option value='$cid'>$title</option>";
+                                    }
+                                    ?>
                             </select>
                         </div>
-                    </div>
+
+
+					</div>
                     <?php foreach ($custom_fields as $row) {
                         if ($row['f_type'] == 'text') { ?>
                             <div class="form-group row">
@@ -293,23 +308,24 @@
                                 </div>
                             </div>
 
-                            <?php } else if ($row['f_type'] == 'select') { ?>
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
 
-                            <div class="col-sm-6">
-                                <select name="custom[<?= $row['id'] ?>]" class="form-control b_input">
-                                    <?php
+                            <?php } else if ($row['f_type'] == 'select') { ?>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
+
+							<div class="col-sm-6">
+								<select name="custom[<?= $row['id'] ?>]" class="form-control b_input">
+									<?php
 
                                                 foreach (json_decode($row['value_data']) as $data) {
                                                     echo "<option ". ($row['data'] == $data ? 'selected' : '' ) ." value='$data'>$data</option>";
                                                 }
                                                 ?>
-                                </select>
-                            </div>
-                        </div>
-                        <?php } else if ($row['f_type'] == 'image') {?>
-                            <div class="form-group row">
+								</select>
+							</div>
+						</div>
+						<?php } else if ($row['f_type'] == 'image') {?>
+							<div class="form-group row">
                                 <label class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
                                 <div class="col-sm-6">
                                     <input type="file" name="files" id="files-<?php echo $row['id'] ?>" />
@@ -320,22 +336,21 @@
                                     <div id="uploaded_images-<?php echo $row['id'] ?>" class="row"></div>
                                 </div>
                             </div>
-                            <?php } else if ($row['f_type'] == 'images')  { ?>
-                                <div class="form-group row"><label
-                                        class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
-                                    <div class="col-sm-6">
-                                        <input type="file" name="files" id="files-<?php echo $row['id'] ?>" multiple />
-                                        <?php foreach (json_decode($row['data']) as $key => $image) { ?>
+							<?php } else if ($row['f_type'] == 'images')  { ?>
+								<div class="form-group row"><label
+										class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
+									<div class="col-sm-6">
+										<input type="file" name="files" id="files-<?php echo $row['id'] ?>" multiple />
+										<?php foreach (json_decode($row['data']) as $key => $image) { ?>
                                             <img class="images_display-<?php echo $row['id'] ?>" src="<?php echo base_url() ?>userfiles/custom_images/<?php echo $image ?>" width="200px" alt="">
                                             <input type="hidden" name="images[<?= $row['id'] ?>][<?php echo $key ?>]" value="<?php echo $image ?>">                                            
-                                        <?php } ?>
-                                        <div id="uploaded_images-<?php echo $row['id'] ?>" class="row"></div>
-                                    </div>
-                                </div>
-                            <?php }
-                            }
-                            ?>
-
+										<?php } ?>
+										<div id="uploaded_images-<?php echo $row['id'] ?>" class="row"></div>
+									</div>
+								</div>
+							<?php }
+							}
+							?>
                     <hr>
                     <div class="form-group row"><label
                                 class="col-sm-2 col-form-label"><?php echo $this->lang->line('Image') ?></label>
@@ -438,7 +453,6 @@
                 });
 
             });
-
             var s2 = $("#related_product").select2({
                 placeholder: "Choose product related type",
                 tags: true
@@ -485,7 +499,6 @@
                     }
                 });
             });
-
             $("#sub_cat").select2();
             $("#product_cat").on('change', function () {
                 $("#sub_cat").val('').trigger('change');
@@ -519,43 +532,43 @@
         </script>
 <script>
 <?php foreach ($custom_fields as $row) { ?>
-    $('#files-<?php echo $row['id'] ?>').change(function(e){
-        e.preventDefault();
-        var files = $('#files-<?php echo $row['id'] ?>')[0].files;
-        var error = '';
-        var form_data = new FormData();
-        for(var count = 0; count<files.length; count++) {
-            var name = files[count].name;
-            var extension = name.split('.').pop().toLowerCase();
-            if(jQuery.inArray(extension, ['gif','png','jpg','jpeg']) == -1) {
-                error += "Invalid " + count + " Image File"
-            }
-            else {
-                form_data.append("files[]", files[count]);
-            }
-            console.log(name)
-            
+	$('#files-<?php echo $row['id'] ?>').change(function(e){
+		e.preventDefault();
+		var files = $('#files-<?php echo $row['id'] ?>')[0].files;
+		var error = '';
+		var form_data = new FormData();
+		for(var count = 0; count<files.length; count++) {
+			var name = files[count].name;
+			var extension = name.split('.').pop().toLowerCase();
+			if(jQuery.inArray(extension, ['gif','png','jpg','jpeg']) == -1) {
+				error += "Invalid " + count + " Image File"
+			}
+			else {
+				form_data.append("files[]", files[count]);
+			}
+			console.log(name)
+			
 
-        }
-        if(error == '') {
-            $.ajax({
+		}
+		if(error == '') {
+			$.ajax({
                 url: baseurl + 'customers/upload_images?id=<?php echo $row['id'] ?>&type=<?php echo $row['f_type'] ?>',
                 method:"POST",
-                data: form_data,
-                contentType:false,
-                cache:false,
-                processData:false,
-                beforeSend:function() {
-                    $('#uploaded_images'-<?php echo $row['id'] ?>).html("<label class='text-success'>Uploading...</label>");
-                },
-                success:function(data) {
-                    $('#uploaded_images-<?php echo $row['id'] ?>').html(data);
-                    $('.images_display-<?php echo $row['id'] ?>').remove();
-                }
-            })
-        } else {
-            alert(error);
-        }
-    });
+				data: form_data,
+				contentType:false,
+				cache:false,
+				processData:false,
+				beforeSend:function() {
+					$('#uploaded_images'-<?php echo $row['id'] ?>).html("<label class='text-success'>Uploading...</label>");
+				},
+				success:function(data) {
+					$('#uploaded_images-<?php echo $row['id'] ?>').html(data);
+					$('.images_display-<?php echo $row['id'] ?>').remove();
+				}
+			})
+		} else {
+			alert(error);
+		}
+	});
 <?php } ?>
 </script>
