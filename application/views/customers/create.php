@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="post" id="data_form" class="form-horizontal">
+            <form enctype="multipart/form-data" method="post" id="data_form" class="form-horizontal">
                 <div class="card">
 
                     <div class="card-content">
@@ -284,22 +284,68 @@
                                     <?php
                                     foreach ($custom_fields as $row) {
                                         if ($row['f_type'] == 'text') { ?>
-                                            <div class="form-group row">
+                                    <div class="form-group row">
 
-                                                <label class="col-sm-2 col-form-label"
-                                                       for="docid"><?= $row['name'] ?></label>
+                                        <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
 
-                                                <div class="col-sm-8">
-                                                    <input type="text" placeholder="<?= $row['placeholder'] ?>"
-                                                           class="form-control margin-bottom b_input <?= $row['other'] ?>"
-                                                           name="custom[<?= $row['id'] ?>]">
-                                                </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" placeholder="<?= $row['placeholder'] ?>"
+                                                class="form-control margin-bottom b_input <?= $row['other'] ?>"
+                                                name="custom[<?= $row['id'] ?>]">
+                                        </div>
+                                    </div>
+
+                                    <?php } else if ($row['f_type'] == 'select') { ?>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
+
+                                        <div class="col-sm-6">
+                                            <select name="custom[<?= $row['id'] ?>]"
+                                                class="form-control b_input <?= $row['other'] ?>">
+                                                <?php
+
+                                                foreach (json_decode($row['value_data']) as $data) {
+                                                    echo "<option value='$data'>$data</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <?php } else if ($row['f_type'] == 'image') {?>
+                                    <div class="form-group row"><label
+                                            class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
+                                        <div class="col-sm-6">
+                                            <div id="progress-<?php echo $row['id'] ?>" class="progress">
+                                                <div class="progress-bar progress-bar-success"></div>
                                             </div>
-
-
-                                        <?php }
+                                            <!-- The container for the uploaded files -->
+                                            <table id="files-<?php echo $row['id'] ?>" class="files"></table>
+                                            <br>
+                                            <span class="btn btn-success fileinput-button">
+                                                <i class="glyphicon glyphicon-plus"></i>
+                                                <span>Select files...</span>
+                                                <!-- The file input field used as target for the file upload widget -->
+                                                <input id="fileupload-<?php echo $row['id'] ?>" type="file" name="files[]">
+                                            </span>
+                                            <br>
+                                            <pre>Allowed: gif, jpeg, png (Use light small weight images for fast loading - 200x200)</pre>
+                                            <br>
+                                            <!-- The global progress bar -->
+                                            <input type="hidden" name="custom[<?= $row['id'] ?>]" id="image-<?php echo $row['id'] ?>" value="default.png">
+                                        </div>
+                                    </div>
+                                    <?php } else if ($row['f_type'] == 'images')  { ?>
+                                        <div class="form-group row"><label
+                                                class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
+                                            <div class="col-sm-6">
+                                                <input type="file" name="files" id="files-<?php echo $row['id'] ?>" multiple />
+                                                <div id="uploaded_images" class="row"></div>
+                                            </div>
+                                        </div>
+                                    <?php }
                                     }
                                     ?>
+
 
 
                                     <div class="form-group row">
@@ -384,4 +430,84 @@
         </div>
     </div>
 </div>
+<script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js'); ?>"></script>
+<script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
+<script>
+<?php foreach ($custom_fields as $row) { ?>
+    /*jslint unparam: true */
+    /*global window, $ */
+    $(function () {
+        'use strict';
+        // Change this to the location of your server-side upload handler:
+        var url = '<?php echo base_url() ?>products/file_handling';
+        $('#fileupload-<?php echo $row['id'] ?>').fileupload({
+                url: url,
+                dataType: 'json',
+                formData: {
+                    '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                },
+                done: function (e, data) {
+                    var img = 'default.png';
+                    console.log(data.result.files)
+                    $.each(data.result.files, function (index, file) {
+                        $('#files-<?php echo $row['id'] ?>').html(
+                            '<tr><td><a data-url="<?php echo base_url() ?>products/file_handling?op=delete&name=' +
+                            file.name +
+                            '" class="aj_delete"><i class="btn-danger btn-sm icon-trash-a"></i> ' +
+                            file.name +
+                            ' </a><img style="max-height:200px;" src="<?php echo base_url() ?>userfiles/product/' +
+                            file.name + '"></td></tr>');
+                        img = file.name;
+                    });
 
+                    $('#image-<?php echo $row['id'] ?>').val(img);
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#progress-<?php echo $row['id'] ?> .progress-bar').css(
+                        'width',
+                        progress + '%'
+                    );
+                }
+            }).prop('disabled', !$.support.fileInput)
+            .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    });
+    $('#files-<?php echo $row['id'] ?>').change(function(e){
+        e.preventDefault();
+        var files = $('#files-<?php echo $row['id'] ?>')[0].files;
+        var error = '';
+        var form_data = new FormData();
+        for(var count = 0; count<files.length; count++) {
+            var name = files[count].name;
+            var extension = name.split('.').pop().toLowerCase();
+            if(jQuery.inArray(extension, ['gif','png','jpg','jpeg']) == -1) {
+                error += "Invalid " + count + " Image File"
+            }
+            else {
+                form_data.append("files[]", files[count]);
+            }
+            console.log(name)
+            
+
+        }
+        if(error == '') {
+            $.ajax({
+                url: baseurl + 'customers/upload_images?id=<?php echo $row['id'] ?>',
+                method:"POST",
+                data: form_data,
+                contentType:false,
+                cache:false,
+                processData:false,
+                beforeSend:function() {
+                    $('#uploaded_images').html("<label class='text-success'>Uploading...</label>");
+                },
+                success:function(data) {
+                    $('#uploaded_images').html(data);
+                }
+            })
+        } else {
+            alert(error);
+        }
+    });
+<?php } ?>
+</script>

@@ -1,4 +1,5 @@
-<?php 
+<?php
+$lang['Option'] = "Option"; 
 $lang['Pay'] = "Pay";
 $lang['You have an older due the value is'] = "You have an older due the value is";
 $lang['Date'] = "Date";

@@ -75,7 +75,8 @@
                            for="product_cat"><?php echo $this->lang->line('Warehouse') ?>*</label>
 
                     <div class="col-sm-6">
-                        <select name="product_warehouse" class="form-control">
+                    <select name="product_warehouse" id="wfrom" class="form-control">
+                            <option value='0'>Select</option>
                             <?php
                             foreach ($warehouse as $row) {
                                 $cid = $row['id'];
@@ -231,6 +232,17 @@
                     </div>
                     <small>Do not change if not applicable</small>
                 </div>
+                <div class="form-group row"><label class="col-sm-2 col-form-label"
+                        for="related_product"><?php echo $this->lang->line('Related Product') ?></label>
+                        <div class="col-sm-6">
+                    <select id="related_product" name="related_product[]" class="form-control required select-box"
+                                multiple="multiple">
+
+                    </select>
+                        </div>
+
+                </div>
+
                 <?php
                 foreach ($custom_fields as $row) {
                     if ($row['f_type'] == 'text') { ?>
@@ -246,10 +258,25 @@
                             </div>
                         </div>
 
+                    <?php } else if ($row['f_type'] == 'select') { ?>
+                        <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
 
+                                        <div class="col-sm-6">
+                                            <select name="custom[<?= $row['id'] ?>]" class="form-control b_input">
+                                                <?php
+
+                                                foreach (json_decode($row['value_data']) as $data) {
+                                                    echo "<option value='$data'>$data</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
                     <?php }
                 }
                 ?>
+
                 <hr>
                 <div class="form-group row"><label
                             class="col-sm-2 col-form-label"><?php echo $this->lang->line('Image') ?></label>
@@ -450,6 +477,38 @@
         $(this).closest('tr').remove();
     });
 
+    $("#related_product").select2();
+    $("#wfrom").on('change', function () {
+        var tips = $('#wfrom').val();
+        $("#related_product").select2({
+
+            tags: [],
+            ajax: {
+                url: baseurl + 'products/stock_transfer_products?wid=' + tips,
+                dataType: 'json',
+                type: 'POST',
+                quietMillis: 50,
+                data: function (product) {
+
+                    return {
+                        product: product,
+                        '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.product_name,
+                                id: item.pid
+                            }
+                        })
+                    };
+                },
+            }
+        });
+    });
 
     $("#sub_cat").select2();
     $("#product_cat").on('change', function () {

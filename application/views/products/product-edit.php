@@ -79,7 +79,7 @@
                                for="product_cat"><?php echo $this->lang->line('Warehouse') ?>*</label>
 
                         <div class="col-sm-6">
-                            <select name="product_warehouse" class="form-control">
+                            <select name="product_warehouse" id="wfrom" class="form-control">
                                 <?php
                                 echo '<option value="' . $cat_ware['wid'] . '">' . $cat_ware['watt'] . ' (S)</option>';
                                 foreach ($warehouse as $row) {
@@ -111,7 +111,7 @@
 
                         <div class="col-sm-6">
                             <div class="input-group">
-                                <span class="input-group-addon"><?php echo $this->config->item('currency') ; echo $product['product_price'] ?></span>
+                                <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
                                 <input type="text" name="product_price" class="form-control required"
                                        placeholder="0.00" aria-describedby="sizing-addon"
                                        onkeypress="return isNumber(event)"
@@ -262,6 +262,22 @@
                         </div>
                         <small>Do not change if not applicable</small>
                     </div>
+                    <div class="form-group row"><label class="col-sm-2 col-form-label"
+                            for="related_product"><?php echo $this->lang->line('Related Product') ?></label>
+                        <div class="col-sm-6">
+                            <select id="related_product" name="related_product[]" class="form-control required select-box"
+                                        multiple="multiple">
+                                        <?php
+
+                                        foreach ($related_product as $row) {
+                                            $cid = $row['pid'];
+                                            $title = $row['product_name'];
+                                            echo "<option value='$cid'>$title</option>";
+                                        }
+                                        ?>
+                            </select>
+                        </div>
+                    </div>
                     <?php foreach ($custom_fields as $row) {
                         if ($row['f_type'] == 'text') { ?>
                             <div class="form-group row">
@@ -277,12 +293,25 @@
                                 </div>
                             </div>
 
+                            <?php } else if ($row['f_type'] == 'select') { ?>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
 
+                            <div class="col-sm-6">
+                                <select name="custom[<?= $row['id'] ?>]" class="form-control b_input">
+                                    <?php
+
+                                                foreach (json_decode($row['value_data']) as $data) {
+                                                    echo "<option ". ($row['data'] == $data ? 'selected' : '' ) ." value='$data'>$data</option>";
+                                                }
+                                                ?>
+                                </select>
+                            </div>
+                        </div>
                         <?php }
+                                    }
+                                    ?>
 
-
-                    }
-                    ?>
                     <hr>
                     <div class="form-group row"><label
                                 class="col-sm-2 col-form-label"><?php echo $this->lang->line('Image') ?></label>
@@ -384,6 +413,53 @@
                     }
                 });
 
+            });
+
+            var s2 = $("#related_product").select2({
+                placeholder: "Choose product related type",
+                tags: true
+            });
+
+            var vals = <?php echo '['; foreach($rese22 as $name) {echo json_encode($name['product_name']) . ','  ?><?php }  echo ']'; ?>
+
+            vals.forEach(function(e){
+            if(!s2.find('option:contains(' + e + ')').length) 
+            s2.append($('<option>').text(e));
+            });
+
+            s2.val(vals).trigger("change");
+            $("#related_product").select2();
+            $("#wfrom").on('change', function () {
+                $('#related_product').empty().trigger("change");
+                var tips = $('#wfrom').val();
+                $("#related_product").select2({
+
+                    tags: [],
+                    ajax: {
+                        url: baseurl + 'products/stock_transfer_products?wid=' + tips,
+                        dataType: 'json',
+                        type: 'POST',
+                        quietMillis: 50,
+                        data: function (product) {
+
+                            return {
+                                product: product,
+                                '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: $.map(data, function (item) {
+                                    return {
+                                        text: item.product_name,
+                                        id: item.pid
+                                    }
+                                })
+                            };
+                        },
+                    }
+                });
             });
 
             $("#sub_cat").select2();

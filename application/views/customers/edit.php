@@ -193,27 +193,73 @@
                             </div>
                         </div>
 
-                        <?php foreach ($custom_fields as $row) {
+                        <?php
+                        foreach ($custom_fields as $row) {
                             if ($row['f_type'] == 'text') { ?>
-                                <div class="form-group row">
+                        <div class="form-group row">
 
-                                    <label class="col-sm-2 col-form-label"
-                                           for="docid"><?= $row['name'] ?></label>
+                            <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
 
-                                    <div class="col-sm-8">
-                                        <input type="text" placeholder="<?= $row['placeholder'] ?>"
-                                               class="form-control margin-bottom b_input"
-                                               name="custom[<?= $row['id'] ?>]"
-                                               value="<?= $row['data'] ?>">
+                            <div class="col-sm-6">
+                                <input type="text" placeholder="<?= $row['placeholder'] ?>"
+                                    class="form-control margin-bottom b_input <?= $row['other'] ?>"
+                                    name="custom[<?= $row['id'] ?>]" value="<?= $row['data'] ?>">
+                            </div>
+                        </div>
+
+                        <?php } else if ($row['f_type'] == 'select') { ?>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="docid"><?= $row['name'] ?></label>
+
+                            <div class="col-sm-6">
+                                <select name="custom[<?= $row['id'] ?>]" class="form-control b_input">
+                                    <?php
+
+                                                foreach (json_decode($row['value_data']) as $data) {
+                                                    echo "<option ". ($row['data'] == $data ? 'selected' : '' ) ." value='$data'>$data</option>";
+                                                }
+                                                ?>
+                                </select>
+                            </div>
+                        </div>
+                        <?php } else if ($row['f_type'] == 'image') {?>
+                            <div class="form-group row"><label
+                                    class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
+                                <div class="col-sm-6">
+                                    <div id="progress-<?php echo $row['id'] ?>" class="progress">
+                                        <div class="progress-bar progress-bar-success"></div>
+                                    </div>
+                                    <!-- The container for the uploaded files -->
+                                    <table id="files-<?php echo $row['id'] ?>" class="files"></table>
+                                    <br>
+                                    <span class="btn btn-success fileinput-button">
+                                        <i class="glyphicon glyphicon-plus"></i>
+                                        <span>Select files...</span>
+                                        <!-- The file input field used as target for the file upload widget -->
+                                        <input id="fileupload-<?php echo $row['id'] ?>" type="file" name="files[]">
+                                        <img  class="image_display" src="<?php echo base_url() ?>userfiles/custom_images/<?php $row['data'] ?>" alt="">
+                                    </span>
+                                    <br>
+                                    <pre>Allowed: gif, jpeg, png (Use light small weight images for fast loading - 200x200)</pre>
+                                    <br>
+                                    <!-- The global progress bar -->
+                                    <input type="hidden" name="custom[<?= $row['id'] ?>]" id="image-<?php echo $row['id'] ?>" value="default.png">
+                                </div>
+                            </div>
+                            <?php } else if ($row['f_type'] == 'images')  { ?>
+                                <div class="form-group row"><label
+                                        class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
+                                    <div class="col-sm-6">
+                                        <input type="file" name="files" id="files-<?php echo $row['id'] ?>" multiple />
+                                        <?php foreach (json_decode($row['data']) as $image) { ?>
+                                            <img class="images_display" src="<?php echo base_url() ?>userfiles/custom_images/<?php echo $image ?>" width="200px" alt="">
+                                        <?php } ?>
+                                        <div id="uploaded_images" class="row"></div>
                                     </div>
                                 </div>
-
-
                             <?php }
-
-
-                        }
-                        ?>
+                            }
+                            ?>
                     </div>
 
                     <div class="col-md-6">
