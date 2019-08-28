@@ -764,7 +764,7 @@ FROM geopos_invoices AS i LEFT JOIN geopos_customers AS c ON i.csd=c.id GROUP BY
         }
         $result = $query->result_array();
     }
-    
+
     public function switch_location()
     {
         $id = $this->input->get('id', true);

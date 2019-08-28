@@ -92,6 +92,17 @@
 
 
                         </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                            <div class="input-group mt-1">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" <?php echo ($product['favorite'] ? 'checked' : '') ?> name="favorite" id="favorite">
+                                    <label class="custom-control-label" for="favorite"><?php echo $this->lang->line('Favorite') ?></label>
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
                     <div class="form-group row">
 
@@ -103,6 +114,16 @@
                                    class="form-control" name="product_code"
                                    value="<?php echo $product['product_code'] ?>">
                         </div>
+                        <label class="col-sm-1 col-form-label"><?php echo $this->lang->line('Wholesale-Price') ?>*</label>
+
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
+                                <input type="text" name="wholesale" class="form-control required" placeholder="0.00"
+                                    aria-describedby="sizing-addon" onkeypress="return isNumber(event)" value="<?php echo edit_amountExchange_s($product['wholesale'], 0, $this->aauth->get_user()->loc) ?>">
+                            </div>
+                        </div>
+
                     </div>
                     <div class="form-group row">
 
@@ -118,6 +139,17 @@
                                        value="<?php echo edit_amountExchange_s($product['product_price'], 0, $this->aauth->get_user()->loc) ?>">
                             </div>
                         </div>
+                        <label class="col-sm-1 control-label"
+                        for="product_status"><?php echo $this->lang->line('Product Status') ?>*</label>
+
+                        <div class="col-sm-3">
+                            <select name="product_status" id="product_status" class="form-control required">
+                                <option <?php echo ($product['product_status'] == 0 ? 'selected' : '') ?> value='0'>Select</option>
+                                <option <?php echo ($product['product_status'] == 1 ? 'selected' : '') ?> value='1'>New</option>
+                                <option <?php echo ($product['product_status'] == 2 ? 'selected' : '') ?> value='2'>Used</option>
+                            </select>
+                        </div>
+
                     </div>
                     <div class="form-group row">
 
@@ -131,6 +163,16 @@
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['fproduct_price'], 0, $this->aauth->get_user()->loc) ?>">
                             </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="input-group mt-1">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" <?php echo ($product['bundle_products'] ? 'checked' : '') ?> class="custom-control-input" name="bundle" id="bundle">
+                                    <label class="custom-control-label" for="bundle"><?php echo $this->lang->line('Bundle Products') ?></label>
+                                </div>
+
+                            </div>
+
                         </div>
                     </div>
                     <div class="form-group row">
@@ -277,6 +319,23 @@
                                         ?>
                             </select>
                         </div>
+                    </div>
+                    <div class="form-group row bundel_select"><label class="col-sm-2 col-form-label"
+                            for="bundle_products"><?php echo $this->lang->line('Bundle Products') ?></label>
+                            <div class="col-sm-6">
+                        <select id="bundle_products" name="bundle_products[]" class="form-control required select-box"
+                                    multiple="multiple">
+                                    <?php
+
+                                foreach ($bundle_products as $row) {
+                                    $cid = $row['pid'];
+                                    $title = $row['product_name'];
+                                    echo "<option value=".$cid.">".$title."</option>";
+                                }
+                                ?>
+                        </select>
+                            </div>
+
                     </div>
                     <?php foreach ($custom_fields as $row) {
                         if ($row['f_type'] == 'text') { ?>
@@ -439,24 +498,34 @@
 
             });
 
-            var s2 = $("#related_product").select2({
-                placeholder: "Choose product related type",
-                tags: true
+            $('#bundle').change(function() {
+                if (this.checked) {
+                    $(".bundel_select").show();
+                    $(".select2-container--default").width('100%')
+                    console.log($("#related_product").val())
+                } else {
+                    $(".bundel_select").hide();
+                    $('#bundle_products').empty().trigger("change");
+                }
             });
+            
+            $("#related_product").select2()
+            $("#bundle_products").select2()
+            <?php if ($product['related_product'] != 'null' && $product['bundle_products']) { ?>
+                const related_val = <?php echo ($product['related_product'] != 'null' && $product['bundle_products'] ? $product['related_product'] : '') ?>;
+                $('#related_product').val(related_val).trigger('change');
+            <?php } ?>
+            <?php if ($product['bundle_products'] != 'null' && $product['bundle_products']) { ?>
+                const bundle_val = <?php echo ($product['bundle_products'] != 'null' && $product['bundle_products']  ? $product['bundle_products'] : '') ?>;
+                $('#bundle_products').val(bundle_val).trigger('change');
 
-            var vals = <?php echo '['; foreach($rese22 as $name) {echo json_encode($name['product_name']) . ','  ?><?php }  echo ']'; ?>
-
-            vals.forEach(function(e){
-            if(!s2.find('option:contains(' + e + ')').length) 
-            s2.append($('<option>').text(e));
-            });
-
-            s2.val(vals).trigger("change");
-            $("#related_product").select2();
+            <?php } ?>
+            
+            
             $("#wfrom").on('change', function () {
-                $('#related_product').empty().trigger("change");
+                $('#related_product, #bundle_products').empty().trigger("change");
                 var tips = $('#wfrom').val();
-                $("#related_product").select2({
+                $("#related_product, #bundle_products").select2({
 
                     tags: [],
                     ajax: {
@@ -485,6 +554,7 @@
                     }
                 });
             });
+
 
             $("#sub_cat").select2();
             $("#product_cat").on('change', function () {

@@ -284,6 +284,7 @@
                                         <th class="text-xs-left"><?php echo $this->lang->line('Tax') ?></th>
                                         <th class="text-xs-left"><?php echo $this->lang->line('Discount') ?></th>
                                         <th class="text-xs-left"><?php echo $this->lang->line('Amount') ?></th>
+                                        <th class="text-xs-left"><?php echo $this->lang->line('Pay') ?></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -300,12 +301,12 @@
                             <td>' . amountExchange($row['totaltax'], $invoice['multi'], $invoice['loc']) . ' (' . amountFormat_s($row['tax']) . '%)</td>
                             <td>' . amountExchange($row['totaldiscount'], $invoice['multi'], $invoice['loc']) . ' (' . amountFormat_s($row['discount']) . $this->lang->line($invoice['format_discount']) . ')</td>
                             <td>' . amountExchange($row['subtotal'], $invoice['multi'], $invoice['loc']) . '</td>
+                            <td>'; echo $row['pay'] == 1 ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-close text-danger"></i>'; echo '</td>
                         </tr>';
 
                                         echo '<tr><td colspan=7>' . $row['product_des'] . '</td></tr>';
                                         if (CUSTOM) {
                                             $p_custom_fields = $this->custom->view_fields_data($row['pid'], 4, 1);
-
 
                                             $z_custom_fields = '';
 
@@ -315,7 +316,7 @@
 
                                             echo '<tr>  
                             <td colspan="7">' . $z_custom_fields . '&nbsp;</td>
-							
+                            
                         </tr>';
                                         }
                                         $c++;

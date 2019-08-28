@@ -309,6 +309,7 @@
                                         <th class="text-xs-left"><?php echo $this->lang->line('Tax') ?></th>
                                         <th class="text-xs-left"><?php echo $this->lang->line('Discount') ?></th>
                                         <th class="text-xs-left"><?php echo $this->lang->line('Amount') ?></th>
+                                        <th class="text-xs-left"><?php echo $this->lang->line('Pay') ?></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -325,12 +326,12 @@
                             <td>' . amountExchange($row['totaltax'], 0, $this->aauth->get_user()->loc) . ' (' . amountFormat_s($row['tax']) . '%)</td>
                             <td>' . amountExchange($row['totaldiscount'], 0, $this->aauth->get_user()->loc) . ' (' . amountFormat_s($row['discount']) . $this->lang->line($invoice['format_discount']) . ')</td>
                             <td>' . amountExchange($row['subtotal'], 0, $this->aauth->get_user()->loc) . '</td>
+                            <td>'; echo $row['pay'] == 1 ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-close text-danger"></i>'; echo '</td>
                         </tr>';
 
                                         echo '<tr><td colspan=5>' . $row['product_des'] . '</td></tr>';
                                         $c++;
                                     } ?>
-
                                     </tbody>
                                 <?php } ?>
                             </table>

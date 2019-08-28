@@ -21,22 +21,14 @@
                         <input type="hidden" name="customer_id" id="customer_id" value="1">
                         <div id="customer_name"><?php echo $this->lang->line('Default'); ?>: <strong>Walk
                                 In </strong></div>
+                        <input type="hidden" name="customer_wholesale" id="customer_wholesale" value="0">
+                                
                     </div>
                 </div>
             </div>
-            <?php 
-            $due_amount = ((int)$due['total'] - (int)$due['pamnt']);
-            if ($due_amount != 0) { ?>
-            <div  class="alert alert-danger">
-                <a href="#" class="close" data-dismiss="alert">&times;</a>
-
-                <div class="message"><?php echo $this->lang->line('You have an older due the value is') ?> <strong><?php echo $due_amount ?></strong></div>
-            </div>
-            <?php } ?>
-
             <div id="saman-row-pos" class="rqw mt-1">
-                <div class="mt-1" id="alert-due"></div>
                 <div class="col p-mobile">
+                    <div class="mt-1" id="alert-due"></div>
                     <table id="pos_list" class="table-responsive tfr pos_stripe">
                         <thead>
                         <tr class="item_header bg-gradient-directional-purple white">
@@ -327,7 +319,7 @@
             <div class="row border-bottom-grey-blue  border-bottom-lighten-4">
 
 
-                <div class="col-md-9 pb-1">
+                <div class="col-md-6 pb-1">
                     <input type="text" class="form-control text-center round mousetrap"
                            name="product_barcode"
                            placeholder="Enter Product name, scan barcode " id="search_bar"
@@ -344,6 +336,14 @@
                         }
                         ?>
                     </select></div>
+                <div class="col-md-3  grey text-xs-center"><select
+                            id="product_status"
+                            class="form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('All') ?></option>
+                        <option value="1"><?php echo $this->lang->line('New') ?></option>
+                        <option value="2"><?php echo $this->lang->line('Used') ?></option>
+                </select></div>
+
 
 
             </div>
@@ -862,7 +862,7 @@
         url: baseurl + 'search_products/pos_search',
         dataType: 'html',
         method: 'POST',
-        data: 'cid=' + $('#categories').val() + '&wid=' + $('#warehouses option:selected').val() + '&' + crsf_token + '=' + crsf_hash,
+        data: 'cid=' + $('#categories').val() + '&wid=' + $('#warehouses option:selected').val() + '&' + crsf_token + '=' + crsf_hash + '&status=' + $('#product_status').val(),
         success: function (data) {
             $('#pos_item').html(data);
         }

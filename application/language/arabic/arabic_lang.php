@@ -1,4 +1,13 @@
 <?php 
+$lang['Select Products'] = "أختار المنتاجات";
+$lang['Bundle Products'] = "حزمة المنتجات";
+$lang['New'] = "حديد";
+$lang['Used'] = "مستعمل";
+$lang['Product Status'] = "حالة المنتج";
+$lang['Wholesale-Price'] = "سعر الجملة";
+$lang['Related Product'] = "المنتجات ذات الصلة";
+$lang['Favorite'] = "منتج مفضل";
+$lang['Option'] = "أختيار";
 $lang['Date'] = "تاريخ";
 $lang['Edit'] = "تصحيح";
 $lang['employee_login_panel'] = "لوحة دخول الموظفين";
@@ -94,6 +103,7 @@ $lang['Customer'] = "زبون";
 $lang['Due'] = "بسبب";
 $lang['Status'] = "الحالة";
 $lang['Amount'] = "كمية";
+$lang['Pay'] = "دفع";
 $lang['net_income'] = "صافي الدخل";
 $lang['cashflow'] = "تدفق مالي";
 $lang['task_manager'] = "مدير المهام";

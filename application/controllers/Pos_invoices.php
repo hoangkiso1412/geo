@@ -279,6 +279,7 @@ class Pos_invoices extends CI_Controller
                 $ptotal_tax = $this->input->post('taxa');
                 $ptotal_disc = $this->input->post('disca');
                 $product_des = $this->input->post('product_description', true);
+                $pay = $this->input->post('pay');
                 $product_unit = $this->input->post('unit');
                 $product_hsn = $this->input->post('hsn', true);
                 $product_alert = $this->input->post('alert');
@@ -298,6 +299,7 @@ class Pos_invoices extends CI_Controller
                         'price' => rev_amountExchange_s($product_price[$key], $currency, $this->aauth->get_user()->loc),
                         'tax' => numberClean($product_tax[$key]),
                         'discount' => numberClean($product_discount[$key]),
+                        'pay' => $pay[$key] ? 1 : 0,
                         'subtotal' => rev_amountExchange_s($product_subtotal[$key], $currency, $this->aauth->get_user()->loc),
                         'totaltax' => rev_amountExchange_s($ptotal_tax[$key], $currency, $this->aauth->get_user()->loc),
                         'totaldiscount' => rev_amountExchange_s($ptotal_disc[$key], $currency, $this->aauth->get_user()->loc),
@@ -991,6 +993,7 @@ class Pos_invoices extends CI_Controller
                 $product_price = $this->input->post('product_price');
                 $product_tax = $this->input->post('product_tax');
                 $product_discount = $this->input->post('product_discount');
+                $pay = $this->input->post('pay');
                 $product_subtotal = $this->input->post('product_subtotal');
                 $ptotal_tax = $this->input->post('taxa');
                 $ptotal_disc = $this->input->post('disca');
@@ -1010,6 +1013,7 @@ class Pos_invoices extends CI_Controller
                         'price' => rev_amountExchange_s($product_price[$key], $currency, $this->aauth->get_user()->loc),
                         'tax' => numberClean($product_tax[$key]),
                         'discount' => numberClean($product_discount[$key]),
+                        'pay' => $pay[$key] ? 1 : 0,
                         'subtotal' => rev_amountExchange_s($product_subtotal[$key], $currency, $this->aauth->get_user()->loc),
                         'totaltax' => rev_amountExchange_s($ptotal_tax[$key], $currency, $this->aauth->get_user()->loc),
                         'totaldiscount' => rev_amountExchange_s($ptotal_disc[$key], $currency, $this->aauth->get_user()->loc),

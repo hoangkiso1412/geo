@@ -147,7 +147,7 @@ class Customers extends CI_Controller
     public function upload_images()
     {
         if($_FILES["files"]["name"] != '') {
-        
+            
             $config["upload_path"] = './userfiles/custom_images';
             $output = '';
             $config["allowed_types"] = 'gif|jpg|png';
@@ -162,11 +162,19 @@ class Customers extends CI_Controller
                 $_FILES["file"]["size"] = $_FILES["files"]["size"][$count];
                 if($this->upload->do_upload('file')) {
                     $data = $this->upload->data();
-                    $output .= '
-                    <div class="col-md-3">
-                    <img src="'.base_url().'userfiles/custom_images/'.$data["file_name"].'" class="img-responsive img-thumbnail" />
-                    <input type="hidden" name="images['.$_GET['id'].']['.$count.']" value="'. $data["file_name"] .'">
-                    </div>';
+                    if($this->input->get('type') == 'images') {
+                        $output .= '
+                        <div class="col-md-3">
+                        <img src="'.base_url().'userfiles/custom_images/'.$data["file_name"].'" class="img-responsive img-thumbnail" />
+                        <input type="hidden" name="images['.$_GET['id'].']['.$count.']" value="'. $data["file_name"] .'">
+                        </div>';
+                    } else {
+                        $output .= '
+                        <div class="col-md-3">
+                        <img src="'.base_url().'userfiles/custom_images/'.$data["file_name"].'" class="img-responsive img-thumbnail" />
+                        <input type="hidden" name="custom['.$_GET['id'].']" value="'. $data["file_name"] .'">
+                        </div>';
+                    }
                 }
             }
             echo $output;   
@@ -174,8 +182,10 @@ class Customers extends CI_Controller
     }
 
 
+
     public function addcustomer()
     {
+        
         $name = $this->input->post('name', true);
         $company = $this->input->post('company', true);
         $phone = $this->input->post('phone', true);
@@ -201,13 +211,15 @@ class Customers extends CI_Controller
         $docid = $this->input->post('docid', true);
         $custom = $this->input->post('c_field', true);
         $discount = $this->input->post('discount', true);
-        $this->customers->add($name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $language, $create_login, $password, $docid, $custom, $discount);
-
+        $wholesale = $this->input->post('wholesale', true) ? 1 : 0;
+        
+        $this->customers->add($name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $language, $create_login, $password, $docid, $custom, $discount, $wholesale);
 
     }
 
     public function editcustomer()
     {
+        
         if (!$this->aauth->premission(8)) {
             exit('<h3>Sorry! You have insufficient permissions to access this section</h3>');
         }
@@ -235,10 +247,13 @@ class Customers extends CI_Controller
         $custom = $this->input->post('c_field', true);
         $language = $this->input->post('language', true);
         $discount = $this->input->post('discount', true);
+        $wholesale = $this->input->post('wholesale', true) ? 1 : 0;
+
         if ($id) {
-            $this->customers->edit($id, $name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $docid, $custom, $language, $discount);
+            $this->customers->edit($id, $name, $company, $phone, $email, $address, $city, $region, $country, $postbox, $customergroup, $taxid, $name_s, $phone_s, $email_s, $address_s, $city_s, $region_s, $country_s, $postbox_s, $docid, $custom, $language, $discount, $wholesale);
         }
     }
+
 
     public function changepassword()
     {

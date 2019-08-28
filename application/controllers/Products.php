@@ -163,24 +163,24 @@ class Products extends CI_Controller
 
     public function delete_i()
     {
-        if ($this->aauth->premission(11)) {
-            $id = $this->input->post('deleteid');
-            if ($id) {
-                $this->db->delete('geopos_products', array('pid' => $id));
-                $this->db->delete('geopos_products', array('sub' => $id, 'merge' => 1));
-                $this->db->delete('geopos_movers', array('d_type' => 1, 'rid1' => $id));
-                $this->db->set('merge', 0);
-                $this->db->where('sub', $id);
-                $this->db->update('geopos_products');
-                echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('DELETED')));
-            } else {
-                echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('ERROR')));
+         if ($this->aauth->premission(11)) {
+             $id = $this->input->post('deleteid');
+             if ($id) {
+                 $this->db->delete('geopos_products', array('pid' => $id));
+                 $this->db->delete('geopos_products', array('sub' => $id, 'merge' => 1));
+                 $this->db->delete('geopos_movers', array('d_type' => 1, 'rid1' => $id));
+                 $this->db->set('merge', 0);
+                 $this->db->where('sub', $id);
+                 $this->db->update('geopos_products');
+                 echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('DELETED')));
+             } else {
+                 echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('ERROR')));
+             }
+         }
+         else {
+                echo json_encode(array('status' => 'Error', 'message' =>
+                    $this->lang->line('ERROR')));
             }
-        }
-        else {
-               echo json_encode(array('status' => 'Error', 'message' =>
-                   $this->lang->line('ERROR')));
-           }
     }
 
     public function edit()
@@ -305,9 +305,11 @@ class Products extends CI_Controller
     {
         $wid = $this->input->get('wid');
         $customer = $this->input->post('product');
-        $terms = @$customer['term'];
-        $result = $this->products->products_list($wid, $terms);
-        echo json_encode($result);
+        $term = @$customer['term'];
+        // $result = $this->products->products_list($wid, $terms);
+        $query = $this->db->query("SELECT * FROM geopos_products WHERE warehouse = ". $wid ." AND geopos_products.product_name LIKE '%" . $term . "%' AND geopos_products.product_code LIKE '%" . $term . "%'");
+        $results = $query->result_array();
+        echo json_encode($results);
     }
 
     public function sub_cat()

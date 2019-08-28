@@ -360,7 +360,22 @@
                                        value="<?php echo $customer['postbox_s'] ?>" id="postbox_s">
                             </div>
                         </div>
+                        <div class="form-group row">
 
+                            <label class="col-sm-2 col-form-label"
+                                for="postbox"></label>
+
+                            <div class="col-sm-3">
+                                <div class="input-group mt-1">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" <?php echo ($customer['wholesale'] ? 'checked' : '') ?> class="custom-control-input" name="wholesale" id="wholesale">
+                                        <label class="custom-control-label" for="wholesale"><?php echo $this->lang->line('Wholesale-Price') ?></label>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
 
                     </div>
 

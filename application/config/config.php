@@ -441,7 +441,7 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
 $cstring=substr($config['encryption_key'],0,4);
-$config['csrf_protection'] = TRUE;
+$config['csrf_protection'] = false;
 $config['csrf_token_name'] = 'g_'.$cstring;
 $config['csrf_cookie_name'] = 'g_co'.$cstring;
 $config['csrf_expire'] = 7200;

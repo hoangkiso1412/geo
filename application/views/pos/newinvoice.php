@@ -23,6 +23,7 @@
                             <input type="hidden" name="customer_id" id="customer_id" value="1">
                             <div id="customer_name"><?php echo $this->lang->line('Default'); ?>: <strong>Walk
                                     In </strong></div>
+                            <input type="hidden" name="customer_wholesale" id="customer_wholesale" value="0">
                         </div>
 
 
