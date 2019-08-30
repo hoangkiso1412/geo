@@ -594,6 +594,7 @@
                                             name="p_amount"
                                             placeholder="Amount" onkeypress="return isNumber(event)"
                                             id="p_amount" onkeyup="update_pay_pos()"
+                                            disabled
                                     />
                                     <span class="input-group-addon"><i
                                                 class="icon icon-cash"></i></span>
@@ -923,8 +924,20 @@
         }
         ?>
         $('#b_total').html(' <?= $this->config->item('currency'); ?> ' + accounting.formatNumber(roundoff));
-        $('#p_amount').val(accounting.formatNumber(roundoff));
 
+        var paycheckboxs =  document.querySelectorAll("[date-role='paycheckbok']");
+        var amount = 0 ;
+        paycheckboxs.forEach(function(checkbox){
+            if (document.getElementById(checkbox.id).checked == true ) {
+                var splits      = checkbox.id.split("-"); 
+                var general_id  = splits[1];
+                var current_total_value = document.getElementById("result-"+general_id).innerHTML ;
+                current_total_value = current_total_value.replace(',','');
+                current_total_value = current_total_value.replace(',','');
+                amount += parseFloat(current_total_value);
+            }
+        });
+        $('#p_amount').val(amount);
     });
 
     function update_pay_pos() {

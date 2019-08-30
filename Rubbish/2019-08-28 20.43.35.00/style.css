@@ -597,6 +597,9 @@ text-transform: capitalize;
     .p-mobile {
         padding: 0.3rem !important;
     }
+    .p-width {
+            width: 145% !important;
+    }
 }
 
 .form-control-sm {
