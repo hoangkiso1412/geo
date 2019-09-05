@@ -16,16 +16,17 @@
  * ***********************************************************************
  */
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Search_products extends CI_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->load->library("Aauth");
         $this->load->model('search_model');
+        $this->load->model('products_model', 'products');
+
         if (!$this->aauth->is_loggedin()) {
             redirect('/user/', 'refresh');
         }
@@ -34,7 +35,7 @@ class Search_products extends CI_Controller
         }
     }
 
-//search product in invoice
+    //search product in invoice
     public function search()
     {
         $result = array();
@@ -49,7 +50,11 @@ class Search_products extends CI_Controller
         $join = '';
         if ($this->aauth->get_user()->loc) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            if (BDATA) $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND '; else $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (BDATA) {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
+            } else {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
             $qw .= '(geopos_warehouse.loc=0) AND ';
@@ -64,7 +69,6 @@ class Search_products extends CI_Controller
             }
             echo json_encode($out);
         }
-
     }
 
     public function puchase_search()
@@ -81,7 +85,11 @@ class Search_products extends CI_Controller
         $join = '';
         if ($this->aauth->get_user()->loc) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            if (BDATA) $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND '; else $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (BDATA) {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
+            } else {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
             $qw .= '(geopos_warehouse.loc=0) AND ';
@@ -97,7 +105,6 @@ class Search_products extends CI_Controller
 
             echo json_encode($out);
         }
-
     }
 
     public function csearch()
@@ -108,7 +115,9 @@ class Search_products extends CI_Controller
         $whr = '';
         if ($this->aauth->get_user()->loc) {
             $whr = ' (loc=' . $this->aauth->get_user()->loc . ' OR loc=0) AND ';
-            if (!BDATA) $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (!BDATA) {
+                $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $whr = ' (loc=0) AND ';
         }
@@ -118,13 +127,11 @@ class Search_products extends CI_Controller
             echo '<ol>';
             $i = 1;
             foreach ($result as $row) {
-
                 echo "<li onClick=\"selectCustomer('" . $row['id'] . "','" . $row['name'] . " ','" . $row['address'] . "','" . $row['city'] . "','" . $row['phone'] . "','" . $row['email'] . "','" . amountFormat_general($row['discount_c']) . "')\"><span>$i</span><p>" . $row['name'] . " &nbsp; &nbsp  " . $row['phone'] . "</p></li>";
                 $i++;
             }
             echo '</ol>';
         }
-
     }
 
     public function party_search()
@@ -135,13 +142,17 @@ class Search_products extends CI_Controller
         $name = $this->input->get('keyword', true);
 
         $ty = $this->input->get('ty', true);
-        if ($ty) $tbl = 'geopos_supplier';
+        if ($ty) {
+            $tbl = 'geopos_supplier';
+        }
         $whr = '';
 
 
         if ($this->aauth->get_user()->loc) {
             $whr = ' (loc=' . $this->aauth->get_user()->loc . ' OR loc=0) AND ';
-            if (!BDATA) $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (!BDATA) {
+                $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $whr = ' (loc=0) AND ';
         }
@@ -153,13 +164,11 @@ class Search_products extends CI_Controller
             echo '<ol>';
             $i = 1;
             foreach ($result as $row) {
-
                 echo "<li onClick=\"selectCustomer('" . $row['id'] . "','" . $row['name'] . " ','" . $row['address'] . "','" . $row['city'] . "','" . $row['phone'] . "','" . $row['email'] . "')\"><span>$i</span><p>" . $row['name'] . " &nbsp; &nbsp  " . $row['phone'] . "</p></li>";
                 $i++;
             }
             echo '</ol>';
         }
-
     }
 
     public function pos_c_search()
@@ -170,7 +179,9 @@ class Search_products extends CI_Controller
         $whr = '';
         if ($this->aauth->get_user()->loc) {
             $whr = ' (loc=' . $this->aauth->get_user()->loc . ' OR loc=0) AND ';
-            if (!BDATA) $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (!BDATA) {
+                $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $whr = ' (loc=0) AND ';
         }
@@ -189,7 +200,6 @@ class Search_products extends CI_Controller
             }
             echo '</ol>';
         }
-
     }
 
 
@@ -203,7 +213,9 @@ class Search_products extends CI_Controller
         $whr = '';
         if ($this->aauth->get_user()->loc) {
             $whr = ' (loc=' . $this->aauth->get_user()->loc . ' OR loc=0) AND ';
-            if (!BDATA) $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (!BDATA) {
+                $whr = ' (loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $whr = ' (loc=0) AND ';
         }
@@ -218,12 +230,10 @@ class Search_products extends CI_Controller
             }
             echo '</ol>';
         }
-
     }
     
     public function pos_search()
     {
-
         $out = '';
         $name = $this->input->post('name', true);
         $cid = $this->input->post('cid', true);
@@ -244,7 +254,11 @@ class Search_products extends CI_Controller
         $join = '';
         if ($this->aauth->get_user()->loc) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            if (BDATA) $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND '; else $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (BDATA) {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
+            } else {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
             $qw .= '(geopos_warehouse.loc=0) AND ';
@@ -272,11 +286,11 @@ class Search_products extends CI_Controller
                 // $related_products = implode(',', json_decode($row['related_product'],true));
                 
                 
-                // $query3 = "SELECT geopos_products.* FROM geopos_products WHERE pid in(". $related_products . ',' .");";
+            // $query3 = "SELECT geopos_products.* FROM geopos_products WHERE pid in(". $related_products . ',' .");";
                 
-                // $query3 = $this->db->query($query);
+            // $query3 = $this->db->query($query);
                 
-                // $result2 = $query3->result_array();
+            // $result2 = $query3->result_array();
                 
             
             $out .= '    <div class="col-3 border "><div class="rounded text-center mt-3 pb-3">
@@ -298,12 +312,10 @@ class Search_products extends CI_Controller
         }
 
         echo $out;
-
     }
 
     public function v2_pos_search()
     {
-
         $out = '';
         $name = $this->input->post('name', true);
         $cid = $this->input->post('cid', true);
@@ -324,7 +336,11 @@ class Search_products extends CI_Controller
 
         if ($this->aauth->get_user()->loc) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            if (BDATA) $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND '; else $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            if (BDATA) {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
+            } else {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
         } elseif (!BDATA) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
             $qw .= '(geopos_warehouse.loc=0) AND ';
@@ -349,7 +365,6 @@ class Search_products extends CI_Controller
         $i = 0;
         echo '<div class="row match-height">';
         foreach ($result as $row) {
-
             $out .= '    <div class="col-2 border"  ><div class="text-center mt-3 pb-3 rounded" >
                                 ' . ($row['favorite'] ? '<i class="fa fa-heart favorite-products"></i>' : '') .  ($row['bundle_products'] ? '<i class="fa fa-object-group bundle-products"></i>' : '') .'
                                  <a  id="posp' . $i . '"  class="v2_select_pos_item round"  data-bundle="' . ($row['bundle_products'] ? true : false) . '" data-name="' . $row['product_name'] . '"  data-price="' . amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) . '" data-wholesale="' . amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc) . '"  data-tax="' . amountFormat_general($row['taxrate']) . '"  data-discount="' . amountFormat_general($row['disrate']) . '" data-pcode="' . $row['product_code'] . '"   data-pid="' . $row['pid'] . '"  data-stock="' . amountFormat_general($row['qty']) . '" data-unit="' . $row['unit'] . '" >
@@ -365,10 +380,16 @@ class Search_products extends CI_Controller
                                 </div></div>';
 
             $i++;
-
         }
 
         echo $out;
+    }
 
+    public function pos_get_bundle()
+    {
+        $out = '';
+        $product_id = $this->input->get('product_id', true);
+        echo json_encode($this->products->pos_get_bundle_by_id($product_id), true);
+        ;
     }
 }

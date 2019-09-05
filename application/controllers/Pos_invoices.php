@@ -37,6 +37,8 @@ class Pos_invoices extends CI_Controller
     {
         parent::__construct();
         $this->load->model('pos_invoices_model', 'invocies');
+        $this->load->model('products_model', 'products');
+
         $this->load->library("Aauth");
         $this->load->library("Registerlog");
         $this->load->library("Common");
@@ -148,7 +150,13 @@ class Pos_invoices extends CI_Controller
         $data['terms'] = $this->invocies->billingterms();
         $data['currency'] = $this->invocies->currencies();
         $data['invoice'] = $this->invocies->invoice_details($tid, $this->limited);
-        if ($data['invoice']['id']) $data['products'] = $this->invocies->invoice_products($tid);
+        if ($data['invoice']['id']){
+            $data['products'] = $this->invocies->invoice_products($tid);
+            for ($i=0; $i < count($data['products']); $i++) { 
+                $data['products'][$i]['bundles'] = $this->products->pos_get_bundle_by_id( $data['products'][$i]['pid']);
+            }
+         
+        }
         $head['title'] = "Edit Invoice #$tid";
         $head['usernm'] = $this->aauth->get_user()->username;
         $data['warehouse'] = $this->invocies->warehouses();

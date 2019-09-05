@@ -16,14 +16,14 @@
  * ***********************************************************************
  */
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products_model extends CI_Model
 {
-    var $table = 'geopos_products';
-    var $column_order = array(null, 'geopos_products.product_name', 'geopos_products.qty', 'geopos_products.product_code', 'geopos_product_cat.title', 'geopos_products.product_price', null); //set column field database for datatable orderable
-    var $column_search = array('geopos_products.product_name', 'geopos_products.product_code', 'geopos_product_cat.title', 'geopos_warehouse.title'); //set column field database for datatable searchable
-    var $order = array('geopos_products.pid' => 'desc'); // default order
+    public $table = 'geopos_products';
+    public $column_order = array(null, 'geopos_products.product_name', 'geopos_products.qty', 'geopos_products.product_code', 'geopos_product_cat.title', 'geopos_products.product_price', null); //set column field database for datatable orderable
+    public $column_search = array('geopos_products.product_name', 'geopos_products.product_code', 'geopos_product_cat.title', 'geopos_warehouse.title'); //set column field database for datatable searchable
+    public $order = array('geopos_products.pid' => 'desc'); // default order
 
     public function __construct()
     {
@@ -42,40 +42,42 @@ class Products_model extends CI_Model
             if ($this->aauth->get_user()->loc) {
                 $this->db->group_start();
                 $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-                if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+                if (BDATA) {
+                    $this->db->or_where('geopos_warehouse.loc', 0);
+                }
                 $this->db->group_end();
             } elseif (!BDATA) {
                 $this->db->where('geopos_warehouse.loc', 0);
             }
 
             $this->db->where("geopos_products.sub_id=$id");
-
         } else {
             $this->db->join('geopos_product_cat', 'geopos_product_cat.id = geopos_products.pcat');
 
             if ($w) {
-
                 if ($id > 0) {
                     $this->db->where("geopos_warehouse.id = $id");
-                   // $this->db->where('geopos_products.sub_id', 0);
+                    // $this->db->where('geopos_products.sub_id', 0);
                 }
                 if ($this->aauth->get_user()->loc) {
                     $this->db->group_start();
                     $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
 
-                    if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+                    if (BDATA) {
+                        $this->db->or_where('geopos_warehouse.loc', 0);
+                    }
                     $this->db->group_end();
                 } elseif (!BDATA) {
                     $this->db->where('geopos_warehouse.loc', 0);
                 }
-
             } else {
-
                 $this->db->where('geopos_products.merge', 0);
                 if ($this->aauth->get_user()->loc) {
                     $this->db->group_start();
                     $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-                    if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+                    if (BDATA) {
+                        $this->db->or_where('geopos_warehouse.loc', 0);
+                    }
                     $this->db->group_end();
                 } elseif (!BDATA) {
                     $this->db->where('geopos_warehouse.loc', 0);
@@ -89,50 +91,47 @@ class Products_model extends CI_Model
 
         $i = 0;
 
-        foreach ($this->column_search as $item) // loop column 
-        {
+        foreach ($this->column_search as $item) { // loop column
             $search = $this->input->post('search');
             $value = $search['value'];
-            if ($value) // if datatable send POST for search
-            {
-
-                if ($i === 0) // first loop
-                {
+            if ($value) { // if datatable send POST for search
+                if ($i === 0) { // first loop
                     $this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
                     $this->db->like($item, $value);
                 } else {
                     $this->db->or_like($item, $value);
                 }
 
-                if (count($this->column_search) - 1 == $i) //last loop
-                    $this->db->group_end(); //close bracket
+                if (count($this->column_search) - 1 == $i) { //last loop
+                    $this->db->group_end();
+                } //close bracket
             }
             $i++;
         }
         $search = $this->input->post('order');
-        if ($search) // here order processing
-        {
+        if ($search) { // here order processing
             $this->db->order_by($this->column_order[$search['0']['column']], $search['0']['dir']);
-        } else if (isset($this->order)) {
+        } elseif (isset($this->order)) {
             $order = $this->order;
             $this->db->order_by(key($order), $order[key($order)]);
         }
     }
 
-    function get_datatables($id = '', $w = '', $sub = '')
+    public function get_datatables($id = '', $w = '', $sub = '')
     {
         if ($id > 0) {
             $this->_get_datatables_query($id, $w, $sub);
         } else {
             $this->_get_datatables_query();
         }
-        if ($this->input->post('length') != -1)
+        if ($this->input->post('length') != -1) {
             $this->db->limit($this->input->post('length'), $this->input->post('start'));
+        }
         $query = $this->db->get();
         return $query->result();
     }
 
-    function count_filtered($id, $w = '', $sub='')
+    public function count_filtered($id, $w = '', $sub='')
     {
         if ($id > 0) {
             $this->_get_datatables_query($id, $w, $sub);
@@ -149,9 +148,10 @@ class Products_model extends CI_Model
         $this->db->from($this->table);
         $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
         if ($this->aauth->get_user()->loc) {
-
             $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+            if (BDATA) {
+                $this->db->or_where('geopos_warehouse.loc', 0);
+            }
         } elseif (!BDATA) {
             $this->db->where('geopos_warehouse.loc', 0);
         }
@@ -161,8 +161,12 @@ class Products_model extends CI_Model
     public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '', $product_status, $bundle_products)
     {
         $ware_valid = $this->valid_warehouse($warehouse);
-        if(!$sub_cat) $sub_cat=0;
-        if(!$b_id) $b_id=0;
+        if (!$sub_cat) {
+            $sub_cat=0;
+        }
+        if (!$b_id) {
+            $b_id=0;
+        }
         $datetime1 = new DateTime(date('Y-m-d'));
 
         $datetime2 = new DateTime($wdate);
@@ -173,8 +177,8 @@ class Products_model extends CI_Model
         }
 
         if ($this->aauth->get_user()->loc) {
-            if ($ware_valid['loc'] == $this->aauth->get_user()->loc OR $ware_valid['loc'] == '0' OR $warehouse == 0) {
-                if (strlen($barcode) > 5 AND is_numeric($barcode)) {
+            if ($ware_valid['loc'] == $this->aauth->get_user()->loc or $ware_valid['loc'] == '0' or $warehouse == 0) {
+                if (strlen($barcode) > 5 and is_numeric($barcode)) {
                     $data = array(
                         'pcat' => $catid,
                         'warehouse' => $warehouse,
@@ -200,9 +204,7 @@ class Products_model extends CI_Model
                         'product_status' => $product_status,
                         'bundle_products' => $bundle_products
                     );
-
                 } else {
-
                     $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
 
                     $data = array(
@@ -286,7 +288,7 @@ class Products_model extends CI_Model
                     $this->lang->line('ERROR')));
             }
         } else {
-            if (strlen($barcode) > 5 AND is_numeric($barcode)) {
+            if (strlen($barcode) > 5 and is_numeric($barcode)) {
                 $data = array(
                     'pcat' => $catid,
                     'warehouse' => $warehouse,
@@ -376,7 +378,6 @@ class Products_model extends CI_Model
             if ($w_type) {
                 foreach ($w_type as $key => $value) {
                     if ($w_type[$key] && numberClean($w_stock[$key]) > 0.00 && $w_type[$key] != $warehouse) {
-
                         $data['product_name'] = $product_name;
                         $data['warehouse'] = $w_type[$key];
                         $data['qty'] = numberClean($w_stock[$key]);
@@ -393,7 +394,6 @@ class Products_model extends CI_Model
             }
             $this->custom->save_fields_data($pid, 4);
             $this->db->trans_complete();
-
         }
     }
 
@@ -406,7 +406,7 @@ class Products_model extends CI_Model
         $r_n = $query->row_array();
         $ware_valid = $this->valid_warehouse($warehouse);
         if ($this->aauth->get_user()->loc) {
-            if ($ware_valid['loc'] == $this->aauth->get_user()->loc OR $ware_valid['loc'] == '0' OR $warehouse == 0) {
+            if ($ware_valid['loc'] == $this->aauth->get_user()->loc or $ware_valid['loc'] == '0' or $warehouse == 0) {
                 $data = array(
                     'pcat' => $catid,
                     'warehouse' => $warehouse,
@@ -492,18 +492,18 @@ class Products_model extends CI_Model
             }
         }
         $this->custom->edit_save_fields_data($pid, 4);
-
     }
 
 
 
     public function prd_stats()
     {
-
         $whr = '';
         if ($this->aauth->get_user()->loc) {
             $whr = ' LEFT JOIN  geopos_warehouse on geopos_warehouse.id = geopos_products.warehouse WHERE geopos_warehouse.loc=' . $this->aauth->get_user()->loc;
-            if (BDATA) $whr = ' LEFT JOIN  geopos_warehouse on geopos_warehouse.id = geopos_products.warehouse WHERE geopos_warehouse.loc=0 OR geopos_warehouse.loc=' . $this->aauth->get_user()->loc;
+            if (BDATA) {
+                $whr = ' LEFT JOIN  geopos_warehouse on geopos_warehouse.id = geopos_products.warehouse WHERE geopos_warehouse.loc=0 OR geopos_warehouse.loc=' . $this->aauth->get_user()->loc;
+            }
         } elseif (!BDATA) {
             $whr = ' LEFT JOIN  geopos_warehouse on geopos_warehouse.id = geopos_products.warehouse WHERE geopos_warehouse.loc=0';
         }
@@ -533,7 +533,6 @@ FROM geopos_products $whr");
         }
         $query = $this->db->get();
         return $query->result_array();
-
     }
 
 
@@ -544,7 +543,6 @@ FROM geopos_products $whr");
         $this->db->where('type', 0);
         $query = $this->db->get();
         return $query->result_array();
-
     }
 
     public function transfer($from_warehouse, $products_l, $to_warehouse, $qty)
@@ -561,7 +559,9 @@ FROM geopos_products $whr");
         $i = 0;
         foreach ($products_l as $row) {
             $qty = 0;
-            if (array_key_exists($i, $qtyArray)) $qty = $qtyArray[$i];
+            if (array_key_exists($i, $qtyArray)) {
+                $qty = $qtyArray[$i];
+            }
 
             $this->db->select('*');
             $this->db->from('geopos_products');
@@ -571,19 +571,14 @@ FROM geopos_products $whr");
             $pr2 = $pr;
             $c_qty = $pr['qty'];
             if ($c_qty - $qty < 0) {
-
             } elseif ($c_qty - $qty == 0) {
-
-
                 if ($pr['merge'] == 2) {
-
                     $this->db->select('pid,product_name');
                     $this->db->from('geopos_products');
                     $this->db->where('pid', $pr['sub']);
                     $this->db->where('warehouse', $to_warehouse);
                     $query = $this->db->get();
                     $pr = $query->row_array();
-
                 } else {
                     $this->db->select('pid,product_name');
                     $this->db->from('geopos_products');
@@ -599,14 +594,12 @@ FROM geopos_products $whr");
                 $product_name = $pr['product_name'];
 
                 if ($c_pid) {
-
-                    $this->db->set('qty', "qty+$qty", FALSE);
+                    $this->db->set('qty', "qty+$qty", false);
                     $this->db->where('pid', $c_pid);
                     $this->db->update('geopos_products');
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty ID " . $c_pid, $this->aauth->get_user()->username);
                     $this->db->delete('geopos_products', array('pid' => $row));
                     $this->db->delete('geopos_movers', array('d_type' => 1, 'rid1' => $row));
-
                 } else {
                     $updateArray[] = array(
                         'pid' => $row,
@@ -619,8 +612,6 @@ FROM geopos_products $whr");
                     $this->movers(1, $row, $qty, 0, 'Stock Transferred & Initialized W- ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty W- $to_warehouse_name PID " . $pr2['pid'], $this->aauth->get_user()->username);
                 }
-
-
             } else {
                 $data['product_name'] = $pr['product_name'];
                 $data['pcat'] = $pr['pcat'];
@@ -662,24 +653,20 @@ FROM geopos_products $whr");
                 $product_name = $pr2['product_name'];
 
                 if ($c_pid) {
-
-                    $this->db->set('qty', "qty+$qty", FALSE);
+                    $this->db->set('qty', "qty+$qty", false);
                     $this->db->where('pid', $c_pid);
                     $this->db->update('geopos_products');
 
                     $this->movers(1, $c_pid, $qty, 0, 'Stock Transferred W ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty W $to_warehouse_name  ID " . $c_pid, $this->aauth->get_user()->username);
-
-
                 } else {
                     $this->db->insert('geopos_products', $data);
                     $pid = $this->db->insert_id();
                     $this->movers(1, $pid, $qty, 0, 'Stock Transferred & Initialized W ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty  W $to_warehouse_name ID " . $pr2['pid'], $this->aauth->get_user()->username);
-
                 }
 
-                $this->db->set('qty', "qty-$qty", FALSE);
+                $this->db->set('qty', "qty-$qty", false);
                 $this->db->where('pid', $row);
                 $this->db->update('geopos_products');
                 $this->movers(1, $row, -$qty, 0, 'Stock Transferred WID ' . $to_warehouse_name);
@@ -695,8 +682,6 @@ FROM geopos_products $whr");
 
         echo json_encode(array('status' => 'Success', 'message' =>
             $this->lang->line('UPDATED')));
-
-
     }
 
     public function meta_delete($name)
@@ -728,5 +713,24 @@ FROM geopos_products $whr");
         );
         $this->db->insert('geopos_movers', $data);
     }
-
+    public function pos_get_bundle_by_id($id)
+    {
+        try {
+            $out = '';
+            $product_id = $id;
+    
+            $query = "SELECT bundle_products  FROM geopos_products WHERE pid = ". $product_id;
+            $query_result = $this->db->query($query)->result_array();
+           
+           
+            $bundes = str_replace(']', ')', str_replace('[', "(", $query_result[0]['bundle_products']));
+    
+            $query = "SELECT geopos_products.*  FROM geopos_products Where pid IN ".$bundes;
+    
+            $query_result = $this->db->query($query)->result_array();
+            return $query_result;
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
 }
