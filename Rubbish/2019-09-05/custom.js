@@ -6,7 +6,7 @@ $('#addproduct').on('click', function () {
     $('#ganak').val(nxt);
     var functionNum = "'" + cvalue + "'";
     count = $('#saman-row div').length;
-    //product row
+//product row
     var data = '<tr><td><input type="text" class="form-control" name="product_name[]" placeholder="Enter Product name or Code" id="productname-' + cvalue + '"></td><td><input type="text" class="form-control req amnt" name="product_qty[]" id="amount-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ><input type="hidden" id="alert-' + cvalue + '" value=""  name="alert[]"> </td> <td><input type="text" class="form-control req prc" name="product_price[]" id="price-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td><td> <input type="text" class="form-control vat" name="product_tax[]" id="vat-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td id="texttaxa-' + cvalue + '" class="text-center">0</td> <td><input type="text" class="form-control discount" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + cvalue + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td><span class="currenty">' + currency + '</span> <strong><span class=\'ttlText\' id="result-' + cvalue + '">0</span></strong></td> <td class="text-center"><button type="button" data-rowid="' + cvalue + '" class="btn btn-danger removeProd" title="Remove" > <i class="fa fa-minus-square"></i> </button> </td><input type="hidden" name="taxa[]" id="taxa-' + cvalue + '" value="0"><input type="hidden" name="disca[]" id="disca-' + cvalue + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + cvalue + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + cvalue + '" value="0"> <input type="hidden" name="unit[]" id="unit-' + cvalue + '" value=""> <input type="hidden" name="hsn[]" id="hsn-' + cvalue + '" value=""> </tr><tr><td colspan="8"><textarea class="form-control"  id="dpid-' + cvalue + '" name="product_description[]" placeholder="Enter Product description" autocomplete="off"></textarea><br></td></tr>';
     //ajax request
     // $('#saman-row').append(data);
@@ -140,8 +140,8 @@ var samanYog = function () {
         if (itempriceList[z] > 0) {
             sum += itempriceList[z];
         }
-        var t1 = accounting.unformat($("#taxa-" + x).val(), accounting.settings.number.decimal);
-        var d1 = accounting.unformat($("#disca-" + x).val(), accounting.settings.number.decimal);
+        var t1=accounting.unformat($("#taxa-" + x).val(), accounting.settings.number.decimal);
+        var d1=accounting.unformat($("#disca-" + x).val(), accounting.settings.number.decimal);
         if (t1 > 0) {
             taxc += t1;
         }
@@ -158,9 +158,9 @@ var samanYog = function () {
 //actions
 var deleteRow = function (num) {
     var totalSelector = $("#subttlform");
-    var prodttl = accounting.unformat($("#total-" + num).val(), accounting.settings.number.decimal);
-    var subttl = accounting.unformat(totalSelector.val(), accounting.settings.number.decimal);
-    var totalSubVal = subttl - prodttl;
+    var prodttl = accounting.unformat($("#total-" + num).val(),accounting.settings.number.decimal);
+    var subttl =  accounting.unformat(totalSelector.val(),accounting.settings.number.decimal);
+    var totalSubVal =subttl - prodttl;
     totalSelector.val(totalSubVal);
     $("#subttlid").html(accounting.formatNumber(totalSubVal));
     var totalBillVal = totalSubVal + shipTot - coupon;
@@ -174,23 +174,23 @@ var deleteRow = function (num) {
 
 var billUpyog = function () {
     var out = 0;
-    var disc_val = accounting.unformat($('.discVal').val(), accounting.settings.number.decimal);
+    var disc_val = accounting.unformat($('.discVal').val(),accounting.settings.number.decimal);
     if (disc_val) {
-        $("#subttlform").val(accounting.formatNumber(samanYog()));
+        $("#subttlform").val( accounting.formatNumber(samanYog()));
         var disc_rate = $('#discountFormat').val();
 
         switch (disc_rate) {
             case '%':
-                out = precentCalc(accounting.unformat($('#subttlform').val(), accounting.settings.number.decimal), disc_val);
+                out = precentCalc(accounting.unformat($('#subttlform').val(),accounting.settings.number.decimal), disc_val);
                 break;
             case 'b_p':
-                out = precentCalc(accounting.unformat($('#subttlform').val(), accounting.settings.number.decimal), disc_val);
+                out = precentCalc(accounting.unformat($('#subttlform').val(),accounting.settings.number.decimal), disc_val);
                 break;
             case 'flat':
-                out = accounting.unformat(disc_val, accounting.settings.number.decimal);
+                out = accounting.unformat(disc_val,accounting.settings.number.decimal);
                 break;
             case 'bflat':
-                out = accounting.unformat(disc_val, accounting.settings.number.decimal);
+                out = accounting.unformat(disc_val,accounting.settings.number.decimal);
                 break;
         }
         out = parseFloat(out).toFixed(two_fixed);
@@ -248,7 +248,7 @@ var o_rowTotal = function (numb) {
             }
 
         } else {
-            //before tax
+//before tax
             if (disFormat == 'bflat') {
                 disco = deciFormat(discountVal);
                 totalValue = parseFloat(totalPrice) - parseFloat(discountVal);
@@ -283,7 +283,7 @@ var o_rowTotal = function (numb) {
             }
 
         } else {
-            //before tax
+//before tax
             if (disFormat == 'bflat') {
                 disco = deciFormat(discountVal);
                 totalValue = parseFloat(totalPrice) - parseFloat(discountVal);
@@ -318,7 +318,7 @@ var o_rowTotal = function (numb) {
             }
 
         } else {
-            //before tax
+//before tax
             if (disFormat == 'bflat') {
                 disco = deciFormat(discountVal);
                 totalValue = parseFloat(totalPrice) - parseFloat(discountVal);
@@ -354,7 +354,7 @@ var rowTotal = function (numb) {
     if ($("#inv_page").val() == 'new_i' && formInputGet("#pid", numb) > 0) {
         var alertVal = accounting.unformat($("#alert-" + numb).val(), accounting.settings.number.decimal);
         if (alertVal <= +amountVal) {
-            var aqt = alertVal - amountVal;
+            var aqt = alertVal-amountVal;
             alert('Low Stock! ' + accounting.formatNumber(aqt));
         }
     }
@@ -374,7 +374,7 @@ var rowTotal = function (numb) {
                 disco = accounting.formatNumber(discount);
             }
         } else {
-            //before tax
+//before tax
             if (disFormat == 'bflat') {
                 disco = accounting.formatNumber(discountVal);
                 totalValue = totalPrice - discountVal;
@@ -404,7 +404,7 @@ var rowTotal = function (numb) {
                 disco = accounting.formatNumber(discount);
             }
         } else {
-            //before tax
+//before tax
             if (disFormat == 'bflat') {
                 disco = accounting.formatNumber(discountVal);
                 totalValue = totalPrice - discountVal;
@@ -431,7 +431,7 @@ var rowTotal = function (numb) {
             }
 
         } else {
-            //before tax
+//before tax
             if (disFormat == 'bflat') {
                 disco = accounting.formatNumber(discountVal);
                 totalValue = totalPrice - discountVal;
@@ -731,8 +731,8 @@ $(document).on('click', ".select_pos_item", function (e) {
     var stock = accounting.unformat($(this).attr('data-stock'), accounting.settings.number.decimal);
     var flag = true;
     var discount = $(this).attr('data-discount');
-    var custom_discount = accounting.unformat($('#custom_discount').val(), accounting.settings.number.decimal);
-    if (custom_discount > 0) discount = accounting.formatNumber(custom_discount);
+    var custom_discount= accounting.unformat($('#custom_discount').val(), accounting.settings.number.decimal);
+     if (custom_discount > 0) discount = accounting.formatNumber(custom_discount);
 
     $('.pdIn').each(function () {
         if (pid == $(this).val()) {
@@ -765,30 +765,30 @@ $(document).on('click', ".select_pos_item", function (e) {
         var cvalue = parseInt(ganak);
         var functionNum = "'" + cvalue + "'";
         count = $('#saman-row div').length;
-        var data = '<tr id="ppid-' + cvalue + '" class="mb-1"><td colspan="7" ><input type="text" class="form-control text-center p-mobile" name="product_name[]" placeholder="Enter Product name or Code" id="productname-' + cvalue + '" value="' + $(this).attr('data-name') + '-' + $(this).attr('data-pcode') + '"><input type="hidden" id="alert-' + cvalue + '" value="' + $(this).attr('data-stock') + '"  name="alert[]"></td></tr><tr><td><input type="text" class="form-control p-mobile req amnt" name="product_qty[]" id="amount-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ></td> <td><input type="text" class="form-control p-mobile req prc" name="product_price[]" id="price-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + ($('#customer_wholesale').val() == 1 ? $(this).attr('data-wholesale') : $(this).attr('data-price')) + '"></td><td> <input type="text" class="form-control p-mobile vat" name="product_tax[]" id="vat-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + t_r + '"></td>  <td><input type="text" class="form-control p-mobile discount pos_w" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + cvalue + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + discount + '"></td> <td><span class="currenty">' + currency + '</span> <strong><span class=\'ttlText\' id="result-' + cvalue + '">0</span></strong></td> <td class="text-center"><input type="checkbox" class="form-control p-mobile pay pos_w" name="pay[]" checked onkeypress="return isNumber(event)" id="pay-' + cvalue + '" autocomplete="off"></td> <td class="text-center"><button type="button" data-rowid="' + cvalue + '" class="btn btn-danger removeItem" title="Remove" > <i class="fa fa-minus-square"></i> </button> </td><input type="hidden" name="taxa[]" id="taxa-' + cvalue + '" value="0"><input type="hidden" name="disca[]" id="disca-' + cvalue + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + cvalue + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + cvalue + '" value="' + $(this).attr('data-pid') + '"> <input type="hidden" name="unit[]" id="unit-' + cvalue + '" value="' + $(this).attr('data-unit') + '"> <input type="hidden" name="hsn[]" id="hsn-' + cvalue + '" value="' + $(this).attr('data-pcode') + '"><tr id="bundle-group-' + cvalue + '"></tr></tr>';
+        var data = '<tr id="ppid-' + cvalue + '" class="mb-1"><td colspan="7" ><input type="text" class="form-control text-center p-mobile" name="product_name[]" placeholder="Enter Product name or Code" id="productname-' + cvalue + '" value="' + $(this).attr('data-name') + '-' + $(this).attr('data-pcode') + '"><input type="hidden" id="alert-' + cvalue + '" value="' + $(this).attr('data-stock') + '"  name="alert[]"></td></tr><tr><td><input type="text" class="form-control p-mobile req amnt" name="product_qty[]" id="amount-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ></td> <td><input type="text" class="form-control p-mobile req prc" name="product_price[]" id="price-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + ($('#customer_wholesale').val() == 1 ? $(this).attr('data-wholesale') : $(this).attr('data-price'))  + '"></td><td> <input type="text" class="form-control p-mobile vat" name="product_tax[]" id="vat-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + t_r + '"></td>  <td><input type="text" class="form-control p-mobile discount pos_w" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + cvalue + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + discount + '"></td> <td><span class="currenty">' + currency + '</span> <strong><span class=\'ttlText\' id="result-' + cvalue + '">0</span></strong></td> <td class="text-center"><input type="checkbox" class="form-control p-mobile pay pos_w" name="pay[]" checked onkeypress="return isNumber(event)" id="pay-' + cvalue + '" autocomplete="off"></td> <td class="text-center"><button type="button" data-rowid="' + cvalue + '" class="btn btn-danger removeItem" title="Remove" > <i class="fa fa-minus-square"></i> </button> </td><input type="hidden" name="taxa[]" id="taxa-' + cvalue + '" value="0"><input type="hidden" name="disca[]" id="disca-' + cvalue + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + cvalue + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + cvalue + '" value="' + $(this).attr('data-pid') + '"> <input type="hidden" name="unit[]" id="unit-' + cvalue + '" value="' + $(this).attr('data-unit') + '"> <input type="hidden" name="hsn[]" id="hsn-' + cvalue + '" value="' + $(this).attr('data-pcode') + '"><tr id="bundle-group-'+ cvalue +'"></tr></tr>';
 
         if ($(this).attr('data-bundle')) {
             $.ajax({
                 url: baseurl + 'search_products/pos_get_bundle',
                 dataType: "json",
                 method: 'get',
-                data: 'product_id=' + pid,
-                success: (data) => {
-                    var items = '';
-
-                    data.forEach(e => {
-                        items += ` <td>
+                data: 'product_id=' +pid ,
+                success:  (data)=> {
+                    var items ='';
+                      
+                        data.forEach(e=>{
+                            items += ` <td>
                                             <ul class="list-group">
                                             <li class="list-group-item d-flex justify-content-between align-items-center"><span>
-                                            <img src="${location.origin}/userfiles/product/${e.image}" style="width: 60px;" class="mr-1">
+                                            <img src="http://localhost:8080/fresh/userfiles/product/${e.image}" style="width: 60px;" class="mr-1">
                                             <strong>${e.product_name}</strong>
                                             </span><span class="badge badge-primary badge-pill">$${e.product_price}</span></li>
                                             </ul>
                                         </td>`
-
-                    })
-                    var html = `${items}`;
-                    $('#bundle-group-' + cvalue).html(html);
+                            
+                        })
+                        var html =`${items}`;
+                        $('#bundle-group-'+cvalue).html(html);
                 }
             });
         }
@@ -796,7 +796,7 @@ $(document).on('click', ".select_pos_item", function (e) {
         //ajax request
         // $('#saman-row').append(data);
         $('#pos_items').append(data);
-
+        
         rowTotal(cvalue);
         billUpyog();
         $('#ganak').val(cvalue + 1);
@@ -808,7 +808,7 @@ $(document).on('click', ".select_pos_item", function (e) {
 
 $(document).on('click', ".v2_select_pos_item", function (e) {
     var pid = $(this).attr('data-pid');
-    var stock = accounting.unformat($(this).attr('data-stock'), accounting.settings.number.decimal);
+    var stock =  accounting.unformat($(this).attr('data-stock'), accounting.settings.number.decimal);
 
     var discount = $(this).attr('data-discount');
     var custom_discount = accounting.unformat($('#custom_discount').val(), accounting.settings.number.decimal);
@@ -849,34 +849,34 @@ $(document).on('click', ".v2_select_pos_item", function (e) {
         var cvalue = parseInt(ganak);
         var functionNum = "'" + cvalue + "'";
         count = $('#saman-row div').length;
-        var data = ' <div class="row  m-0 pt-1 pb-1 border-bottom"  id="ppid-' + cvalue + '"> <div class="col-4 "> <span class="quantity"><input type="text" class="form-control req amnt display-inline mousetrap" name="product_qty[]" id="amount-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ><div class="quantity-nav"><div class="quantity-button quantity-up">+</div><div class="quantity-button quantity-down">-</div></div></span>' + $(this).attr('data-name') + '-' + $(this).attr('data-pcode') + '</div> <div class="col-3"> ' + ($('#customer_wholesale').val() == 1 ? $(this).attr('data-wholesale') : $(this).attr('data-price')) + ' </div> <div class="col-3"><strong><span class="ttlText" id="result-' + cvalue + '">0</span></strong><a data-rowid="' + cvalue + '" class="red removeItem" title="Remove"> <i class="fa fa-trash"></i> </a></div> <div class="col-2"><input type="checkbox" class="text-center" name="pay[]" id="pay-' + cvalue + '" checked /><i class="hide_bundle-' + cvalue + ' fa fa-eye-slash pl-1" style="vertical-align:bottom;cursor: pointer;"></i><i class="show_bundle-' + cvalue + ' fa fa-eye pl-1" style="vertical-align:bottom;cursor: pointer;display:none"></i></div><input type="hidden" class="form-control text-center" name="product_name[]" id="productname-' + cvalue + '" value="' + $(this).attr('data-name') + '-' + $(this).attr('data-pcode') + '"><input type="hidden" id="alert-' + cvalue + '" value="' + $(this).attr('data-stock') + '"  name="alert[]"><input type="hidden" class="form-control req prc" name="product_price[]" id="price-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + ($('#customer_wholesale').val() == 1 ? $(this).attr('data-wholesale') : $(this).attr('data-price')) + '"> <input type="hidden" class="form-control vat" name="product_tax[]" id="vat-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + t_r + '"><input type="hidden" class="form-control discount pos_w" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + cvalue + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + discount + '"><input type="hidden" name="taxa[]" id="taxa-' + cvalue + '" value="0"><input type="hidden" name="disca[]" id="disca-' + cvalue + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + cvalue + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + cvalue + '" value="' + $(this).attr('data-pid') + '"> <input type="hidden" name="unit[]" id="unit-' + cvalue + '" value="' + $(this).attr('data-unit') + '"><input type="hidden" name="hsn[]" id="hsn-' + cvalue + '" value="' + $(this).attr('data-pcode') + '"><div class="col-12" id="bundle_product_list-' + cvalue + '"></div></div>';
+        var data = ' <div class="row  m-0 pt-1 pb-1 border-bottom"  id="ppid-' + cvalue + '"> <div class="col-4 "> <span class="quantity"><input type="text" class="form-control req amnt display-inline mousetrap" name="product_qty[]" id="amount-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ><div class="quantity-nav"><div class="quantity-button quantity-up">+</div><div class="quantity-button quantity-down">-</div></div></span>' + $(this).attr('data-name') + '-' + $(this).attr('data-pcode') + '</div> <div class="col-3"> ' + ($('#customer_wholesale').val() == 1 ? $(this).attr('data-wholesale') : $(this).attr('data-price'))  + ' </div> <div class="col-3"><strong><span class="ttlText" id="result-' + cvalue + '">0</span></strong><a data-rowid="' + cvalue + '" class="red removeItem" title="Remove"> <i class="fa fa-trash"></i> </a></div> <div class="col-2"><input type="checkbox" class="text-center" name="pay[]" id="pay-' + cvalue +'" checked /><i class="hide_bundle-' + cvalue +' fa fa-eye-slash pl-1" style="vertical-align:bottom;cursor: pointer;"></i><i class="show_bundle-' + cvalue +' fa fa-eye pl-1" style="vertical-align:bottom;cursor: pointer;display:none"></i></div><input type="hidden" class="form-control text-center" name="product_name[]" id="productname-' + cvalue + '" value="' + $(this).attr('data-name') + '-' + $(this).attr('data-pcode') + '"><input type="hidden" id="alert-' + cvalue + '" value="' + $(this).attr('data-stock') + '"  name="alert[]"><input type="hidden" class="form-control req prc" name="product_price[]" id="price-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + ($('#customer_wholesale').val() == 1 ? $(this).attr('data-wholesale') : $(this).attr('data-price'))  + '"> <input type="hidden" class="form-control vat" name="product_tax[]" id="vat-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + t_r + '"><input type="hidden" class="form-control discount pos_w" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + cvalue + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"  value="' + discount + '"><input type="hidden" name="taxa[]" id="taxa-' + cvalue + '" value="0"><input type="hidden" name="disca[]" id="disca-' + cvalue + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + cvalue + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + cvalue + '" value="' + $(this).attr('data-pid') + '"> <input type="hidden" name="unit[]" id="unit-' + cvalue + '" value="' + $(this).attr('data-unit') + '"><input type="hidden" name="hsn[]" id="hsn-' + cvalue + '" value="' + $(this).attr('data-pcode') + '"><div class="col-12" id="bundle_product_list-' + cvalue +'"></div></div>';
 
         if ($(this).attr('data-bundle')) {
             $.ajax({
                 url: baseurl + 'search_products/pos_get_bundle',
                 dataType: "json",
                 method: 'get',
-                data: 'product_id=' + pid,
-                success: (data) => {
-                    var items = '';
-
-                    data.forEach(e => {
-                        items += ` <ul class="list-group">
+                data: 'product_id=' +pid ,
+                success:  (data)=> {
+                    var items ='';
+                      
+                        data.forEach(e=>{
+                            items += ` <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center"><span>
-                            <img src="${location.origin}/userfiles/product/${e.image}" style="width: 60px;" class="mr-1">
+                            <img src="http://localhost:8080/fresh/userfiles/product/${e.image}" style="width: 60px;" class="mr-1">
                             <strong>${e.product_name}</strong>
                             </span><span class="badge badge-primary badge-pill">$${e.product_price}</span></li>
                                         <ul/> `
-
-                    })
-                    var html = ` <div class="row ">
+                            
+                        })
+                        var html =` <div class="row ">
                             ${items}
                         </div>`;
-                    $('#bundle_product_list-' + cvalue).html(html);
+                        $('#bundle_product_list-'+cvalue).html(html);
                 }
             });
         }
-
+        
         //ajax request
         // $('#saman-row').append(data);
         $('#pos_items').append(data);
@@ -884,13 +884,13 @@ $(document).on('click', ".v2_select_pos_item", function (e) {
         billUpyog();
         $('#ganak').val(cvalue + 1);
         $('#amount-' + cvalue).focus();
-        $('.hide_bundle-' + cvalue).click(function (e) {
+        $('.hide_bundle-' + cvalue).click(function(e){
             $('#bundle_product_list-' + cvalue).hide(400)
             $('.hide_bundle-' + cvalue).hide()
             $('.show_bundle-' + cvalue).show()
         })
-        $('.show_bundle-' + cvalue + '').click(function (e) {
-            $('#bundle_product_list-' + cvalue + '').show(400)
+        $('.show_bundle-' + cvalue +'').click(function(e){
+            $('#bundle_product_list-' + cvalue +'').show(400)
             $('.hide_bundle-' + cvalue).show()
             $('.show_bundle-' + cvalue).hide()
         })

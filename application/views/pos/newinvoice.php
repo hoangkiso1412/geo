@@ -1,5 +1,5 @@
 <form method="post" id="data_form" class="content-body">
-    <div class="sidebar-left sidebar-fixed bg-white">
+    <div class="sidebar-left  bg-white">
         <div class="sidebar">
             <div class="sidebar-content ">
                 <div class="card-body chat-fixed-search">
@@ -201,8 +201,8 @@
                                 </div>
                                 <div class="tab-pane" id="tab3" role="tabpanel" aria-labelledby="base-tab3">
                                     <?php foreach ($draft_list as $rowd) {
-                                        echo '<li class="indigo p-1"><a href="' . base_url() . 'pos_invoices/draft?id=' . $rowd['id'] . '"> #' . $rowd['tid'] . ' (' . $rowd['invoicedate'] . ')</a></li>';
-                                    } ?>
+                                                    echo '<li class="indigo p-1"><a href="' . base_url() . 'pos_invoices/draft?id=' . $rowd['id'] . '"> #' . $rowd['tid'] . ' (' . $rowd['invoicedate'] . ')</a></li>';
+                                                } ?>
                                 </div>
                                 <div class="tab-pane" id="tab4" role="tabpanel" aria-labelledby="base-tab4">
                                     <div class="form-group row">
@@ -271,18 +271,20 @@
 
                                             </select>
                                             <?php if ($exchange['active'] == 1) {
-                                                echo $this->lang->line('Payment Currency client') ?>
-                                            <?php } ?>
+                                                    echo $this->lang->line('Payment Currency client') ?>
+                                            <?php
+                                                } ?>
                                             <?php if ($exchange['active'] == 1) {
-                                                ?>
+                                                    ?>
                                                 <select name="mcurrency"
                                                         class="selectpicker form-control">
                                                 <option value="0">Default</option>
                                                 <?php foreach ($currency as $row) {
-                                                    echo '<option value="' . $row['id'] . '">' . $row['symbol'] . ' (' . $row['code'] . ')</option>';
-                                                } ?>
+                                                        echo '<option value="' . $row['id'] . '">' . $row['symbol'] . ' (' . $row['code'] . ')</option>';
+                                                    } ?>
 
-                                                </select><?php } ?>
+                                                </select><?php
+                                                } ?>
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="toAddInfo"
@@ -312,7 +314,7 @@
                     <div class="row ">
 
 
-                        <div class="col-sm-9">
+                        <div class="col-sm-6">
 
 
                             <div class="position-relative has-icon-left">
@@ -336,7 +338,13 @@
                                 }
                                 ?>
                             </select></div>
-
+						  <div class="col-md-3  grey text-xs-center"><select
+                            id="product_status2"
+                            class="selectpicker form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('All') ?></option>
+                        <option value="1"><?php echo $this->lang->line('New') ?></option>
+                        <option value="2"><?php echo $this->lang->line('Used') ?></option>
+						 </select></div>
 
                     </div>
                     <hr class="white">
@@ -540,7 +548,9 @@
                     </div>
                     <div class="form-group">
 
-                        <?php if ($surcharge_t) echo '<br>' . $this->lang->line('Note: Payment Processing'); ?>
+                        <?php if ($surcharge_t) {
+                                    echo '<br>' . $this->lang->line('Note: Payment Processing');
+                                } ?>
 
                     </div>
                     <div class="row" style="display:none;">
@@ -586,7 +596,7 @@
 
                         <div class="col-6">
                             <div class="card-title">
-                                <label for="cardNumber"><?php echo $this->lang->line('Amount') ?></label>
+                                <label for="cardNumber"> <?php echo $this->lang->line('Amount') ?></label>
                                 <div class="input-group">
                                     <input
                                             type="text"
@@ -594,7 +604,6 @@
                                             name="p_amount"
                                             placeholder="Amount" onkeypress="return isNumber(event)"
                                             id="p_amount" onkeyup="update_pay_pos()"
-                                            disabled
                                     />
                                     <span class="input-group-addon"><i
                                                 class="icon icon-cash"></i></span>
@@ -636,7 +645,7 @@
                             </div>
                         </div>
                     </div>
-                    <?php if(PAC) { ?>
+                    <?php if (PAC) { ?>
                       <div class="col"> <div class="form-group text-bold-600 text-g">
                     <label for="account_p"><?php echo $this->lang->line('Account') ?></label>
 
@@ -924,20 +933,8 @@
         }
         ?>
         $('#b_total').html(' <?= $this->config->item('currency'); ?> ' + accounting.formatNumber(roundoff));
+        $('#p_amount').val(accounting.formatNumber(roundoff));
 
-        var paycheckboxs =  document.querySelectorAll("[date-role='paycheckbok']");
-        var amount = 0 ;
-        paycheckboxs.forEach(function(checkbox){
-            if (document.getElementById(checkbox.id).checked == true ) {
-                var splits      = checkbox.id.split("-"); 
-                var general_id  = splits[1];
-                var current_total_value = document.getElementById("result-"+general_id).innerHTML ;
-                current_total_value = current_total_value.replace(',','');
-                current_total_value = current_total_value.replace(',','');
-                amount += parseFloat(current_total_value);
-            }
-        });
-        $('#p_amount').val(amount);
     });
 
     function update_pay_pos() {
@@ -1046,10 +1043,12 @@
     $('#v2_categories').change(function () {
         var whr = $('#v2_warehouses option:selected').val();
         var cat = $('#v2_categories option:selected').val();
+		  var status = $('#product_status2 option:selected').val();
+		  var name = $('#v2_search_bar').val()
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/v2_pos_search',
-            data: 'wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            data: 'name='+name+'&wid=' + whr + '&status='+ status +'&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },
@@ -1060,13 +1059,36 @@
             }
         });
     });
-    $('#v2_warehouses').change(function () {
-        var whr = $('#v2_warehouses option:selected').val();
+
+	$("#product_status2").change(function (e) {
+	 var whr = $('#v2_warehouses option:selected').val();
         var cat = $('#v2_categories option:selected').val();
+		  var status = $('#product_status2 option:selected').val();
+		    var name = $('#v2_search_bar').val()
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/v2_pos_search',
-            data: 'wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            data: 'name='+name+'&wid=' + whr + '&status='+ status +'&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            beforeSend: function () {
+                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
+            },
+            success: function (data) {
+
+                $("#pos_item").html(data);
+
+            }
+        });
+
+	});
+    $('#v2_warehouses').change(function () {
+        var whr = $('#v2_warehouses option:selected').val();
+        var cat = $('#v2_categories option:selected').val();
+		var status = $('#product_status2 option:selected').val();
+		  var name = $('#v2_search_bar').val()
+        $.ajax({
+            type: "POST",
+            url: baseurl + 'search_products/v2_pos_search',
+            data: 'name='+name+'&wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },
@@ -1111,11 +1133,12 @@
                         $('#v2_search_bar').val('');
                         $('#v2_search_bar').focus();
 						   var whr = $('#v2_warehouses option:selected').val();
+						   var status = $('#product_status2 option:selected').val();
         var cat = $('#v2_categories option:selected').val();
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/v2_pos_search',
-            data: 'wid=' + whr + '&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
+            data: 'wid=' + whr + '&status='+status +'&cid=' + cat + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },

@@ -14,9 +14,9 @@ function selectCustomer(cid, cname, cadd1, cadd2, ph, email, discount = 0) {
 function PselectCustomer(cid, cname, discount, due, wholesale) {
     $('#customer_id').val(cid);
     $('#custom_discount').val(discount);
-    const wholesalePrice = wholesale == 1  ? '<i class="fa fa-star mr-1 text-danger" ></i>' : ''
-    const wholesalePriceColor = wholesale == 1  ? 'class="text-danger"' : ''
-    $('#customer_name').html('<strong '+ wholesalePriceColor +' >' + wholesalePrice +  cname + '</strong>');
+    const wholesalePrice = wholesale == 1 ? '<i class="fa fa-star mr-1 text-danger" ></i>' : ''
+    const wholesalePriceColor = wholesale == 1 ? 'class="text-danger"' : ''
+    $('#customer_name').html('<strong ' + wholesalePriceColor + ' >' + wholesalePrice + cname + '</strong>');
     $('#customer_wholesale').val(wholesale);
     if (due != 0) {
         $('#alert-due').html('<div id="notify" class="alert alert-primary alert-danger" style=""><a href="#" class="close" data-dismiss="alert">×</a><div class="message"><strong>Error</strong>: You have an older due the value is <strong>' + due + '</strong>.</div></div>')
@@ -108,10 +108,11 @@ $(document).ready(function () {
         var whr = $('#warehouses option:selected').val();
         var cat = $('#categories option:selected').val();
         var status = $('#product_status option:selected').val();
+        var name = $('#search_bar').val()
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/pos_search',
-            data: 'wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
+            data: 'name=' + name + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },
@@ -127,10 +128,11 @@ $(document).ready(function () {
         var whr = $('#warehouses option:selected').val();
         var cat = $('#categories option:selected').val();
         var status = $('#product_status option:selected').val();
+        var name = $('#search_bar').val()
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/pos_search',
-            data: 'wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
+            data: 'name=' + name + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },
@@ -165,7 +167,7 @@ $(document).ready(function () {
     $('#v2_search_bar').keyup(function () {
         var whr = $('#v2_warehouses option:selected').val();
         var cat = $('#v2_categories option:selected').val();
-        var status = $('#product_status option:selected').val();
+        var status = $('#product_status2 option:selected').val();
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/v2_pos_search',
@@ -247,11 +249,11 @@ $(document).on('click', "#thermal_p", function (e) {
             if (data.status == 'Success') {
                 $("#thermal_a").removeClass("alert-warning").addClass("alert alert-info").fadeIn();
                 $("#thermal_a .message").html(data.message);
-                $("html, body").animate({scrollTop: $('#thermal_a').offset().bottom}, 1000);
+                $("html, body").animate({ scrollTop: $('#thermal_a').offset().bottom }, 1000);
             } else {
                 $("#thermal_a").removeClass("alert-success").addClass("alert-warning").fadeIn();
                 $("#thermal_a .message").html(data.message);
-                $("html, body").animate({scrollTop: $('#thermal_a').offset().bottom}, 1000);
+                $("html, body").animate({ scrollTop: $('#thermal_a').offset().bottom }, 1000);
             }
         }
     });
@@ -268,7 +270,7 @@ $(document).on('click', "#thermal_server", function (e) {
         success: function (data) {
             $("#thermal_a").removeClass("alert-warning").addClass("alert alert-info").fadeIn();
             $("#thermal_a .message").html('Success');
-            $("html, body").animate({scrollTop: $('#thermal_a').offset().bottom}, 1000);
+            $("html, body").animate({ scrollTop: $('#thermal_a').offset().bottom }, 1000);
         }
     });
 
@@ -308,7 +310,7 @@ function payInvoice(pyurl) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
         $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to enter partial amount!");
-        $("html, body").animate({scrollTop: $('#notify').offset().bottom}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().bottom }, 1000);
     } else {
         jQuery.ajax({
 
@@ -441,7 +443,7 @@ function sendSms(message) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to enter mobile number!");
-        $("html, body").animate({scrollTop: $('#notify').offset().bottom}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().bottom }, 1000);
     } else {
         jQuery.ajax({
             url: baseurl + 'sms/send_sms',
@@ -475,7 +477,7 @@ function sendBill(message) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to enter email!");
-        $("html, body").animate({scrollTop: $('#notify').offset().bottom}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().bottom }, 1000);
     } else {
         jQuery.ajax({
             url: baseurl + 'communication/send_invoice',
@@ -506,7 +508,7 @@ function sendBill(message) {
 //////////////cancel
 $(document).on('click', "#cancel-bill", function (e) {
     e.preventDefault();
-    $('#cancel_bill').modal({backdrop: 'static', keyboard: false}).one('click', '#send', function () {
+    $('#cancel_bill').modal({ backdrop: 'static', keyboard: false }).one('click', '#send', function () {
         var acturl = 'transactions/cancelinvoice';
         cancelBill(acturl);
     });
@@ -519,7 +521,7 @@ function cancelBill(acturl) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>");
-        $("html, body").animate({scrollTop: $('#notify').offset().bottom}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().bottom }, 1000);
     } else {
         jQuery.ajax({
             url: baseurl + acturl,
@@ -567,7 +569,7 @@ function actionCaculate(actionurl, f_name = '#product_action') {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to complete something!");
-        $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
     } else {
         $(".required").parent().removeClass("has-error");
         $.ajax({
@@ -578,14 +580,14 @@ function actionCaculate(actionurl, f_name = '#product_action') {
             success: function (data) {
                 $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                 $("#notify").removeClass("alert-warning").addClass("alert-success").fadeIn();
-                $("html, body").animate({scrollTop: $('html, body').offset().top}, 200);
+                $("html, body").animate({ scrollTop: $('html, body').offset().top }, 200);
                 //  $("#product_action").remove();
                 $("#param1").html(data.param1);
             },
             error: function (data) {
                 $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                 $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
-                $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+                $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
             }
         });
     }
@@ -607,7 +609,7 @@ function searchCS(actionurl) {
     if (errorNum > 0) {
         $("#statusMsg").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#statusMsg").html("<strong>Error</strong>: It appears you have forgotten to complete something!");
-        $("html, body").animate({scrollTop: $('#statusMsg').offset().top}, 1000);
+        $("html, body").animate({ scrollTop: $('#statusMsg').offset().top }, 1000);
     } else {
         $(".crequired").parent().removeClass("has-error");
         $.ajax({
@@ -621,7 +623,7 @@ function searchCS(actionurl) {
 
                     $("#statusMsg").html("<strong>" + data.status + "</strong>: " + data.message);
                     $("#statusMsg").removeClass("alert-warning").addClass("alert-success").fadeIn();
-                    $("html, body").animate({scrollTop: $('html, body').offset().top}, 200);
+                    $("html, body").animate({ scrollTop: $('html, body').offset().top }, 200);
                     $('#customer_id').val(data.cid);
                     $('#customer_name').html('<strong>' + $('#mcustomer_name').val() + '</strong>');
                     $('#customer_address1').html('<strong>' + $('#mcustomer_address1').val() + '<br>' + $('#mcustomer_city').val() + ',' + $('#mcustomer_country').val() + '</strong>');
@@ -636,13 +638,13 @@ function searchCS(actionurl) {
                 } else {
                     $("#statusMsg").html("<strong>" + data.status + "</strong>: " + data.message);
                     $("#statusMsg").removeClass("alert-success").addClass("alert-warning").fadeIn();
-                    $("html, body").animate({scrollTop: $('#statusMsg').offset().top}, 1000);
+                    $("html, body").animate({ scrollTop: $('#statusMsg').offset().top }, 1000);
                 }
             },
             error: function (data) {
                 $("#statusMsg").html("<strong>" + data.status + "</strong>: " + data.message);
                 $("#statusMsg").removeClass("alert-success").addClass("alert-warning").fadeIn();
-                $("html, body").animate({scrollTop: $('#statusMsg').offset().top}, 1000);
+                $("html, body").animate({ scrollTop: $('#statusMsg').offset().top }, 1000);
             }
         });
     }
@@ -703,14 +705,14 @@ $(document).on('click', ".delete-object", function (e) {
     e.preventDefault();
     $('#object-id').val($(this).attr('data-object-id'));
     $(this).closest('tr').attr('id', $(this).attr('data-object-id'));
-    $('#delete_model').modal({backdrop: 'static', keyboard: false});
+    $('#delete_model').modal({ backdrop: 'static', keyboard: false });
 
 });
 $(document).on('click', ".delete-object2", function (e) {
     e.preventDefault();
     $('#object-id2').val($(this).attr('data-object-id'));
     $(this).closest('tr').attr('id', $(this).attr('data-object-id'));
-    $('#delete_model2').modal({backdrop: 'static', keyboard: false});
+    $('#delete_model2').modal({ backdrop: 'static', keyboard: false });
 
 });
 $("#delete-confirm").on("click", function () {
@@ -813,7 +815,7 @@ function actionProduct(actionurl) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to complete something!");
-        $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
     } else {
         $(".required").parent().removeClass("has-error");
         $.ajax({
@@ -824,13 +826,13 @@ function actionProduct(actionurl) {
             success: function (data) {
                 $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                 $("#notify").removeClass("alert-warning").addClass("alert-success").fadeIn();
-                $("html, body").animate({scrollTop: $('html, body').offset().top}, 200);
+                $("html, body").animate({ scrollTop: $('html, body').offset().top }, 200);
                 //   $("#product_action").remove();
             },
             error: function (data) {
                 $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                 $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
-                $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+                $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
             }
         });
     }
@@ -850,7 +852,7 @@ $(document).on('click', "#upda", function (e) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>: It appears you have forgotten to details!");
-        $("html, body").animate({scrollTop: $('body').offset().top}, 1000);
+        $("html, body").animate({ scrollTop: $('body').offset().top }, 1000);
     } else {
         var action_url = $("#core").val();
         $.ajax({
@@ -863,18 +865,18 @@ $(document).on('click', "#upda", function (e) {
                 if (data.status == 'Success') {
                     $("#notify .message").html("<strong>Success</strong>: Thank You! License updated, please refresh the page.");
                     $("#notify").removeClass("alert-danger").addClass("alert-success").fadeIn();
-                    $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+                    $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
                     setTimeout(function () {
                         window.location.href = baseurl;
                     }, 1000);
                 } else if (data.status == 'WError') {
                     $("#notify .message").html("<strong>Error</strong>: " + data.message);
                     $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
-                    $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+                    $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
                 } else if (data.status == 'Error') {
                     $("#notify .message").html("<strong>Error</strong>: " + data.message + " <a class='blue' href='http://bit.ly/georegular' target='_blank'>Purchase another copy</a> OR <a href='http://bit.ly/2IsOoFa' target='_blank'> Read the license terms!</a>");
                     $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
-                    $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+                    $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
                 } else {
                     setTimeout(function () {
                         window.location.href = baseurl;
@@ -897,7 +899,7 @@ function sendMail_g(o_data, action_url) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-warning").fadeIn();
         $("#notify .message").html("<strong>Error</strong>");
-        $("html, body").animate({scrollTop: $('body').offset().top}, 1000);
+        $("html, body").animate({ scrollTop: $('body').offset().top }, 1000);
     } else {
         jQuery.ajax({
             url: baseurl + action_url,
@@ -908,17 +910,17 @@ function sendMail_g(o_data, action_url) {
                 if (data.status == "Success") {
                     $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                     $("#notify").removeClass("alert-danger").addClass("alert-success").fadeIn();
-                    $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+                    $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
                 } else {
                     $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                     $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
-                    $("html, body").animate({scrollTop: $('body').offset().top}, 1000);
+                    $("html, body").animate({ scrollTop: $('body').offset().top }, 1000);
                 }
             },
             error: function (data) {
                 $("#notify .message").html("<strong>" + data.status + "</strong>: " + data.message);
                 $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
-                $("html, body").animate({scrollTop: $('body').offset().top}, 1000);
+                $("html, body").animate({ scrollTop: $('body').offset().top }, 1000);
             }
         });
     }
@@ -948,7 +950,7 @@ function saveMData(o_data, action_url) {
     if (errorNum > 0) {
         $("#notify").removeClass("alert-success").addClass("alert-danger").fadeIn();
         $("#notify .message").html("<strong>Error</strong>");
-        $("html, body").animate({scrollTop: $('#notify').offset().top}, 1000);
+        $("html, body").animate({ scrollTop: $('#notify').offset().top }, 1000);
     } else {
         jQuery.ajax({
             url: baseurl + action_url,
@@ -1006,7 +1008,7 @@ $(document).on('click', ".delete-custom", function (e) {
     // $(this).closest('section').attr('id','d_'+$(this).attr('data-object-id'));
     $(this).closest("*[data-block]").attr('id', 'd_' + $(this).attr('data-object-id'));
 
-    $('#delete_model_' + did).modal({backdrop: 'static', keyboard: false});
+    $('#delete_model_' + did).modal({ backdrop: 'static', keyboard: false });
     // $("#notify .message")
     $('#delete_model_' + did + ' .delete-confirm').attr('data-mid', did);
 });

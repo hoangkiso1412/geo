@@ -1,6 +1,19 @@
 </div>
 </div>
-</div>
+<div id="FileViewermyModal" class="FileViewer">
+
+        <!-- The Close Button -->
+        <span class="FileViewerClose">&times;</span>
+
+        <!-- Modal Content (The Image) -->
+        <img class="FileViewer-content" id="imageToView" class="img-responsive"
+            style="max-width: 800px; max-height:800px">
+        <iframe _ngcontent-c9="" height="60%" width="60%" style="margin: auto" id="FileViewerIframe"
+            style='display:none'>
+        </iframe>
+        <!-- Modal Caption (Image Text) -->
+
+ </div>     
 <!-- BEGIN VENDOR JS-->
 <script type="text/javascript">
     $('[data-toggle="datepicker"]').datepicker({
@@ -47,7 +60,36 @@
 
     });
 
+    $("body").on('click','img',function(){
+	
+	const modal = document.getElementById('FileViewermyModal') ;
 
+    const modalImg = document.getElementById('imageToView');
+    const modalIFrame = document.getElementById(
+      'FileViewerIframe'
+    );
+
+    modal.style.display = 'block';
+    modalIFrame.style.display = 'none';
+    modalImg.style.display = 'block';
+    modalImg.setAttribute('src', $(this).attr('src'));
+
+    const span = document.getElementsByClassName(
+      'FileViewerClose'
+    )[0] ;
+
+    span.onclick = function() {
+      modal.style.display = 'none';
+    };
+    modal.onclick = function() {
+      modal.style.display = 'none';
+    };
+    modalImg.onclick = function(event) {
+      event.stopPropagation();
+    };
+	
+	})
+	
 </script>
 
 
