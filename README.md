@@ -1,1 +1,1 @@
-# private_geo
+# GEO - ERP/POS
