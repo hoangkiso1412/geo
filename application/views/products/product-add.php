@@ -109,7 +109,7 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                            <input type="text" name="product_price" class="form-control required"
+                            <input type="text" name="product_price" id="product_price" class="form-control required"
                                    placeholder="0.00" aria-describedby="sizing-addon"
                                    onkeypress="return isNumber(event)">
                         </div>
@@ -121,7 +121,7 @@
                     <div class="col-sm-3">
                         <div class="input-group">
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                            <input type="text" name="wholesale" class="form-control required" placeholder="0.00"
+                            <input type="text" name="wholesale" id="wholesale" class="form-control required" placeholder="0.00"
                                 aria-describedby="sizing-addon" onkeypress="return isNumber(event)">
                         </div>
                     </div>
@@ -285,16 +285,59 @@
                         </div>
 
                 </div>
-                <div class="form-group row bundel_select" style="display: none"><label class="col-sm-2 col-form-label"
-                        for="bundle_products"><?php echo $this->lang->line('Bundle Products') ?></label>
-                        <div class="col-sm-6">
-                    <select id="bundle_products" name="bundle_products[]" class="form-control required select-box"
-                                multiple="multiple">
+                <div class="form-group row bundel_select" style="display: none">
+                	<div class="col-sm-12">
+                        	<div class="form-group row">
+	                	<label class="col-sm-2 col-form-label" for="bundle_products"><?php echo $this->lang->line('Bundle Products') ?></label>
+	                        <div class="col-sm-6">
+	                    		<select id="bundle_products" name="bundle_products[]" class="form-control required select-box"  multiple="multiple">
+	                                </select>
+	                    	</div>
+                                </div>
+                        </div>
 
-                    </select>
+                        <div class="col-sm-12">
+		                <div class="form-group row">
+                                    <!-- inner product discount row : start -->
+                                    <label class="col-sm-2 col-form-label" for="bundle_products"><?php echo $this->lang->line('Default Discount Rate') ?></label>
+		                    <div class="col-sm-3">
+		                        <input type="text" placeholder="<?php echo $this->lang->line('Default Discount Rate') ?>"
+		                        class="form-control margin-bottom required" id="bundle_p_discount_amount" name="bundle_p_discount_amount"  value="0"
+		                        onkeypress="return isNumber(event)">
+                                    </div>
+
+		                    <div class="col-sm-1">
+	                    		<select id="bundle_p_discount_factor" name="bundle_p_discount_factor" class="form-control">
+                                        	<option value="percent">   (%)</option>
+                                                <option value="value">  ($)</option>
+	                                </select>
+		                    </div>
+                                    <!-- inner product discount row : end -->
+		                </div>
+
+		                <div class="form-group row">
+                                    <!-- inner product discount row : start -->
+                                    <label class="col-sm-2 col-form-label" for="bundle_products"><?php echo $this->lang->line('Default Discount Rate') ?></label>
+		                    <div class="col-sm-3">
+		                        <input type="text" placeholder="<?php echo $this->lang->line('Default Discount Rate') ?>"
+		                        class="form-control margin-bottom required" id="bundle_w_discount_amount" name="bundle_w_discount_amount"  value="0"
+		                        onkeypress="return isNumber(event)">
+                                    </div>
+
+		                    <div class="col-sm-1">
+	                    		<select id="bundle_w_discount_factor" name="bundle_w_discount_factor" class="form-control">
+                                        	<option value="percent">   (%)</option>
+                                                <option value="value">  ($)</option>
+	                                </select>
+		                    </div>
+                                    <!-- inner product discount row : end -->
+		                </div>
                         </div>
 
                 </div>
+
+
+
                 <?php
                 foreach ($custom_fields as $row) {
                     if ($row['f_type'] == 'text') { ?>
@@ -548,13 +591,17 @@
     $('#bundle').change(function() {
         if (this.checked) {
             $(".bundel_select").show();
-            $(".select2-container--default").width('100%')
+            $(".select2-container--default").width('100%');
+            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         } else {
             $(".bundel_select").hide();
+            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         }
     });
     $("#bundle_products").select2();
-    
+
     $("#related_product").select2();
     $("#wfrom").on('change', function () {
         var tips = $('#wfrom').val();
@@ -577,8 +624,15 @@
                 processResults: function (data) {
                     return {
                         results: $.map(data, function (item) {
+
+			    // check if prices are correct
+			    item.wholesale = isNumeric(item.wholesale) ? item.wholesale : 0;
+
+			    // check if prices are correct
+			    item.product_price = isNumeric(item.product_price) ? item.product_price : 0;
+
                             return {
-                                text: item.product_name,
+                                text: item.product_name + ':' + item.product_price + ':' + item.wholesale,
                                 id: item.pid
                             }
                         })
@@ -587,6 +641,59 @@
             }
         });
     });
+
+
+
+     function isNumeric(n) {
+    	return !isNaN(parseFloat(n)) && isFinite(n);
+     }
+
+     function apply_discount(total_price, discount_amount, discount_factor){
+	if(discount_factor == 'percent'){
+		return ( parseFloat( total_price ) - ( parseFloat( total_price ) *  parseFloat( discount_amount )  / 100 ) ).toFixed(2);
+	}else if(discount_factor == 'value'){
+		return ( parseFloat( total_price ) -  parseFloat( discount_amount ) ).toFixed(2) ;
+	}else{
+                return ( parseFloat( total_price ) ).toFixed(2);
+        }
+     }
+
+     function update_bundle_prices(){
+             var retail_price = 0;
+             var wholesale_price = 0;
+             var bundle_p_discount_amount = document.getElementById('bundle_p_discount_amount').value;
+             var bundle_p_discount_factor = document.getElementById('bundle_p_discount_factor').value;
+             var bundle_w_discount_amount = document.getElementById('bundle_w_discount_amount').value;
+             var bundle_w_discount_factor = document.getElementById('bundle_w_discount_factor').value;
+	     $("#bundle_products :selected").map(function(i, el) {
+             		var current_item =  $(el).text();
+                        var current_item_spilit = current_item.split(":");
+
+                        retail_price = ( parseFloat( retail_price ) + parseFloat( current_item_spilit[1] ) ).toFixed(2);
+                        wholesale_price = ( parseFloat( wholesale_price ) +  parseFloat( current_item_spilit[2] ) ).toFixed(2);
+	    		//return $(el).val();
+		}).get();
+
+                retail_price = apply_discount(retail_price, bundle_p_discount_amount, bundle_p_discount_factor);
+                wholesale_price = apply_discount(wholesale_price, bundle_w_discount_amount, bundle_w_discount_factor);
+
+                document.getElementById('product_price').value= retail_price;
+                document.getElementById('wholesale').value= wholesale_price;
+     }
+
+
+
+	$("#bundle_products, #bundle_p_discount_factor, #bundle_w_discount_factor").on('change', function () {
+		update_bundle_prices();
+	});
+
+
+	$("#bundle_p_discount_amount, #bundle_w_discount_amount").on("input",function(e){
+        	update_bundle_prices();
+	});
+
+
+
 
 
     $("#sub_cat").select2();
