@@ -124,7 +124,7 @@ class Products extends CI_Controller
 
     public function addproduct()
     {
-        $product_name = $this->input->post('product_name', true);
+    	$product_name = $this->input->post('product_name', true);
         $catid = $this->input->post('product_cat');
         $warehouse = $this->input->post('product_warehouse');
         $product_code = $this->input->post('product_code');
@@ -153,9 +153,27 @@ class Products extends CI_Controller
         $wholesale = $this->input->post('wholesale');
         $product_status = $this->input->post('product_status');
         $bundle_products = json_encode($this->input->post('bundle_products'));
+        $bundle_p_discount_amount = json_encode($this->input->post('bundle_p_discount_amount'));
+        $bundle_p_discount_factor = json_encode($this->input->post('bundle_p_discount_factor'));
+        $bundle_w_discount_amount = json_encode($this->input->post('bundle_w_discount_amount'));
+        $bundle_w_discount_factor = json_encode($this->input->post('bundle_w_discount_factor'));
+        $discounnt_array = array();
+        $discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
+        $discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
+        $discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
+        $discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
+        $discounnt_array = json_encode($discounnt_array);
 
-        if ($catid) {
-            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products);
+        $this->load->library("form_validation");
+        if ($this->input->post()) {
+            $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
+            if ($this->form_validation->run() == FALSE) {
+                    echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
+            } else {
+                if ($catid) {
+                    $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array);
+                }
+            }
         }
     }
 
