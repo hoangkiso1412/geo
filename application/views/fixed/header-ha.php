@@ -1163,7 +1163,7 @@
                 </li>
             <?php }
             ?>
-
+            <li class="nav-item"><a class="nav-link" href="<?php echo base_url(); ?>detailed_products/search"><i class="icon-target"></i><span><?php echo $this->lang->line('Global Search') ?></span></a>
         </ul>
     </div>
     <!-- /horizontal menu content-->

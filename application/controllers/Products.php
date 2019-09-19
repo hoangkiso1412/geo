@@ -177,8 +177,6 @@ class Products extends CI_Controller
         }
     }
 
-
-
     public function delete_i()
     {
          if ($this->aauth->premission(11)) {

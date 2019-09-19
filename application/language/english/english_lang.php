@@ -1,4 +1,5 @@
-<?php 
+<?php
+$lang['Global Search'] = "Global Search";
 $lang['You have an older due the value is'] = "You have an older due the value is";
 $lang['Select Products'] = "Select Products";
 $lang['Bundle Products'] = "Bundle Products";

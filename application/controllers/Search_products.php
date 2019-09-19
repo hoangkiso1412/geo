@@ -231,7 +231,7 @@ class Search_products extends CI_Controller
             echo '</ol>';
         }
     }
-    
+
     public function pos_search()
     {
         $out = '';
@@ -276,7 +276,7 @@ class Search_products extends CI_Controller
         }
         $relatedQuery = "select GROUP_CONCAT( Concat(',',rel,',')) from (SELECT geopos_products.related_product as rel FROM geopos_products LEFT JOIN geopos_custom_data ON geopos_custom_data.rid=geopos_products.pid AND (geopos_custom_data.module=4) $join WHERE " . $product_status . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%' OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%'OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) GROUP BY pid) as relatedporoducts";
         $query = "SELECT geopos_products.*,geopos_custom_data.* FROM geopos_products LEFT JOIN geopos_custom_data ON geopos_custom_data.rid=geopos_products.pid AND (geopos_custom_data.module=4) $join WHERE " . $product_status . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%' OR INStr((".$relatedQuery."),`pid`)>0 OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%'OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) GROUP BY pid LIMIT 16";
-    
+
         $query = $this->db->query($query);
 
         $result = $query->result_array();
@@ -285,10 +285,10 @@ class Search_products extends CI_Controller
         foreach ($result as $key => $row) {
 
                 // $related_products = implode(',', json_decode($row['related_product'],true));
-                
+
                 
             // $query3 = "SELECT geopos_products.* FROM geopos_products WHERE pid in(". $related_products . ',' .");";
-                
+
             // $query3 = $this->db->query($query);
                 
             // $result2 = $query3->result_array();
@@ -299,10 +299,10 @@ class Search_products extends CI_Controller
                                         <img class="round"
                                              src="' . base_url('userfiles/product/' . $row['image']) . '"  style="max-height: 100%;max-width: 100%">
                                         <div class="text-xs-center text">
-                                       
+
                                             <small style="white-space: pre-wrap;">' . $row['product_name'] . '</small>
 
-                                            
+
                                         </div></a>
                                   
                                 </div></div>';
@@ -313,6 +313,101 @@ class Search_products extends CI_Controller
 
         echo $out;
     }
+
+
+
+
+
+
+
+
+
+    public function detailed_product_search()
+    {
+        $out = '';
+        $name = $this->input->post('name', true);
+        $cid = $this->input->post('cid', true);
+        $wid = $this->input->post('wid', true);
+        $status = $this->input->post('status', true);
+        $qw = '';
+        $product_status = '';
+        if ($wid > 0) {
+            $qw .= "(geopos_products.warehouse='$wid') AND ";
+        }
+        if ($cid > 0) {
+            $qw .= "(geopos_products.pcat='$cid') AND ";
+        }
+        if ($status > 0) {
+            $product_status .= "(geopos_products.product_status='$status') AND ";
+        }
+
+        $join = '';
+        if ($this->aauth->get_user()->loc) {
+            $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
+            if (BDATA) {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
+            } else {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
+        } elseif (!BDATA) {
+            $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
+            $qw .= '(geopos_warehouse.loc=0) AND ';
+        }
+        $bar = '';
+        if (is_numeric($name)) {
+            $b = array('-', '-', '-');
+            $c = array(3, 4, 11);
+            $barcode = $name;
+            for ($i = count($c) - 1; $i >= 0; $i--) {
+                $barcode = substr_replace($barcode, $b[$i], $c[$i], 0);
+            }
+
+            $bar = " OR (geopos_products.barcode LIKE '" . (substr($barcode, 0, -1)) . "%' OR geopos_products.barcode LIKE '" . $name . "%')";
+        }
+        $relatedQuery = "select GROUP_CONCAT( Concat(',',rel,',')) from (SELECT geopos_products.related_product as rel FROM geopos_products LEFT JOIN geopos_custom_data ON geopos_custom_data.rid=geopos_products.pid AND (geopos_custom_data.module=4) $join WHERE " . $product_status . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%' OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%'OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) GROUP BY pid) as relatedporoducts";
+        $query = "SELECT geopos_products.*,geopos_custom_data.* FROM geopos_products LEFT JOIN geopos_custom_data ON geopos_custom_data.rid=geopos_products.pid AND (geopos_custom_data.module=4) $join WHERE " . $product_status . $qw . "(UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' $bar OR geopos_products.product_code LIKE '" . strtoupper($name) . "%' OR INStr((".$relatedQuery."),`pid`)>0 OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%'OR geopos_custom_data.data LIKE '" . strtoupper($name) . "%') AND (geopos_products.qty>0) GROUP BY pid LIMIT 16";
+
+        $query = $this->db->query($query);
+
+        $result = $query->result_array();
+        $i = 0;
+        echo '<div class="row match-height">';
+        foreach ($result as $key => $row) {
+
+                // $related_products = implode(',', json_decode($row['related_product'],true));
+
+
+            // $query3 = "SELECT geopos_products.* FROM geopos_products WHERE pid in(". $related_products . ',' .");";
+
+            // $query3 = $this->db->query($query);
+
+            // $result2 = $query3->result_array();
+
+            $out .= '    <div class="col-3 border "><div class="rounded text-center mt-3 pb-3">
+                                ' . ($row['favorite'] ? '<i class="fa fa-heart favorite-products"></i>' : '') .  (($row['bundle_products']== 'null') ?  '' :'<i class="fa fa-object-group bundle-products"></i>' ) .'
+                                 <a   id="posp' . $i . '"  class="select_pos_item btn btn-outline-light-blue round" data-bundle="' . ($row['bundle_products']=='null' ? false : true) .'"   data-name="' . $row['product_name'] . '"  data-image="' . base_url('userfiles/product/' . $row['image']) . '"  data-url="' . base_url('products/edit?id=' . $row['pid']) . '"  data-toggle="modal" data-target="#basicPay" data-price="' . amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) . '" data-wholesale="' . amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc) . '"  data-tax="' . amountFormat_general($row['taxrate']) . '"  data-discount="' . amountFormat_general($row['disrate']) . '"   data-pcode="' . $row['product_code'] . '"   data-pid="' . $row['pid'] . '"  data-stock="' . amountFormat_general($row['qty']) . '" data-unit="' . $row['unit'] . '" >
+                                        <img class="round"
+                                             src="' . base_url('userfiles/product/' . $row['image']) . '"  style="max-height: 100%;max-width: 100%">
+                                        <div class="text-xs-center text">
+
+                                            <small style="white-space: pre-wrap;">' . $row['product_name'] . '</small>
+
+
+                                        </div></a>
+
+                                </div></div>';
+
+            $i++;
+            //   if ($i % 4 == 0) $out .= '</div><div class="row">';
+        }
+
+        echo $out;
+    }
+
+
+
+
+
 
     public function v2_pos_search()
     {
