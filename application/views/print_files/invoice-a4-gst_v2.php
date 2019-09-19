@@ -218,6 +218,7 @@
     <tr>
         <th><?php echo $this->lang->line('Products') ?></th>
         <th> <?php echo $this->lang->line('Description') ?></th>
+        <th> <?php echo $this->lang->line('Category') ?></th>
         <th><?php echo $this->lang->line('Price') ?></th>
         <th><?php echo $this->lang->line('Qty') ?></th>
         <?php $tcols = 1;
@@ -251,6 +252,7 @@
 
         echo '	  <tr class="item-row">
 		      <td class="item-name">' . $row['product'] . '</td>
+                      <td class="item-name">' . $row['pcat'] . '</td>
 		      <td class="description">' . $row['product_des'] . '</td>
 		      <td>' . amountExchange($row['price'], $invoice['multi'], $invoice['loc']) . '</td>
 		      <td>' . +$row['qty'] . $row['unit'] . '</td>';

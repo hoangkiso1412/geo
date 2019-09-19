@@ -237,6 +237,9 @@
                 <?php echo $this->lang->line('Description') ?>
             </td>
             <td>
+                <?php echo $this->lang->line('Category') ?>
+            </td>
+            <td>
                 <?php echo $this->lang->line('HSN') ?>
             </td>
             <td>
@@ -287,6 +290,7 @@
 
             echo '<tr class="item' . $flag . '"> 
                             <td>' . $row['product'] . '</td>
+                             <td>' . $row['pcat'] . '</td> 
                             <td style="width:12%;" >' . $row['code'] . '</td> 
 							<td style="width:12%;">' . amountExchange($row['price'], $invoice['multi'], $invoice['loc']) . '</td>
                             <td style="width:12%;" >' . amountFormat_general($row['qty']) . $row['unit'] . '</td>   ';

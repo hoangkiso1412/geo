@@ -76,6 +76,30 @@ class Invoices_model extends CI_Model
 
     }
 
+
+
+
+
+    public function invoice_get_pcat($id)
+    {
+
+        $this->db->select('pcat');
+        $this->db->from('geopos_products');
+        $this->db->where('pid', $id);
+        $query = $this->db->get();
+        $row = $query->row();
+        $pcat = $row->pcat;
+
+        $this->db->select('title');
+        $this->db->from('geopos_product_cat');
+        $this->db->where('id', $pcat);
+        $query = $this->db->get();
+        $row = $query->row();
+        return $row->title;
+    }
+
+
+
     public function currencies()
     {
 

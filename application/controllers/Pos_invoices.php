@@ -864,6 +864,16 @@ class Pos_invoices extends CI_Controller
         $data['round_off'] = $this->custom->api_config(4);
         $data['invoice'] = $this->invocies->invoice_details($tid, $this->limited);
         if ($data['invoice']['id']) $data['products'] = $this->invocies->invoice_products($tid);
+
+        $products_with_cats = array();
+        foreach($data['products'] as $product){
+               	$product['pcat'] = $this->invocies->invoice_get_pcat($product['pid']);
+        	array_push($products_with_cats, $product);
+        }
+        $data['products'] = $products_with_cats;
+        //print_r($data['products']); exit();
+
+
         if ($data['invoice']['id']) $data['employee'] = $this->invocies->employee($data['invoice']['eid']);
         if (CUSTOM) $data['c_custom_fields'] = $this->custom->view_fields_data($data['invoice']['cid'], 1, 1);
         if ($data['invoice']['i_class'] == 1) {
