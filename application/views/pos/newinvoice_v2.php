@@ -371,6 +371,7 @@
     <input type="hidden" value="<?= $this->common->disc_status()['ship_tax']; ?>" name="ship_taxtype"
            id="ship_taxtype">
     <input type="hidden" value="0" name="ship_tax" id="ship_tax">
+    <input type="hidden" value="0" name="pay_ids" id="pay_ids">
 </form>
 
 <div id="shortkeyboard" class="modal fade" role="dialog">
@@ -907,12 +908,24 @@
         ?>
         $('#b_total').html(' <?= $this->config->item('currency'); ?> ' + accounting.formatNumber(roundoff));
 
+
+        var pay_ids_array = [];
+        $('.i_pay_box:checked').each(function(){
+        	var box_id = this.id;
+                var s = box_id.split("-");
+                var product_id  = s[1];
+        	pay_ids_array.push(product_id);
+        });
+        document.getElementById('pay_ids').value= pay_ids_array;
+  
+
         var paycheckboxs =  document.querySelectorAll("[date-role='paycheckbok']");
         var amount = 0 ;
         paycheckboxs.forEach(function(checkbox){
             if (document.getElementById(checkbox.id).checked == true ) {
-                var splits      = checkbox.id.split("-"); 
+                var splits      = checkbox.id.split("-");
                 var general_id  = splits[1];
+
                 var current_total_value = document.getElementById("result-"+general_id).innerHTML ;
                 current_total_value = current_total_value.replace(',','');
                 current_total_value = current_total_value.replace(',','');
@@ -969,6 +982,13 @@
                 update_register();
             }, 3000);
     });
+
+
+
+
+
+
+
 </script>
 <!-- Vendor libraries -->
 <script type="text/javascript">

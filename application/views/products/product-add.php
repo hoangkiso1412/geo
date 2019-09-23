@@ -113,8 +113,8 @@
                                    placeholder="0.00" aria-describedby="sizing-addon"
                                    onkeypress="return isNumber(event)">
                         </div>
-                        
-                        
+
+
                     </div>
                     <label class="col-sm-1 control-label"
                     for="wholesale"><?php echo $this->lang->line('Wholesale-Price') ?>*</label>
@@ -144,8 +144,8 @@
                     <div class="col-sm-3">
                         <select name="product_status" class="form-control">
                             <option value='0'>Select</option>
-                            <option value='1'>New</option>
-                            <option value='2'>Used</option>
+                            <option value='1'><?php echo $this->lang->line('New') ?></option>
+                            <option value='2'><?php echo $this->lang->line('Used') ?></option>
                         </select>
                     </div>
 
@@ -317,7 +317,7 @@
 
 		                <div class="form-group row">
                                     <!-- inner product discount row : start -->
-                                    <label class="col-sm-2 col-form-label" for="bundle_products"><?php echo $this->lang->line('Default Discount Rate') ?></label>
+                                    <label class="col-sm-2 col-form-label" for="bundle_products">Wholesale <?php echo $this->lang->line('Default Discount Rate') ?></label>
 		                    <div class="col-sm-3">
 		                        <input type="text" placeholder="<?php echo $this->lang->line('Default Discount Rate') ?>"
 		                        class="form-control margin-bottom required" id="bundle_w_discount_amount" name="bundle_w_discount_amount"  value="0"

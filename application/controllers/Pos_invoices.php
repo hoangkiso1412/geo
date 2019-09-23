@@ -288,15 +288,26 @@ class Pos_invoices extends CI_Controller
                 $ptotal_disc = $this->input->post('disca');
                 $product_des = $this->input->post('product_description', true);
                 $pay = $this->input->post('pay');
+                $pay_ids = $this->input->post('pay_ids');
                 $product_unit = $this->input->post('unit');
                 $product_hsn = $this->input->post('hsn', true);
                 $product_alert = $this->input->post('alert');
+
+               $pay_ids = explode(',', $pay_ids);
+               //echo json_encode(array('status' => 'Error', 'message' => $pay_ids));
+               //exit();
 
                 foreach ($pid as $key => $value) {
 
 
                     $total_discount += numberClean(@$ptotal_disc[$key]);
                     $total_tax += numberClean($ptotal_tax[$key]);
+
+	               if( in_array($product_id[$key], $pay_ids) ) {
+	               		$paid_result = 1;
+	               }else{
+	               		$paid_result = 0;
+	               }
 
                     $data = array(
                         'tid' => $invocieno,
@@ -307,7 +318,7 @@ class Pos_invoices extends CI_Controller
                         'price' => rev_amountExchange_s($product_price[$key], $currency, $this->aauth->get_user()->loc),
                         'tax' => numberClean($product_tax[$key]),
                         'discount' => numberClean($product_discount[$key]),
-                        'pay' => $pay[$key] ? 1 : 0,
+                        'pay' => $paid_result ? 1 : 0,
                         'subtotal' => rev_amountExchange_s($product_subtotal[$key], $currency, $this->aauth->get_user()->loc),
                         'totaltax' => rev_amountExchange_s($ptotal_tax[$key], $currency, $this->aauth->get_user()->loc),
                         'totaldiscount' => rev_amountExchange_s($ptotal_disc[$key], $currency, $this->aauth->get_user()->loc),

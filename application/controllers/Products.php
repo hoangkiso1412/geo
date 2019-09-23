@@ -98,7 +98,7 @@ class Products extends CI_Controller
             $row[] = $prd->c_title;
             $row[] = $prd->title;
             $row[] = amountExchange($prd->product_price, 0, $this->aauth->get_user()->loc);
-            $row[] = '<a href="#" data-object-id="' . $pid . '" class="btn btn-success  btn-sm  view-object"><span class="fa fa-eye"></span> ' . $this->lang->line('View') . '</a> 
+            $row[] = '<a href="#" data-object-id="' . $pid . '" class="btn btn-success  btn-sm  view-object"><span class="fa fa-eye"></span> ' . $this->lang->line('View') . '</a>
 <div class="btn-group">
                                     <button type="button" class="btn btn-indigo dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-print"></i>  ' . $this->lang->line('Print') . '</button>
                                     <div class="dropdown-menu">
@@ -124,7 +124,9 @@ class Products extends CI_Controller
 
     public function addproduct()
     {
+
     	$product_name = $this->input->post('product_name', true);
+
         $catid = $this->input->post('product_cat');
         $warehouse = $this->input->post('product_warehouse');
         $product_code = $this->input->post('product_code');
@@ -153,29 +155,48 @@ class Products extends CI_Controller
         $wholesale = $this->input->post('wholesale');
         $product_status = $this->input->post('product_status');
         $bundle_products = json_encode($this->input->post('bundle_products'));
+
         $bundle_p_discount_amount = json_encode($this->input->post('bundle_p_discount_amount'));
         $bundle_p_discount_factor = json_encode($this->input->post('bundle_p_discount_factor'));
         $bundle_w_discount_amount = json_encode($this->input->post('bundle_w_discount_amount'));
         $bundle_w_discount_factor = json_encode($this->input->post('bundle_w_discount_factor'));
-        $discounnt_array = array();
-        $discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
-        $discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
-        $discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
-        $discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
-        $discounnt_array = json_encode($discounnt_array);
 
+
+	$discounnt_array = array();
+	$discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
+	$discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
+	$discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
+	$discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
+	$discounnt_array = json_encode($discounnt_array);
+
+
+           // if ( $this->products->check_product_name($product_name) > 0   ) {
+           //     $this->session->set_flashdata('msg', '<div class="alert alert-danger">Another product uses the same name !.</div>');
+           //     redirect(site_url('products/add'));
+           // }
+
+
+        //validate product_name
         $this->load->library("form_validation");
         if ($this->input->post()) {
-            $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
-            if ($this->form_validation->run() == FALSE) {
-                    echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
-            } else {
-                if ($catid) {
-                    $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array);
-                }
-            }
+                        $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
+
+	            if ($this->form_validation->run() == FALSE) {
+	                	echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
+	            } else {
+
+			        if ($catid) {
+			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array);
+			        }
+	            }
+
         }
+
+
+
     }
+
+
 
     public function delete_i()
     {
@@ -211,6 +232,8 @@ class Products extends CI_Controller
         $data['cat_ware'] = $this->categories_model->cat_ware($pid);
         $data['cat_sub'] = $this->categories_model->sub_cat($data['product']['pcat']);
         $data['cat_sub_list'] = $this->categories_model->sub_cat_list($data['product']['pcat']);
+
+        /*
         if ($data['product']['related_product'] != 'null' && $data['product']['related_product']) {
 
             $related_product_id  = implode(',', json_decode($data['product']['related_product']));
@@ -223,17 +246,32 @@ class Products extends CI_Controller
             $query3 = $this->db->query($query3);
             $data['related_product'] = $query3->result_array();
         }
-        if ($data['product']['bundle_products'] != 'null' && $data['product']['bundle_products']) {
+        */
 
+
+        /*
             $bundle_products_id  = implode(',', json_decode($data['product']['bundle_products']));
             
             $query4 = "SELECT * FROM geopos_products WHERE pid in($bundle_products_id)";   
             $query4 = $this->db->query($query4);
             $data['rese23'] = $query4->result_array();
             
-            $query5 = "SELECT * FROM geopos_products WHERE pid in($bundle_products_id)";   
+            $query5 = "SELECT * FROM geopos_products WHERE pid in($bundle_products_id)";
             $query5 = $this->db->query($query5);
             $data['bundle_products'] = $query5->result_array();
+        */
+
+            $query5 = "SELECT * FROM geopos_products";
+            $query5 = $this->db->query($query5);
+            $data['products_list'] = $query5->result_array();
+
+        if ($data['product']['bundle_products'] != 'null' && $data['product']['bundle_products']) {
+		// identifier to check if its bundle or product
+		$data['product']['is_bundle'] = 1;
+
+        }else{
+        	// identifier to check if its bundle or product
+        	$data['product']['is_bundle'] = 0;
         }
 
         $data['warehouse'] = $this->categories_model->warehouse_list();
@@ -274,10 +312,24 @@ class Products extends CI_Controller
         $product_status = $this->input->post('product_status');
         $bundle_products = json_encode($this->input->post('bundle_products'));
 
+        $bundle_p_discount_amount = json_encode($this->input->post('bundle_p_discount_amount'));
+        $bundle_p_discount_factor = json_encode($this->input->post('bundle_p_discount_factor'));
+        $bundle_w_discount_amount = json_encode($this->input->post('bundle_w_discount_amount'));
+        $bundle_w_discount_factor = json_encode($this->input->post('bundle_w_discount_factor'));
+
+
+	$discounnt_array = array();
+	$discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
+	$discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
+	$discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
+	$discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
+	$discounnt_array = json_encode($discounnt_array);
+
+
         if (!$sub_cat) $sub_cat = 0;    
         $brand = $this->input->post('brand');
         if ($pid) {
-            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products);
+            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array);
         }
     }
 

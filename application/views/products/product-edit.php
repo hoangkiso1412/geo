@@ -43,30 +43,40 @@
                                                      for="product_cat"><?php echo $this->lang->line('Product Category') ?>
                                 *</label>
                             <select name="product_cat" class="form-control" id="product_cat">
-                                <?php
-                                echo '<option value="' . $cat_ware['cid'] . '">' . $cat_ware['catt'] . ' (S)</option>';
-                                foreach ($cat as $row) {
-                                    $cid = $row['id'];
-                                    $title = $row['title'];
-                                    echo "<option value='$cid'>$title</option>";
-                                }
-                                ?>
+                            <option value=''>Select</option>
+                            <?php
+                            foreach ($cat as $row) {
+                                $cid = $row['id'];
+                                $title = $row['title'];
+
+	                                $v =  $product['pcat'];
+	                                $sel = ($cid == $v) ? 'selected="selected"' : '';
+
+                                echo "<option value=".$cid." ".$sel.">".$title."</option>";
+                            }
+                            ?>
+
                             </select>
+
                         </div>
 
 
                         <div class="col-sm-6"><label class="col-form-label"
                                                      for="sub_cat"><?php echo $this->lang->line('Sub') ?><?php echo $this->lang->line('Category') ?></label>
                             <select id="sub_cat" name="sub_cat" class="form-control select-box">
-                                <?= '<option value="' . $cat_sub['id'] . '">' . $cat_sub['title'] . ' (S)</option>';
+                            <option value=''>Select</option>
+                            <?php
+                            foreach ($cat_sub_list as $row) {
+                                $cid = $row['id'];
+                                $title = $row['title'];
 
+	                                $v =  $product['sub'];
+	                                $sel = ($cid == $v) ? 'selected="selected"' : '';
 
-                                foreach ($cat_sub_list as $row) {
-                                    $cid = $row['id'];
-                                    $title = $row['title'];
-                                    echo "<option value='$cid'>$title</option>";
-                                }
-                                ?>
+                                echo "<option value=".$cid." ".$sel.">".$title."</option>";
+                            }
+                            ?>
+
                             </select>
 
 
@@ -79,16 +89,21 @@
                                for="product_cat"><?php echo $this->lang->line('Warehouse') ?>*</label>
 
                         <div class="col-sm-6">
-                            <select name="product_warehouse" id="wfrom" class="form-control">
-                                <?php
-                                echo '<option value="' . $cat_ware['wid'] . '">' . $cat_ware['watt'] . ' (S)</option>';
-                                foreach ($warehouse as $row) {
-                                    $cid = $row['id'];
-                                    $title = $row['title'];
-                                    echo "<option value='$cid'>$title</option>";
-                                }
-                                ?>
+                            <select name="product_warehouse" id="wfrom" required="required"  class="form-control">
+                            <option value=''>Select</option>
+                            <?php
+                            foreach ($warehouse as $row) {
+                                $cid = $row['id'];
+                                $title = $row['title'];
+
+	                                $v =  $product['warehouse'];
+	                                $sel = ($cid == $v) ? 'selected="selected"' : '';
+
+                                echo "<option value=".$cid." ".$sel.">".$title."</option>";
+                            }
+                            ?>
                             </select>
+
 
 
                         </div>
@@ -119,7 +134,7 @@
                         <div class="col-sm-3">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" name="wholesale" class="form-control required" placeholder="0.00"
+                                <input type="text" name="wholesale"  id="wholesale" class="form-control required" placeholder="0.00"
                                     aria-describedby="sizing-addon" onkeypress="return isNumber(event)" value="<?php echo edit_amountExchange_s($product['wholesale'], 0, $this->aauth->get_user()->loc) ?>">
                             </div>
                         </div>
@@ -133,7 +148,7 @@
                         <div class="col-sm-6">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" name="product_price" class="form-control required"
+                                <input type="text" name="product_price" id="product_price" class="form-control required"
                                        placeholder="0.00" aria-describedby="sizing-addon"
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['product_price'], 0, $this->aauth->get_user()->loc) ?>">
@@ -145,8 +160,8 @@
                         <div class="col-sm-3">
                             <select name="product_status" id="product_status" class="form-control required">
                                 <option <?php echo ($product['product_status'] == 0 ? 'selected' : '') ?> value='0'>Select</option>
-                                <option <?php echo ($product['product_status'] == 1 ? 'selected' : '') ?> value='1'>New</option>
-                                <option <?php echo ($product['product_status'] == 2 ? 'selected' : '') ?> value='2'>Used</option>
+                                <option <?php echo ($product['product_status'] == 1 ? 'selected' : '') ?> value='1'><?php echo $this->lang->line('New') ?></option>
+                                <option <?php echo ($product['product_status'] == 2 ? 'selected' : '') ?> value='2'><?php echo $this->lang->line('Used') ?></option>
                             </select>
                         </div>
 
@@ -167,7 +182,7 @@
                         <div class="col-sm-3">
                             <div class="input-group mt-1">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" <?php echo ($product['bundle_products'] ? 'checked' : '') ?> class="custom-control-input" name="bundle" id="bundle">
+                                    <input type="checkbox" <?php echo ($product['is_bundle'] ? 'checked' : '') ?> class="custom-control-input" name="bundle" id="bundle">
                                     <label class="custom-control-label" for="bundle"><?php echo $this->lang->line('Bundle Products') ?></label>
                                 </div>
 
@@ -311,10 +326,18 @@
                                         multiple="multiple">
                                         <?php
 
-                                        foreach ($related_product as $row) {
+                                        foreach ($products_list as $row) {
                                             $cid = $row['pid'];
                                             $title = $row['product_name'];
-                                            echo "<option value='$cid'>$title</option>";
+
+                                            $row['wholesale'] = is_numeric($row['wholesale']) ? $row['wholesale'] : 0;
+                                            $row['product_price'] = is_numeric($row['product_price']) ? $row['product_price'] : 0;
+                                            $title_full =  $row['product_name'] . ':' . $row['product_price']. ':' .$row['wholesale'];
+
+	                                	$v =  json_decode($product['related_product']);
+	                                	$sel = (is_array($v) && in_array($cid, $v)) ? 'selected="selected"' : '';
+
+                                   	    echo "<option value=".$cid." ".$sel.">".$title_full."</option>";
                                         }
                                         ?>
                             </select>
@@ -323,18 +346,75 @@
                     <div class="form-group row bundel_select"><label class="col-sm-2 col-form-label"
                             for="bundle_products"><?php echo $this->lang->line('Bundle Products') ?></label>
                             <div class="col-sm-6">
-                        <select id="bundle_products" name="bundle_products[]" class="form-control required select-box"
-                                    multiple="multiple">
-                                    <?php
+		                        <select id="bundle_products" name="bundle_products[]" class="form-control required select-box"
+		                                    multiple="multiple">
+		                                    <?php
 
-                                foreach ($bundle_products as $row) {
-                                    $cid = $row['pid'];
-                                    $title = $row['product_name'];
-                                    echo "<option value=".$cid.">".$title."</option>";
-                                }
-                                ?>
-                        </select>
+		                                foreach ($products_list as $row) {
+		                                    $cid = $row['pid'];
+		                                    $title = $row['product_name'];
+
+                                                    $row['wholesale'] = is_numeric($row['wholesale']) ? $row['wholesale'] : 0;
+                                                    $row['product_price'] = is_numeric($row['product_price']) ? $row['product_price'] : 0;
+                                                    $title_full =  $row['product_name'] . ':' . $row['product_price']. ':' .$row['wholesale'];
+
+			                                $v =  json_decode($product['bundle_products']);
+			                                $sel = (is_array($v) && in_array($cid, $v)) ? 'selected="selected"' : '';
+
+		                                    echo "<option value=".$cid." ".$sel.">".$title_full."</option>";
+		                                }
+
+		                                ?>
+		                        </select>
                             </div>
+
+
+                        <div class="col-sm-12">
+                       		 <br />
+                                 <?php
+                                 	$bundle_discount = json_decode($product['bundle_discount']);
+                                        $bundle_p_discount_amount = json_decode($bundle_discount->bundle_p_discount_amount);
+                                        $bundle_p_discount_factor = json_decode($bundle_discount->bundle_p_discount_factor);
+                                        $bundle_w_discount_amount = json_decode($bundle_discount->bundle_w_discount_amount);
+                                        $bundle_w_discount_factor = json_decode($bundle_discount->bundle_w_discount_factor);
+                                 ?>
+		                <div class="form-group row">
+                                    <!-- inner product discount row : start -->
+                                    <label class="col-sm-2 col-form-label" for="bundle_products"><?php echo $this->lang->line('Default Discount Rate') ?></label>
+		                    <div class="col-sm-3">
+		                        <input type="text" placeholder="<?php echo $this->lang->line('Default Discount Rate') ?>"
+		                        class="form-control margin-bottom required" id="bundle_p_discount_amount" name="bundle_p_discount_amount"  value="<?php echo $bundle_p_discount_amount ? $bundle_p_discount_amount : 0; ?>"
+		                        onkeypress="return isNumber(event)">
+                                    </div>
+
+		                    <div class="col-sm-1">
+	                    		<select id="bundle_p_discount_factor" name="bundle_p_discount_factor" class="form-control">
+                                        	<option value="percent" <?php echo ($bundle_p_discount_factor == 'percent') ? 'selected' : ''; ?>>   (%)</option>
+                                                <option value="value" <?php echo ($bundle_p_discount_factor == 'value') ? 'selected' : ''; ?>>  ($)</option>
+	                                </select>
+		                    </div>
+                                    <!-- inner product discount row : end -->
+		                </div>
+
+		                <div class="form-group row">
+                                    <!-- inner product discount row : start -->
+                                    <label class="col-sm-2 col-form-label" for="bundle_products">Wholesale <?php echo $this->lang->line('Default Discount Rate') ?></label>
+		                    <div class="col-sm-3">
+		                        <input type="text" placeholder="<?php echo $this->lang->line('Default Discount Rate') ?>"
+		                        class="form-control margin-bottom required" id="bundle_w_discount_amount" name="bundle_w_discount_amount"  value="<?php echo $bundle_w_discount_amount ? $bundle_w_discount_amount : 0; ?>" value="0"
+		                        onkeypress="return isNumber(event)">
+                                    </div>
+
+		                    <div class="col-sm-1">
+	                    		<select id="bundle_w_discount_factor" name="bundle_w_discount_factor" class="form-control">
+                                        	<option value="percent" <?php echo ($bundle_w_discount_factor == 'percent') ? 'selected' : ''; ?>>   (%)</option>
+                                                <option value="value" <?php echo ($bundle_w_discount_factor == 'value') ? 'selected' : ''; ?>>  ($)</option>
+	                                </select>
+		                    </div>
+                                    <!-- inner product discount row : end -->
+		                </div>
+                        </div>
+
 
                     </div>
                     <?php foreach ($custom_fields as $row) {
@@ -498,33 +578,57 @@
 
             });
 
-            $('#bundle').change(function() {
-                if (this.checked) {
-                    $(".bundel_select").show();
-                    $(".select2-container--default").width('100%')
-                    console.log($("#related_product").val())
-                } else {
-                    $(".bundel_select").hide();
-                    $('#bundle_products').empty().trigger("change");
-                }
-            });
+    $('#bundle').change(function() {
+        if (this.checked) {
+            $(".bundel_select").show();
+            $(".select2-container--default").width('100%');
+            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+        } else {
+            $(".bundel_select").hide();
+            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+        }
+    });
+    $("#bundle_products").select2();
+
             
-            $("#related_product").select2()
-            $("#bundle_products").select2()
+            $("#related_product").select2();
+
             <?php if ($product['related_product'] != 'null' && $product['bundle_products']) { ?>
                 const related_val = <?php echo ($product['related_product'] != 'null' && $product['bundle_products'] ? $product['related_product'] : '') ?>;
                 $('#related_product').val(related_val).trigger('change');
             <?php } ?>
-            <?php if ($product['bundle_products'] != 'null' && $product['bundle_products']) { ?>
-                const bundle_val = <?php echo ($product['bundle_products'] != 'null' && $product['bundle_products']  ? $product['bundle_products'] : '') ?>;
-                $('#bundle_products').val(bundle_val).trigger('change');
 
+
+            <?php if ($product['is_bundle']) { ?>
+		            $(".bundel_select").show();
+		            $(".select2-container--default").width('100%');
+		            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+            	            update_bundle_prices();
+
+	    <?php } else {   ?>
+		            $(".bundel_select").hide();
+		            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
             <?php } ?>
             
-            
+
             $("#wfrom").on('change', function () {
-                $('#related_product, #bundle_products').empty().trigger("change");
+                //$('#related_product, #bundle_products').empty().trigger("change");
                 var tips = $('#wfrom').val();
+                update_categories_from_warehouse(tips);
+
+            });
+
+            <?php if ($product['warehouse']) { ?>
+            	 var tips = <?php echo $product['warehouse'];?>;
+                 update_categories_from_warehouse(tips);
+            <?php } ?>
+
+
+     function update_categories_from_warehouse(tips){
                 $("#related_product, #bundle_products").select2({
 
                     tags: [],
@@ -542,18 +646,78 @@
                             };
                         },
                         processResults: function (data) {
-                            return {
-                                results: $.map(data, function (item) {
-                                    return {
-                                        text: item.product_name,
-                                        id: item.pid
-                                    }
-                                })
-                            };
+	                    return {
+	                        results: $.map(data, function (item) {
+
+				    // check if prices are correct
+				    item.wholesale = isNumeric(item.wholesale) ? item.wholesale : 0;
+
+				    // check if prices are correct
+				    item.product_price = isNumeric(item.product_price) ? item.product_price : 0;
+
+	                            return {
+	                                text: item.product_name + ':' + item.product_price + ':' + item.wholesale,
+	                                id: item.pid
+	                            }
+	                        })
+	                    };
                         },
                     }
                 });
-            });
+     }
+
+
+     function isNumeric(n) {
+    	return !isNaN(parseFloat(n)) && isFinite(n);
+     }
+
+     function apply_discount(total_price, discount_amount, discount_factor){
+	if(discount_factor == 'percent'){
+		return ( parseFloat( total_price ) - ( parseFloat( total_price ) *  parseFloat( discount_amount )  / 100 ) ).toFixed(2);
+	}else if(discount_factor == 'value'){
+		return ( parseFloat( total_price ) -  parseFloat( discount_amount ) ).toFixed(2) ;
+	}else{
+                return ( parseFloat( total_price ) ).toFixed(2);
+        }
+     }
+
+     function update_bundle_prices(){
+             var retail_price = 0;
+             var wholesale_price = 0;
+             var bundle_p_discount_amount = document.getElementById('bundle_p_discount_amount').value;
+             var bundle_p_discount_factor = document.getElementById('bundle_p_discount_factor').value;
+             var bundle_w_discount_amount = document.getElementById('bundle_w_discount_amount').value;
+             var bundle_w_discount_factor = document.getElementById('bundle_w_discount_factor').value;
+	     $("#bundle_products :selected").map(function(i, el) {
+             		var current_item =  $(el).text();
+                        var current_item_spilit = current_item.split(":");
+
+                        retail_price = ( parseFloat( retail_price ) + parseFloat( current_item_spilit[1] ) ).toFixed(2);
+                        wholesale_price = ( parseFloat( wholesale_price ) +  parseFloat( current_item_spilit[2] ) ).toFixed(2);
+	    		//return $(el).val();
+		}).get();
+
+                retail_price = apply_discount(retail_price, bundle_p_discount_amount, bundle_p_discount_factor);
+                wholesale_price = apply_discount(wholesale_price, bundle_w_discount_amount, bundle_w_discount_factor);
+
+                document.getElementById('product_price').value= retail_price;
+                document.getElementById('wholesale').value= wholesale_price;
+     }
+
+
+
+	$("#bundle_products, #bundle_p_discount_factor, #bundle_w_discount_factor").on('change', function () {
+		update_bundle_prices();
+	});
+
+
+	$("#bundle_p_discount_amount, #bundle_w_discount_amount").on("input",function(e){
+        	update_bundle_prices();
+	});
+
+
+
+
 
 
             $("#sub_cat").select2();

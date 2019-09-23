@@ -1,10 +1,8 @@
 <?php
-$lang['Global Search'] = "Global Search";
-$lang['You have an older due the value is'] = "You have an older due the value is";
 $lang['Select Products'] = "Select Products";
 $lang['Bundle Products'] = "Bundle Products";
-$lang['New'] = "New";
-$lang['Used'] = "Used";
+$lang['New'] = "Original";
+$lang['Used'] = "Copy";
 $lang['Product Status'] = "Product Status";
 $lang['Wholesale-Price'] = "Wholesale Price";
 $lang['Related Product'] = "Related Product";    
