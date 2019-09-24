@@ -7,7 +7,7 @@
             <div class="row border-bottom-grey-blue  border-bottom-lighten-4">
 
 
-                <div class="col-md-6 pb-1">
+                <div class="col-md-3 pb-1">
                     <input type="text" class="form-control text-center round mousetrap"
                            name="product_barcode"
                            placeholder="Enter Product name, scan barcode " id="search_bar"
@@ -18,6 +18,17 @@
                             class="form-control round teal">
                         <option value="0"><?php echo $this->lang->line('All') ?></option><?php
                         foreach ($cat as $row) {
+                            $cid = $row['id'];
+                            $title = $row['title'];
+                            echo "<option value='$cid'>$title</option>";
+                        }
+                        ?>
+                    </select></div>
+                <div class="col-md-3  grey text-xs-center"><select
+                            id="warehouses"
+                            class="form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
+                        foreach ($warehouse as $row) {
                             $cid = $row['id'];
                             $title = $row['title'];
                             echo "<option value='$cid'>$title</option>";
@@ -111,124 +122,7 @@
 </div>
 
 
-
-<div class="modal fade" id="basicPay" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content ">
-            <form method="post" id="basicpay_data" class="form-horizontal">
-                <!-- Modal Header -->
-                <div class="modal-header">
-
-                    <h4 class="modal-title" id="popup_main_title" style="margin:0px auto;"> </h4>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                        <span class="sr-only"><?php echo $this->lang->line('Close') ?></span>
-                    </button>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <p id="statusMsg"></p>
-
-                    <div class="text-center"><h1 id="b_total"></h1></div>
-
-                    <div id="product-inner">
-                                        <img class="round" id="popup_product_image" src=""  style="max-height: 100%;max-width: 100%">
-                    </div>
-
-                    <div class="row">
-
-                        <div class="col-6">
-                            <div class="card-title">
-                                <label for="cardNumber"><?php echo $this->lang->line('Product Name') ?></label>
-                                <div class="input-group">
-                                    <input
-                                            type="text"
-                                            class="form-control  text-bold-600 blue-grey"
-                                            name="popup_product_name" id="popup_product_name" disabled
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div class="card-title">
-                                <label for="cardNumber"><?php echo $this->lang->line('Price') ?></label>
-                                <div class="input-group">
-                                    <input
-                                            type="text"
-                                            class="form-control  text-bold-600 blue-grey"
-                                            name="popup_product_price" id="popup_product_price" disabled
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-
-                    <div class="row">
-
-                        <div class="col-6">
-                            <div class="card-title">
-                                <label for="cardNumber"><?php echo $this->lang->line('Product Wholesale Price') ?></label>
-                                <div class="input-group">
-                                    <input
-                                            type="text"
-                                            class="form-control  text-bold-600 blue-grey"
-                                            name="popup_product_wholesale" id="popup_product_wholesale" disabled
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div class="card-title">
-                                <label for="cardNumber"><?php echo $this->lang->line('Stock') ?></label>
-                                <div class="input-group">
-                                    <input
-                                            type="text"
-                                            class="form-control  text-bold-600 blue-grey"
-                                            name="popup_product_stock" id="popup_product_stock" disabled
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                             <a id="popup_product_url" href="">
-                            <button class="btn btn-success btn-lg btn-block mb-1"
-                                    type="submit"
-                                    id="pos_basic_pay" data-type="4"><i
-                                        class="fa fa-edit"></i> <?php echo $this->lang->line('Edit Product') ?>
-                            </button>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="row" style="display:none;">
-                        <div class="col-xs-12">
-                            <p class="payment-errors"></p>
-                        </div>
-                    </div>
-
-
-                    <!-- shipping -->
-
-
-                </div>
-                <!-- Modal Footer -->
-
-            </form>
-        </div>
-    </div>
-</div>
-
+   
 
 
 
@@ -247,12 +141,80 @@
 
 
 
+
+                $(document).on('click', ".view-object", function (e) {
+                    e.preventDefault();
+                    $('#view-object-id').val($(this).attr('data-object-id'));
+
+                    $('#view_model').modal({backdrop: 'static', keyboard: false});
+
+                    var actionurl = $('#view-action-url').val();
+                    $.ajax({
+                        url: baseurl + actionurl,
+                        data: 'id=' + $('#view-object-id').val() + '&' + crsf_token + '=' + crsf_hash,
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function (data) {
+                            $('#view_object').html(data);
+
+                        }
+
+                    });
+
+                });
+
+
+
 </script>
+
+
+
+
+
+        <div id="view_model" class="modal  fade">
+
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content ">
+
+                    <div class="modal-header">
+
+                        <h4 class="modal-title"><?php echo $this->lang->line('View') ?></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body" id="view_object">
+                        <p></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" id="view-object-id" value="">
+                        <input type="hidden" id="view-action-url" value="detailed_products/view_over">
+
+                        <button type="button" data-dismiss="modal"
+                                class="btn"><?php echo $this->lang->line('Close') ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+<div id="FileViewermyModal" class="FileViewer">
+
+        <!-- The Close Button -->
+        <span class="FileViewerClose" style=" font-size:20pt;">&times;</span>
+
+        <!-- Modal Content (The Image) -->
+        <img class="FileViewer-content" id="imageToView" class="img-responsive"
+            style="max-width: 800px; max-height800px">
+        <iframe _ngcontent-c9="" height="60%" width="60%" style="margin: auto" id="FileViewerIframe"
+            style='display:none'>
+        </iframe>
+        <!-- Modal Caption (Image Text) -->
+
+ </div>
+<!-- BEGIN VENDOR JS-->
+
 <!-- Vendor libraries -->
-
-
-
-
 
 
 
@@ -273,6 +235,44 @@
     ;</script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products.js') . APPVER; ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products_control.js') . APPVER; ?>"></script>
+
+
+
+
+<script type="text/javascript">
+
+    $("#view_model .modal-body").on('click','img',function(){
+
+	const modal = document.getElementById('FileViewermyModal') ;
+
+	    const modalImg = document.getElementById('imageToView');
+	    const modalIFrame = document.getElementById(
+	      'FileViewerIframe'
+	    );
+
+	    modal.style.display = 'block';
+	    modalIFrame.style.display = 'none';
+	    modalImg.style.display = 'block';
+	    modalImg.setAttribute('src', $(this).attr('src'));
+
+	    const span = document.getElementsByClassName(
+	      'FileViewerClose'
+	    )[0] ;
+
+	    span.onclick = function() {
+	      modal.style.display = 'none';
+	    };
+	    modal.onclick = function() {
+	      modal.style.display = 'none';
+	    };
+	    modalImg.onclick = function(event) {
+	      event.stopPropagation();
+	    };
+
+    });
+
+</script>
+
 
 </body>
 </html>

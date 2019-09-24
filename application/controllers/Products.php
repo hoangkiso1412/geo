@@ -170,6 +170,35 @@ class Products extends CI_Controller
 	$discounnt_array = json_encode($discounnt_array);
 
 
+        $search_meta = '';
+        $search_meta .= $product_name.' ';
+        $search_meta .= $product_code.' ';
+        // add category to search_meta
+        $cats_list = $this->categories_model->category_list();
+        $cat_name = '';
+        foreach ($cats_list as $row) {
+            $cid = $row['id'];
+            $title = $row['title'];
+
+             if($cid == $catid){
+             	$cat_name = $title;
+             }
+        }
+        $search_meta .= $cat_name.' ';
+        // add warehouse to search_meta
+        $warehouse_list = $this->categories_model->warehouse_list();
+        $warehouse_name = '';
+        foreach ($warehouse_list as $row) {
+            $cid = $row['id'];
+            $title = $row['title'];
+
+             if($cid == $warehouse){
+             	$warehouse_name = $title;
+             }
+        }
+        $search_meta .= $warehouse_name.' ';
+
+
            // if ( $this->products->check_product_name($product_name) > 0   ) {
            //     $this->session->set_flashdata('msg', '<div class="alert alert-danger">Another product uses the same name !.</div>');
            //     redirect(site_url('products/add'));
@@ -186,7 +215,7 @@ class Products extends CI_Controller
 	            } else {
 
 			        if ($catid) {
-			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array);
+			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
 			        }
 	            }
 
@@ -326,10 +355,41 @@ class Products extends CI_Controller
 	$discounnt_array = json_encode($discounnt_array);
 
 
+
+        $search_meta = '';
+        $search_meta .= $product_name.' ';
+        $search_meta .= $product_code.' ';
+        // add category to search_meta
+        $cats_list = $this->categories_model->category_list();
+        $cat_name = '';
+        foreach ($cats_list as $row) {
+            $cid = $row['id'];
+            $title = $row['title'];
+
+             if($cid == $catid){
+             	$cat_name = $title;
+             }
+        }
+        $search_meta .= $cat_name.' ';
+        // add warehouse to search_meta
+        $warehouse_list = $this->categories_model->warehouse_list();
+        $warehouse_name = '';
+        foreach ($warehouse_list as $row) {
+            $cid = $row['id'];
+            $title = $row['title'];
+
+             if($cid == $warehouse){
+             	$warehouse_name = $title;
+             }
+        }
+        $search_meta .= $warehouse_name.' ';
+
+
+
         if (!$sub_cat) $sub_cat = 0;    
         $brand = $this->input->post('brand');
         if ($pid) {
-            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array);
+            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
         }
     }
 

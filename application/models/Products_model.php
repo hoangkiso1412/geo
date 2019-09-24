@@ -160,7 +160,7 @@ class Products_model extends CI_Model
 
 
 
-    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '', $product_status, $bundle_products, $discounnt_array)
+    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '', $product_status, $bundle_products, $discounnt_array,$search_meta)
     {
         $ware_valid = $this->valid_warehouse($warehouse);
         if (!$sub_cat) {
@@ -205,7 +205,8 @@ class Products_model extends CI_Model
                         'wholesale' => $wholesale,
                         'product_status' => $product_status,
                         'bundle_products' => $bundle_products,
-                        'bundle_discount' => $discounnt_array
+                        'bundle_discount' => $discounnt_array,
+                        'search_meta' => $search_meta
                     );
                 } else {
                     $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
@@ -234,7 +235,8 @@ class Products_model extends CI_Model
                         'wholesale' => $wholesale,
                         'product_status' => $product_status,
                         'bundle_products' => $bundle_products,
-                        'bundle_discount' => $discounnt_array
+                        'bundle_discount' => $discounnt_array,
+                        'search_meta' => $search_meta
                     );
                 }
                 $this->db->trans_start();
@@ -318,7 +320,8 @@ class Products_model extends CI_Model
                     'wholesale' => $wholesale,
                     'product_status' => $product_status,
                     'bundle_products' => $bundle_products,
-                    'bundle_discount' => $discounnt_array
+                    'bundle_discount' => $discounnt_array,
+                    'search_meta' => $search_meta
                 );
             } else {
                 $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
@@ -346,7 +349,8 @@ class Products_model extends CI_Model
                     'wholesale' => $wholesale,
                     'product_status' => $product_status,
                     'bundle_products' => $bundle_products,
-                    'bundle_discount' => $discounnt_array
+                    'bundle_discount' => $discounnt_array,
+                    'search_meta' => $search_meta
                 );
             }
             $this->db->trans_start();
@@ -404,7 +408,7 @@ class Products_model extends CI_Model
         }
     }
 
-    public function edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat = '', $b_id = '', $related_product, $favorite ='', $wholesale, $product_status, $bundle_products, $discounnt_array)
+    public function edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat = '', $b_id = '', $related_product, $favorite ='', $wholesale, $product_status, $bundle_products, $discounnt_array, $search_meta)
     {
         $this->db->select('qty');
         $this->db->from('geopos_products');
@@ -437,7 +441,8 @@ class Products_model extends CI_Model
                     'wholesale' => $wholesale,
                     'product_status' => $product_status,
                     'bundle_products' => $bundle_products,
-                    'bundle_discount' => $discounnt_array
+                    'bundle_discount' => $discounnt_array,
+                    'search_meta' => $search_meta
                 );
 
                 $this->db->set($data);
@@ -483,7 +488,8 @@ class Products_model extends CI_Model
                 'wholesale' => $wholesale,
                 'product_status' => $product_status,
                 'bundle_products' => $bundle_products,
-                'bundle_discount' => $discounnt_array
+                'bundle_discount' => $discounnt_array,
+                'search_meta' => $search_meta
             );
             $this->db->set($data);
             $this->db->where('pid', $pid);

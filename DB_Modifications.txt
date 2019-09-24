@@ -1,0 +1,1 @@
+ALTER TABLE geopos_products ADD search_meta varchar(255) not null default '';
