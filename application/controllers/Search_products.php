@@ -1,4 +1,4 @@
-<?php
+<?php    
 /**
  * Geo POS -  Accounting,  Invoicing  and CRM Application
  * Copyright (c) Rajesh Dukiya. All Rights Reserved
