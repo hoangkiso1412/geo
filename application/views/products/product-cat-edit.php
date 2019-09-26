@@ -52,6 +52,37 @@
 
                     </div>
 
+
+
+                    <div class="form-group row">
+
+                        <label class="col-sm-2 col-form-label" for="product_cat_name"><?php echo $this->lang->line('Product Retail Price') ?> (%) </label>
+
+                        <div class="col-sm-6">
+                            <input type="text"
+                                   class="form-control margin-bottom  required" name="retail_discount"
+                                   value="<?php echo $productcat['retail_discount'] ?>">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+
+                        <label class="col-sm-2 col-form-label" for="product_cat_name"><?php echo $this->lang->line('Wholesale-Price') ?> (%)</label>
+
+                        <div class="col-sm-6">
+                            <input type="text"
+                                   class="form-control margin-bottom  required" name="wholesale_discount"
+                                   value="<?php echo $productcat['wholesale_discount'] ?>">
+                        </div>
+                    </div>
+
+
+
+
+
+
+
                     <?php if ($productcat['c_type']) { ?>
                         <input type="hidden" value="1" name="cat_type">
                         <input type="hidden" value="<?= $productcat['rel_id'] ?>" name="old_cat_type">

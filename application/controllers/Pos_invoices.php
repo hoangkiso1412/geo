@@ -334,14 +334,56 @@ class Pos_invoices extends CI_Controller
 
                     $amt = numberClean($product_qty[$key]);
                     if ($product_id[$key] > 0) {
-                        $this->db->set('qty', "qty-$amt", FALSE);
-                        $this->db->where('pid', $product_id[$key]);
-                        $this->db->update('geopos_products');
-                        if ((numberClean($product_alert[$key]) - $amt) < 0 AND $st_c == 0 AND $this->common->zero_stock()) {
-                            echo json_encode(array('status' => 'Error', 'message' => 'Product - <strong>' . $product_name1[$key] . "</strong> - Low quantity. Available stock is  " . $product_alert[$key]));
-                            $transok = false;
-                            $st_c = 1;
-                        }
+
+	                    	// if bundle
+			        $this->db->select('pid, bundle_products');
+			        $this->db->from('geopos_products');
+			        $this->db->where('pid', $product_id[$key]);
+			        $query_bundle = $this->db->get();
+			        $bundle_row = $query_bundle->row_array();
+
+                                $bundle_products_array = $bundle_row['bundle_products'];
+                                $bundle_products = json_decode($bundle_products_array);
+
+	                        if ($bundle_products != 'null' && $bundle_products) {
+
+                                        // loop bundle products
+		                                foreach ($bundle_products as $product_id_from_bundle) {
+                                                        if(is_numeric ($product_id_from_bundle)){
+							        $this->db->select('pid, qty, product_name');
+							        $this->db->from('geopos_products');
+							        $this->db->where('pid', $product_id_from_bundle);
+							        $query_bundle_product = $this->db->get();
+							        $bundle_product_row = $query_bundle_product->row_array();
+
+				                                $bundle_product_name = $bundle_product_row['product_name'];
+	                                                        $bundle_product_qty = $bundle_product_row['qty'];
+
+	                                                        // update product qty
+					                        $this->db->set('qty', "qty-$amt", FALSE);
+					                        $this->db->where('pid', $product_id_from_bundle);
+					                        $this->db->update('geopos_products');
+					                        if ((numberClean($bundle_product_qty) - $amt) < 0 ) {
+					                            echo json_encode(array('status' => 'Error', 'message' => 'Product - <strong>' . $bundle_product_qty . "</strong> - Low quantity. Available stock is  " .$bundle_product_qty ));
+					                            $transok = false;
+					                            $st_c = 1;
+					                        }
+                                                        }
+
+
+		                                }
+                                   	// end of bundle loop
+
+	                        }else{
+		                        $this->db->set('qty', "qty-$amt", FALSE);
+		                        $this->db->where('pid', $product_id[$key]);
+		                        $this->db->update('geopos_products');
+		                        if ((numberClean($product_alert[$key]) - $amt) < 0 AND $st_c == 0 AND $this->common->zero_stock()) {
+		                            echo json_encode(array('status' => 'Error', 'message' => 'Product - <strong>' . $product_name1[$key] . "</strong> - Low quantity. Available stock is  " . $product_alert[$key]));
+		                            $transok = false;
+		                            $st_c = 1;
+		                        }
+	                        }
                     }
                     $itc += $amt;
 

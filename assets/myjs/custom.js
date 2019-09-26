@@ -780,7 +780,7 @@ $(document).on('click', ".select_pos_item", function (e) {
                         items += ` <td>
                                             <ul class="list-group">
                                             <li class="list-group-item d-flex justify-content-between align-items-center"><span>
-                                            <img src="${location.origin}/userfiles/product/${e.image}" style="width: 60px;" class="mr-1">
+                                            <img src="${baseurl}/userfiles/product/${e.image}" style="width: 60px;" class="mr-1">
                                             <strong>${e.product_name}</strong>
                                             </span><span class="badge badge-primary badge-pill">$${e.product_price}</span></li>
                                             </ul>

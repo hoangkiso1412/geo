@@ -1,4 +1,4 @@
-<?php    
+<?php
 /**
  * Geo POS -  Accounting,  Invoicing  and CRM Application
  * Copyright (c) Rajesh Dukiya. All Rights Reserved
@@ -344,14 +344,18 @@ class Search_products extends CI_Controller
         $join = '';
         if ($this->aauth->get_user()->loc) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
+            /*
             if (BDATA) {
                 $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
             } else {
                 $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
             }
+            */
         } elseif (!BDATA) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
+            /*
             $qw .= '(geopos_warehouse.loc=0) AND ';
+            */
         }
         $bar = '';
         if (is_numeric($name)) {

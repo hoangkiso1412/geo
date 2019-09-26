@@ -137,8 +137,12 @@ class Productcategory Extends CI_Controller
         $cat_desc = $this->input->post('product_catdesc', true);
         $cat_type = $this->input->post('cat_type', true);
         $cat_rel = $this->input->post('cat_rel', true);
+
+        $cat_retail_discount = $this->input->post('retail_discount', true);
+        $wholesale_discount = $this->input->post('wholesale_discount', true);
+
         if ($cat_name) {
-            $this->products_cat->addnew($cat_name, $cat_desc, $cat_type, $cat_rel);
+            $this->products_cat->addnew($cat_name, $cat_desc, $cat_type, $cat_rel, $cat_retail_discount, $wholesale_discount);
         }
     }
 
@@ -267,8 +271,12 @@ class Productcategory Extends CI_Controller
         $cat_type = $this->input->post('cat_type', true);
         $cat_rel = $this->input->post('cat_rel', true);
         $old_cat_type = $this->input->post('old_cat_type', true);
+
+        $cat_retail_discount = $this->input->post('retail_discount', true);
+        $wholesale_discount = $this->input->post('wholesale_discount', true);
+
         if ($cid) {
-            $this->products_cat->edit($cid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type);
+            $this->products_cat->edit($cid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type, $cat_retail_discount, $wholesale_discount);
         }
     }
 

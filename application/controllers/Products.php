@@ -69,6 +69,11 @@ class Products extends CI_Controller
         $data['variables'] = $this->units->variables_list();
         $head['title'] = "Add Product";
         $head['usernm'] = $this->aauth->get_user()->username;
+
+            $query5 = "SELECT * FROM geopos_products";
+            $query5 = $this->db->query($query5);
+            $data['products_list'] = $query5->result_array();
+
         $this->load->view('fixed/header', $head);
         $this->load->view('products/product-add', $data);
         $this->load->view('fixed/footer');
@@ -197,6 +202,19 @@ class Products extends CI_Controller
              }
         }
         $search_meta .= $warehouse_name.' ';
+
+
+        // add custom fields to search_meta
+         $custom_fields = $this->input->post('custom');
+         if( is_array($custom_fields) ) {
+	             foreach ($custom_fields as $key => $value) {
+	                if ($value) {
+	                     $search_meta .= $value.' ';
+	                }
+
+	             }
+         }
+
 
 
            // if ( $this->products->check_product_name($product_name) > 0   ) {
@@ -371,6 +389,19 @@ class Products extends CI_Controller
              }
         }
         $search_meta .= $cat_name.' ';
+
+        // add  sub category to search_meta
+        $sub_cat_name = '';
+        foreach ($cats_list as $row) {
+            $cid = $row['id'];
+            $title = $row['title'];
+
+             if($cid == $sub_cat){
+             	$cat_name = $title;
+             }
+        }
+        $search_meta .= $sub_cat_name.' ';
+
         // add warehouse to search_meta
         $warehouse_list = $this->categories_model->warehouse_list();
         $warehouse_name = '';
@@ -386,7 +417,20 @@ class Products extends CI_Controller
 
 
 
-        if (!$sub_cat) $sub_cat = 0;    
+        // add custom fields to search_meta
+         $custom_fields = $this->input->post('custom');
+         if( is_array($custom_fields) ) {
+	             foreach ($custom_fields as $key => $value) {
+	                if ($value) {
+	                     $search_meta .= $value.' ';
+	                }
+
+	             }
+         }
+
+
+
+        if (!$sub_cat) $sub_cat = 0;
         $brand = $this->input->post('brand');
         if ($pid) {
             $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
@@ -446,6 +490,16 @@ class Products extends CI_Controller
         $result = $this->categories_model->category_list(1, $wid);
         echo json_encode($result);
     }
+
+
+    public function cat_details()
+    {
+        $wid = $this->input->get('id');
+        $result = $this->categories_model->get_cat_details(1, $wid);
+        echo json_encode($result);
+    }
+
+
 
     public function stock_transfer()
     {

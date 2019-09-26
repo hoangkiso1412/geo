@@ -86,7 +86,7 @@ class Detailed_products extends CI_Controller
         $data['acc_list'] = $this->invocies->accountslist();
 
             $head['s_mode'] = false;
-            $this->load->view('fixed/header', $head);
+            $this->load->view('fixed/header-pos', $head);
             $this->load->view('pos/detailed_product', $data);
 
  
@@ -163,6 +163,16 @@ class Detailed_products extends CI_Controller
              }
         }
         $data['cat_name'] = $cat_name;
+
+ 
+
+
+        	$sales_query = $this->db->query("SELECT geopos_invoices.tid,geopos_invoice_items.pid,geopos_invoice_items.qty,geopos_invoice_items.price,geopos_invoices.invoicedate FROM geopos_invoice_items LEFT JOIN geopos_invoices ON geopos_invoices.id=geopos_invoice_items.tid WHERE geopos_invoice_items.pid='".$pid."' AND geopos_invoices.status!='canceled' ");
+        	$sales_result = $sales_query->result_array();
+
+            $data['sales'] = $sales_result;
+
+
 
         $this->load->view('pos/detailed-product-view-over', $data);
 

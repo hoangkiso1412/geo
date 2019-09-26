@@ -30,6 +30,16 @@ ORDER BY id DESC");
         return $query->result_array();
     }
 
+
+
+    public function get_cat_details($type = 0, $rel = 0)
+    {
+        $query = $this->db->query("SELECT id,title, retail_discount, wholesale_discount FROM geopos_product_cat WHERE  id='$rel' ");
+        return $query->row();
+    }
+
+
+
     public function warehouse_list()
     {
         $where = '';
@@ -101,7 +111,7 @@ p.pid='$id' $qj ");
     }
 
 
-    public function addnew($cat_name, $cat_desc, $cat_type = 0, $cat_rel = 0)
+    public function addnew($cat_name, $cat_desc, $cat_type = 0, $cat_rel = 0, $cat_retail_discount = 0, $wholesale_discount = 0)
     {
         if (!$cat_type) $cat_type = 0;
         if (!$cat_rel) $cat_rel = 0;
@@ -109,7 +119,9 @@ p.pid='$id' $qj ");
             'title' => $cat_name,
             'extra' => $cat_desc,
             'c_type' => $cat_type,
-            'rel_id' => $cat_rel
+            'rel_id' => $cat_rel,
+            'retail_discount' => $cat_retail_discount,
+            'wholesale_discount' => $wholesale_discount
         );
 
         if ($cat_type) {
@@ -148,14 +160,16 @@ p.pid='$id' $qj ");
 
     }
 
-    public function edit($catid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type)
+    public function edit($catid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type, $cat_retail_discount = 0, $wholesale_discount = 0)
     {
          if (!$cat_rel) $cat_rel = 0;
         $data = array(
             'title' => $product_cat_name,
             'extra' => $product_cat_desc,
             'c_type' => $cat_type,
-            'rel_id' => $cat_rel
+            'rel_id' => $cat_rel,
+            'retail_discount' => $cat_retail_discount,
+            'wholesale_discount' => $wholesale_discount
         );
         $this->db->set($data);
         $this->db->where('id', $catid);

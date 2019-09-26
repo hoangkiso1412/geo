@@ -33,6 +33,39 @@
                                class="form-control margin-bottom required" name="product_catdesc">
                     </div>
                 </div>
+
+
+
+
+
+                    <div class="form-group row">
+
+                        <label class="col-sm-2 col-form-label" for="product_cat_name"><?php echo $this->lang->line('Product Retail Price') ?> (%) </label>
+
+                        <div class="col-sm-6">
+                            <input type="text"
+                                   class="form-control margin-bottom  required" name="retail_discount"
+                                   value="">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+
+                        <label class="col-sm-2 col-form-label" for="product_cat_name"><?php echo $this->lang->line('Wholesale-Price') ?> (%)</label>
+
+                        <div class="col-sm-6">
+                            <input type="text"
+                                   class="form-control margin-bottom  required" name="wholesale_discount"
+                                   value="">
+                        </div>
+                    </div>
+
+
+
+
+
+
                 <div class="form-group row">
 
                     <label class="col-sm-2 col-form-label"

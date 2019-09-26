@@ -28,11 +28,52 @@
                 <div class="form-group row">
 
 
+
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+
+	function return_product_id(prod, values) {
+	  for (var i = 0, len = values.length; i < len; i++) {
+	    if (values[i][1] == prod) {
+               var edit_location = baseurl + 'products/edit?id=' + values[i][0];
+	       //alert(edit_location);
+	      document.location.href = edit_location;
+	      break;
+	    }
+	  }
+	}
+
+	var Product_List = [
+	      <?php
+		foreach ($products_list as $row) {
+	                 $pid = $row['pid'];
+	                 $title = $row['product_name'];
+	          echo '["'.$pid.'", "'.$title.' : Edit "],';
+	      }
+	      ?>
+	];
+
+	$( "#product_name" ).autocomplete({
+	        source: Product_List.map(function(val){return val[1]}),
+	 select: function (event, ui) {
+	// return id of selected product
+	            	return_product_id(ui.item.value, Product_List);
+	     // end of product list loop
+	 }
+	});
+  } );
+  </script>
+
+
+
                     <div class="col-sm-6"><label class="col-form-label"
                                                  for="product_name"><?php echo $this->lang->line('Product Name') ?>
                             *</label>
                         <input type="text" placeholder="Product Name"
-                               class="form-control margin-bottom required" name="product_name">
+                               class="form-control margin-bottom required" name="product_name" id="product_name">
                     </div>
 
 
@@ -48,6 +89,7 @@
                                                  for="product_cat"><?php echo $this->lang->line('Product Category') ?>
                             *</label>
                         <select name="product_cat" id="product_cat" class="form-control">
+                            <option value="" disabled="disabled" selected> -- Select Category -- </option>
                             <?php
                             foreach ($cat as $row) {
                                 $cid = $row['id'];
@@ -58,16 +100,17 @@
                         </select>
                     </div>
 
-
-                    <div class="col-sm-6"><label class="col-form-label"
-                                                 for="sub_cat"><?php echo $this->lang->line('Sub') ?><?php echo $this->lang->line('Category') ?></label>
-                        <select id="sub_cat" name="sub_cat" class="form-control required select-box">
+			<div class="col-sm-6"><label class="col-form-label"
+                                                 for="sub_cat"><?php echo $this->lang->line('Sub') ?> <?php echo $this->lang->line('Category') ?></label>
+                        <select id="sub_cat" name="sub_cat" class="form-control required select-box" >
 
                         </select>
 
-
                     </div>
+
                 </div>
+
+
 
                 <div class="form-group row">
 
@@ -97,6 +140,17 @@
                             </div>
 
                         </div>
+
+                        <div class="input-group mt-1">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="auto_profit" id="auto_profit">
+                                <label class="custom-control-label" for="auto_profit"><?php echo $this->lang->line('Auto Profit') ? $this->lang->line('Auto Profit') : 'Auto Profit' ?></label>
+                            </div>
+
+                        </div>
+
+                        <input type="hidden" name="cat_retail_discount" id="cat_retail_discount" value="" />
+                        <input type="hidden" name="cat_wholesale_discount" id="cat_wholesale_discount" value="" />
 
                     </div>
                 </div>
@@ -133,7 +187,7 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                            <input type="text" name="fproduct_price" class="form-control"
+                            <input type="text" name="fproduct_price" id="fproduct_price" class="form-control"
                                    placeholder="0.00" aria-describedby="sizing-addon1"
                                    onkeypress="return isNumber(event)">
                         </div>
@@ -588,6 +642,7 @@
         $(this).closest('tr').remove();
     });
 
+
     $('#bundle').change(function() {
         if (this.checked) {
             $(".bundel_select").show();
@@ -600,9 +655,117 @@
             document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         }
     });
+
+
+
+    $('#auto_profit').change(function() {
+        if (this.checked) {
+            	document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+		apply_auto_profit_prices();
+
+        } else {
+            $(".bundel_select").hide();
+            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+        }
+    });
+
+
+
+    $('#fproduct_price').change(function() {
+        if (document.getElementById('auto_profit').checked) {
+            	apply_auto_profit_prices();
+        }
+    });
+
+
+     function apply_auto_profit_prices(){
+            var purchase_price = parseFloat( document.getElementById('fproduct_price').value );
+            var cat_retail_discount = parseFloat( document.getElementById('cat_retail_discount').value );
+            var cat_wholesale_discount = parseFloat( document.getElementById('cat_wholesale_discount').value );
+
+            if(purchase_price > 0 && cat_retail_discount > 0 && cat_wholesale_discount > 0){
+            		document.getElementById('product_price').value = purchase_price - ( purchase_price * cat_retail_discount  / 100 );
+            		document.getElementById('wholesale').value = purchase_price - ( purchase_price * cat_wholesale_discount / 100 );
+            }else{
+            		alert('Error : Please check the following \n  1) Set Purchase Order Price > 0 \n  2) Select Cateogry  \n  3) Make sure that you Set discount prices for this category in categories section');
+			document.getElementById('auto_profit').checked = false;
+            }
+     }
+
+
+
+    $("#sub_cat").select2();
+
+    $("#product_cat").on('change', function () {
+        var cat_id = $('#product_cat').val();
+
+        // get prices and set to hidden input
+        var purchase_price = parseFloat( document.getElementById('fproduct_price').value );
+        $.ajax({
+                url: baseurl + 'products/cat_details?id=' + cat_id,
+                dataType: 'json',
+                type: 'POST',
+                quietMillis: 50,
+                data: function (product) {
+                    return {
+                        product: product,
+                        '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                    };
+                },
+            	success: function(data){
+                	var retail_discount = data.retail_discount = isNumeric(data.retail_discount) ? parseFloat(data.retail_discount) : 0;
+                        var wholesale_discount = data.wholesale_discount = isNumeric(data.wholesale_discount) ? parseFloat(data.wholesale_discount) : 0;
+
+                	document.getElementById('cat_retail_discount').value =   retail_discount;
+                	document.getElementById('cat_wholesale_discount').value =   wholesale_discount;
+
+                        if (document.getElementById('auto_profit').checked && purchase_price > 0) {
+                		document.getElementById('product_price').value = purchase_price - ( purchase_price * retail_discount  / 100 );
+                        	document.getElementById('wholesale').value = purchase_price - ( purchase_price * wholesale_discount / 100 );
+                        }
+	   	 }
+	});
+
+
+        $("#sub_cat").select2({
+
+            ajax: {
+                url: baseurl + 'products/sub_cat?id=' + cat_id,
+                dataType: 'json',
+                type: 'POST',
+                quietMillis: 50,
+                data: function (product) {
+                    return {
+                        product: product,
+                        '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.title,
+                                id: item.id
+                            }
+                        })
+                    };
+                },
+            }
+        });
+    });
+ 
+
+
+
+
+
+
     $("#bundle_products").select2();
 
     $("#related_product").select2();
+
+
     $("#wfrom").on('change', function () {
         var tips = $('#wfrom').val();
         $("#related_product, #bundle_products").select2({
@@ -696,36 +859,10 @@
 
 
 
-    $("#sub_cat").select2();
-    $("#product_cat").on('change', function () {
-        $("#sub_cat").val('').trigger('change');
-        var tips = $('#product_cat').val();
-        $("#sub_cat").select2({
 
-            ajax: {
-                url: baseurl + 'products/sub_cat?id=' + tips,
-                dataType: 'json',
-                type: 'POST',
-                quietMillis: 50,
-                data: function (product) {
-                    return {
-                        product: product,
-                        '<?=$this->security->get_csrf_token_name()?>': crsf_hash
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.title,
-                                id: item.id
-                            }
-                        })
-                    };
-                },
-            }
-        });
-    });
+
+
+
 </script>
 <script>
 <?php foreach ($custom_fields as $row) { ?>

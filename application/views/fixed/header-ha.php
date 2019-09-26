@@ -1163,7 +1163,47 @@
                 </li>
             <?php }
             ?>
-            <li class="nav-item"><a class="nav-link" href="<?php echo base_url(); ?>detailed_products/search"><i class="icon-target"></i><span><?php echo $this->lang->line('Global Search') ?></span></a>
+
+
+
+                <li class="dropdown nav-item" data-menu="dropdown"><a class="dropdown-toggle nav-link" href="#"
+                                                                      data-toggle="dropdown"><i
+                                class="icon-grid"></i><span><?php echo $this->lang->line('Products') ?></span></a>
+                    <ul class="dropdown-menu">
+                        <li data-menu=""><a
+                                    class="dropdown-item" href="<?php echo base_url(); ?>detailed_products/search" data-toggle="dropdown">
+                                    <?php echo $this->lang->line('Products') ?></a>
+                        </li>
+
+
+                    </ul>
+                </li>
+
+
+
+            <?php if ($this->aauth->get_user()->roleid < 5) {
+                ?>
+                <li class="dropdown nav-item" data-menu="dropdown"><a class="dropdown-toggle nav-link" href="#"
+                                                                      data-toggle="dropdown"><i
+                                class="icon-grid"></i><span><?php echo $this->lang->line('Products') . ' ' . $this->lang->line('Variations'); ?></span></a>
+                    <ul class="dropdown-menu">
+	                        <li><a class="dropdown-item"
+	                               href="<?php echo base_url(); ?>units/variations"><i
+	                                        class="ft-chevron-right"></i> <?php echo $this->lang->line('Products') . ' ' . $this->lang->line('Variations') ?>
+	                            </a></li>
+	                        <li><a class="dropdown-item"
+	                               href="<?php echo base_url(); ?>units/variables"><i
+	                                        class="ft-chevron-right"></i> <?php echo $this->lang->line('Variations') . ' ' . $this->lang->line('Variables') ?>
+	                            </a></li>
+
+
+                    </ul>
+                </li>
+            <?php }?>
+
+
+
+
         </ul>
     </div>
     <!-- /horizontal menu content-->

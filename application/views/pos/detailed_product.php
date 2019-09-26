@@ -197,22 +197,20 @@
         </div>
 
 
-
+<!--
 <div id="FileViewermyModal" class="FileViewer">
 
-        <!-- The Close Button -->
         <span class="FileViewerClose" style=" font-size:20pt;">&times;</span>
 
-        <!-- Modal Content (The Image) -->
         <img class="FileViewer-content" id="imageToView" class="img-responsive"
             style="max-width: 800px; max-height800px">
         <iframe _ngcontent-c9="" height="60%" width="60%" style="margin: auto" id="FileViewerIframe"
             style='display:none'>
         </iframe>
-        <!-- Modal Caption (Image Text) -->
+
 
  </div>
-<!-- BEGIN VENDOR JS-->
+ -->
 
 <!-- Vendor libraries -->
 
@@ -236,8 +234,7 @@
 <script src="<?php echo assets_url('assets/myjs/detailed_products.js') . APPVER; ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products_control.js') . APPVER; ?>"></script>
 
-
-
+<!--
 
 <script type="text/javascript">
 
@@ -273,6 +270,7 @@
 
 </script>
 
+-->
 
 </body>
 </html>
