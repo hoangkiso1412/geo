@@ -188,6 +188,7 @@ class Search_products extends CI_Controller
 
         if ($name) {
             $query = $this->db->query("SELECT id,name,phone,discount_c,wholesale FROM geopos_customers WHERE $whr (UPPER(name)  LIKE '%" . strtoupper($name) . "%' OR UPPER(phone)  LIKE '" . strtoupper($name) . "%') LIMIT 6");
+            //$query = $this->db->query("SELECT geopos_customers.id , geopos_customers.name , geopos_customers.phone,geopos_customers.discount_c,geopos_customers.wholesale , SUM(geopos_invoices.subtotal)  , SUM(geopos_invoices.pamnt) ,  SUM(geopos_invoices.subtotal)  - SUM(geopos_invoices.pamnt)  AS 'DIFF'  FROM geopos_customers INNER JOIN geopos_invoices ON geopos_customers.id = geopos_invoices.csd WHERE $whr (UPPER(name)  LIKE '%" . strtoupper($name) . "%' OR UPPER(phone)  LIKE '" . strtoupper($name) . "%') LIMIT 6");
             $result = $query->result_array();
             echo '<ol>';
             $i = 1;

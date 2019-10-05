@@ -1164,20 +1164,12 @@
             <?php }
             ?>
 
-
-
-                <li class="dropdown nav-item" data-menu="dropdown"><a class="dropdown-toggle nav-link" href="#"
-                                                                      data-toggle="dropdown"><i
-                                class="icon-grid"></i><span><?php echo $this->lang->line('Products') ?></span></a>
-                    <ul class="dropdown-menu">
-                        <li data-menu=""><a
-                                    class="dropdown-item" href="<?php echo base_url(); ?>detailed_products/search" data-toggle="dropdown">
-                                    <?php echo $this->lang->line('Products') ?></a>
-                        </li>
-
-
-                    </ul>
-                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo base_url(); ?>detailed_products/search">
+                        <i class="fa fa-search"></i>
+                        <span><?php echo $this->lang->line('Global Search') ?></span>
+                    </a>
+            </li>
 
 
 

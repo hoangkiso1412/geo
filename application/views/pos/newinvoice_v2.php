@@ -920,12 +920,19 @@
   
 
         var paycheckboxs =  document.querySelectorAll("[date-role='paycheckbok']");
+        //  give a fake value for the unchecked pay select 
+        paycheckboxs.forEach(function(checkbox){
+            if (document.getElementById(checkbox.id).checked != true ) {
+                document.getElementById(checkbox.id).value = "faked-unchecked-value";
+            }
+        });
+
+        // get the value of checked products and but it in #p_amount
         var amount = 0 ;
         paycheckboxs.forEach(function(checkbox){
             if (document.getElementById(checkbox.id).checked == true ) {
                 var splits      = checkbox.id.split("-");
                 var general_id  = splits[1];
-
                 var current_total_value = document.getElementById("result-"+general_id).innerHTML ;
                 current_total_value = current_total_value.replace(',','');
                 current_total_value = current_total_value.replace(',','');
