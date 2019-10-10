@@ -322,8 +322,8 @@ class Search_products extends CI_Controller
 
 
 
-
-    public function detailed_product_search()
+    //  for the global search page
+    public function detailed_product_search() 
     {
         $out = '';
         $name = $this->input->post('name', true);
@@ -345,18 +345,8 @@ class Search_products extends CI_Controller
         $join = '';
         if ($this->aauth->get_user()->loc) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            /*
-            if (BDATA) {
-                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
-            } else {
-                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
-            }
-            */
         } elseif (!BDATA) {
             $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            /*
-            $qw .= '(geopos_warehouse.loc=0) AND ';
-            */
         }
         $bar = '';
         if (is_numeric($name)) {
@@ -411,7 +401,7 @@ class Search_products extends CI_Controller
 
             // $result2 = $query3->result_array();
 
-            $out .= '    <div class="col-3 border "><div class="rounded text-center mt-3 pb-3">
+            $out .= '    <div class="col-2 border "><div class="rounded text-center mt-3 pb-3">
                                 ' . ($row['favorite'] ? '<i class="fa fa-heart favorite-products"></i>' : '') .  (($row['bundle_products']== 'null') ?  '' :'<i class="fa fa-object-group bundle-products"></i>' ) .'
                                  <a   id="posp' . $i . '"  class="select_pos_item btn btn-outline-light-blue round   view-object" data-bundle="' . ($row['bundle_products']=='null' ? false : true) .'"   data-name="' . $row['product_name'] . '" data-object-id="' . $row['pid'] . '"  data-image="' . base_url('userfiles/product/' . $row['image']) . '"  data-url="' . base_url('products/edit?id=' . $row['pid']) . '"  data-toggle="modal" data-target="#" data-price="' . amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) . '" data-wholesale="' . amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc) . '"  data-tax="' . amountFormat_general($row['taxrate']) . '"  data-discount="' . amountFormat_general($row['disrate']) . '"   data-pcode="' . $row['product_code'] . '"   data-pid="' . $row['pid'] . '"  data-stock="' . amountFormat_general($row['qty']) . '" data-unit="' . $row['unit'] . '" >
                                         <img class="round"

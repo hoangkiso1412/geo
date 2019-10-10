@@ -920,15 +920,9 @@
   
 
         var paycheckboxs =  document.querySelectorAll("[date-role='paycheckbok']");
-        //  give a fake value for the unchecked pay select 
-        paycheckboxs.forEach(function(checkbox){
-            if (document.getElementById(checkbox.id).checked != true ) {
-                document.getElementById(checkbox.id).value = "faked-unchecked-value";
-            }
-        });
 
-        // get the value of checked products and but it in #p_amount
         var amount = 0 ;
+        var pay_ids_array = [];
         paycheckboxs.forEach(function(checkbox){
             if (document.getElementById(checkbox.id).checked == true ) {
                 var splits      = checkbox.id.split("-");
@@ -937,9 +931,12 @@
                 current_total_value = current_total_value.replace(',','');
                 current_total_value = current_total_value.replace(',','');
                 amount += parseFloat(current_total_value);
+                pay_ids_array.push(general_id);
             }
         });
+        document.getElementById('pay_ids').value= pay_ids_array;
         $('#p_amount').val(amount);
+        update_pay_pos();
     });
 
     function update_pay_pos() {

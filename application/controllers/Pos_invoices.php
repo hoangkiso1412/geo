@@ -293,9 +293,7 @@ class Pos_invoices extends CI_Controller
                 $product_hsn = $this->input->post('hsn', true);
                 $product_alert = $this->input->post('alert');
 
-               $pay_ids = explode(',', $pay_ids);
-               //echo json_encode(array('status' => 'Error', 'message' => $pay_ids));
-               //exit();
+                $pay_ids = explode(',', $pay_ids);
 
                 foreach ($pid as $key => $value) {
 
@@ -303,7 +301,7 @@ class Pos_invoices extends CI_Controller
                     $total_discount += numberClean(@$ptotal_disc[$key]);
                     $total_tax += numberClean($ptotal_tax[$key]);
 
-	               if( in_array($product_id[$key], $pay_ids) ) {
+	               if( in_array($key, $pay_ids) ) {
 	               		$paid_result = 1;
 	               }else{
 	               		$paid_result = 0;
@@ -335,7 +333,7 @@ class Pos_invoices extends CI_Controller
                     $amt = numberClean($product_qty[$key]);
                     if ($product_id[$key] > 0) {
 
-	                    	// if bundle
+	                // if bundle
 			        $this->db->select('pid, bundle_products');
 			        $this->db->from('geopos_products');
 			        $this->db->where('pid', $product_id[$key]);
@@ -359,7 +357,7 @@ class Pos_invoices extends CI_Controller
 				                                $bundle_product_name = $bundle_product_row['product_name'];
 	                                                        $bundle_product_qty = $bundle_product_row['qty'];
 
-	                                                        // update product qty
+	                                        // update product qty
 					                        $this->db->set('qty', "qty-$amt", FALSE);
 					                        $this->db->where('pid', $product_id_from_bundle);
 					                        $this->db->update('geopos_products');
@@ -640,8 +638,7 @@ class Pos_invoices extends CI_Controller
             } else {
                 $this->db->trans_rollback();
             }
-        } else {
-//draft
+        } else {//draft
             $p_amount = 0;
             $pmethod = $this->input->post('p_method', true);
 

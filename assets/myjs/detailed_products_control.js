@@ -149,10 +149,11 @@ $(document).ready(function () {
         var whr = $('#warehouses option:selected').val();
         var cat = $('#categories option:selected').val();
         var status = $('#product_status option:selected').val();
+        var name = $('#search_bar').val()
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/detailed_product_search',
-            data: 'name=' + $(this).val() + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
+            data: 'name=' + name + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },

@@ -13,7 +13,7 @@
                            placeholder="Enter Product name, scan barcode " id="search_bar"
                            autocomplete="off" autofocus="autofocus">
                 </div>
-                <div class="col-md-3  grey text-xs-center"><select
+                <div class="col-md-2  grey text-xs-center"><select
                             id="categories"
                             class="form-control round teal">
                         <option value="0"><?php echo $this->lang->line('All') ?></option><?php
@@ -23,8 +23,34 @@
                             echo "<option value='$cid'>$title</option>";
                         }
                         ?>
-                    </select></div>
-                <div class="col-md-3  grey text-xs-center"><select
+                    </select>
+                </div>
+                <div class="col-md-2  grey text-xs-center"><select
+                            id="categories"
+                            class="form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
+                        foreach ($cat as $row) {
+                            $cid = $row['id'];
+                            $title = $row['title'];
+                            echo "<option value='$cid'>$title</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-2  grey text-xs-center"><select
+                            id="categories"
+                            class="form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
+                        foreach ($cat as $row) {
+                            $cid = $row['id'];
+                            $title = $row['title'];
+                            echo "<option value='$cid'>$title</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-md-2  grey text-xs-center"><select
                             id="warehouses"
                             class="form-control round teal">
                         <option value="0"><?php echo $this->lang->line('All') ?></option><?php
@@ -35,7 +61,7 @@
                         }
                         ?>
                     </select></div>
-                <div class="col-md-3  grey text-xs-center"><select
+                <div class="col-md-1  grey text-xs-center"><select
                             id="product_status"
                             class="form-control round teal">
                         <option value="0"><?php echo $this->lang->line('All') ?></option>
@@ -139,9 +165,6 @@
         }
     });
 
-
-
-
                 $(document).on('click', ".view-object", function (e) {
                     e.preventDefault();
                     $('#view-object-id').val($(this).attr('data-object-id'));
@@ -160,16 +183,8 @@
                         }
 
                     });
-
                 });
-
-
-
 </script>
-
-
-
-
 
         <div id="view_model" class="modal  fade">
 
@@ -197,36 +212,6 @@
         </div>
 
 
-<!--
-<div id="FileViewermyModal" class="FileViewer">
-
-        <span class="FileViewerClose" style=" font-size:20pt;">&times;</span>
-
-        <img class="FileViewer-content" id="imageToView" class="img-responsive"
-            style="max-width: 800px; max-height800px">
-        <iframe _ngcontent-c9="" height="60%" width="60%" style="margin: auto" id="FileViewerIframe"
-            style='display:none'>
-        </iframe>
-
-
- </div>
- -->
-
-<!-- Vendor libraries -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <script src="<?php echo assets_url(); ?>assets/myjs/jquery-ui.js"></script>
 <script type="text/javascript">var dtformat = $('#hdata').attr('data-df');
     var currency = $('#hdata').attr('data-curr');
@@ -234,45 +219,6 @@
 <script src="<?php echo assets_url('assets/myjs/detailed_products.js') . APPVER; ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products_control.js') . APPVER; ?>"></script>
 
-<!--
-
-<script type="text/javascript">
-
-    $("#view_model .modal-body").on('click','img',function(){
-
-	const modal = document.getElementById('FileViewermyModal') ;
-
-	    const modalImg = document.getElementById('imageToView');
-	    const modalIFrame = document.getElementById(
-	      'FileViewerIframe'
-	    );
-
-	    modal.style.display = 'block';
-	    modalIFrame.style.display = 'none';
-	    modalImg.style.display = 'block';
-	    modalImg.setAttribute('src', $(this).attr('src'));
-
-	    const span = document.getElementsByClassName(
-	      'FileViewerClose'
-	    )[0] ;
-
-	    span.onclick = function() {
-	      modal.style.display = 'none';
-	    };
-	    modal.onclick = function() {
-	      modal.style.display = 'none';
-	    };
-	    modalImg.onclick = function(event) {
-	      event.stopPropagation();
-	    };
-
-    });
-
-</script>
-
--->
 
 </body>
 </html>
-
-

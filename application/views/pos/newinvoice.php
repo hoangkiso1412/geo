@@ -401,6 +401,7 @@
     <input type="hidden" value="<?= $this->common->disc_status()['ship_tax']; ?>" name="ship_taxtype"
            id="ship_taxtype">
     <input type="hidden" value="0" name="ship_tax" id="ship_tax">
+    <input type="hidden" value="0" name="pay_ids" id="pay_ids">
 </form>
 <audio id="beep" src="<?= assets_url() ?>assets/js/beep.wav" autoplay="false"></audio>
 
@@ -933,21 +934,34 @@
             echo ' roundoff=Math.floor(roundoff);';
         }
         ?>
+        function pureNumber(num) {
+            num = num.replace(',','');
+            num = num.replace(',','');
+            num = parseFloat(num);
+            return num
+        }
         $('#b_total').html(' <?= $this->config->item('currency'); ?> ' + accounting.formatNumber(roundoff));
+        
+
+
+
         var paycheckboxs =  document.querySelectorAll("[date-role='paycheckbok']");
         var amount = 0 ;
+        var pay_ids_array = [];
+
         paycheckboxs.forEach(function(checkbox){
             if (document.getElementById(checkbox.id).checked == true ) {
                 var splits      = checkbox.id.split("-"); 
                 var general_id  = splits[1];
                 var current_total_value = document.getElementById("result-"+general_id).innerHTML ;
-                current_total_value = current_total_value.replace(',','');
-                current_total_value = current_total_value.replace(',','');
+                current_total_value = pureNumber(current_total_value);
                 amount += parseFloat(current_total_value);
+                pay_ids_array.push(general_id);
             }
         });
+        document.getElementById('pay_ids').value= pay_ids_array;
         $('#p_amount').val(amount);
-
+        update_pay_pos();
     });
 
     function update_pay_pos() {
