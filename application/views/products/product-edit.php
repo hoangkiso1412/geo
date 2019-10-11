@@ -126,7 +126,7 @@
 
                         <div class="col-sm-6">
                             <input type="text" placeholder="Product Code"
-                                   class="form-control" name="product_code"
+                                   class="form-control required" name="product_code"
                                    value="<?php echo $product['product_code'] ?>">
                         </div>
                         <label class="col-sm-1 col-form-label"><?php echo $this->lang->line('Wholesale-Price') ?>*</label>
@@ -159,7 +159,6 @@
 
                         <div class="col-sm-3">
                             <select name="product_status" id="product_status" class="form-control required">
-                                <option <?php echo ($product['product_status'] == 0 ? 'selected' : '') ?> value='0'>Select</option>
                                 <option <?php echo ($product['product_status'] == 1 ? 'selected' : '') ?> value='1'><?php echo $this->lang->line('New') ?></option>
                                 <option <?php echo ($product['product_status'] == 2 ? 'selected' : '') ?> value='2'><?php echo $this->lang->line('Used') ?></option>
                             </select>

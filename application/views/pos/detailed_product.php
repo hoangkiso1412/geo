@@ -186,21 +186,13 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content ">
 
-                    <div class="modal-header">
-
-                        <h4 class="modal-title"><?php echo $this->lang->line('View') ?></h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                    </div>
                     <div class="modal-body" id="view_object">
-                        <p></p>
+                        
                     </div>
                     <div class="modal-footer">
                         <input type="hidden" id="view-object-id" value="">
                         <input type="hidden" id="view-action-url" value="detailed_products/view_over">
-
-                        <button type="button" data-dismiss="modal"
-                                class="btn"><?php echo $this->lang->line('Close') ?></button>
+                        <button type="button" data-dismiss="modal" class="btn"><?php echo $this->lang->line('Close') ?></button>
                     </div>
                 </div>
             </div>
