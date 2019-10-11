@@ -49,7 +49,6 @@ function isNumber(evt) {
 
 $(document).ready(function () {
 
-
     $("#customer-box").keyup(function () {
         $.ajax({
             type: "GET",
@@ -84,14 +83,18 @@ $(document).ready(function () {
         });
     });
 
-    $('#warehouses').change(function () {
-        var whr = $('#warehouses option:selected').val();
-        var cat = $('#categories option:selected').val();
-        var status = $('#product_status option:selected').val();
+    function do_search() {
+        var name = $('#search_bar').val(); //  search bar
+        var cat = $('#categories option:selected').val(); // category
+        var subcat = $('#sub-categories option:selected').val(); // sub_id 
+        var whr = $('#warehouses option:selected').val(); //  warehouse
+        var loc = $('#locations option:selected').val();  // location
+        var status = $('#product_status option:selected').val(); //  status
+        
         $.ajax({
             type: "POST",
             url: baseurl + 'search_products/detailed_product_search',
-            data: 'wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
+            data: 'name=' + name + '&cid=' + cat + '&subcat=' + subcat + '&wid=' + whr + '&loc=' + loc +'&status=' + status + '&' + crsf_token + '=' + crsf_hash,
             beforeSend: function () {
                 $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
             },
@@ -101,69 +104,28 @@ $(document).ready(function () {
 
             }
         });
-    });
-
-
-    $('#categories').change(function () {
-        var whr = $('#warehouses option:selected').val();
-        var cat = $('#categories option:selected').val();
-        var status = $('#product_status option:selected').val();
-        var name = $('#search_bar').val()
-        $.ajax({
-            type: "POST",
-            url: baseurl + 'search_products/detailed_product_search',
-            data: 'name=' + name + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
-            beforeSend: function () {
-                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
-            },
-            success: function (data) {
-
-                $("#pos_item").html(data);
-
-            }
-        });
-    });
-
-    $('#product_status').change(function () {
-        var whr = $('#warehouses option:selected').val();
-        var cat = $('#categories option:selected').val();
-        var status = $('#product_status option:selected').val();
-        var name = $('#search_bar').val()
-        $.ajax({
-            type: "POST",
-            url: baseurl + 'search_products/detailed_product_search',
-            data: 'name=' + name + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
-            beforeSend: function () {
-                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
-            },
-            success: function (data) {
-
-                $("#pos_item").html(data);
-
-            }
-        });
-    });
-
+    }
 
     $('#search_bar').keyup(function () {
-        var whr = $('#warehouses option:selected').val();
-        var cat = $('#categories option:selected').val();
-        var status = $('#product_status option:selected').val();
-        var name = $('#search_bar').val()
-        $.ajax({
-            type: "POST",
-            url: baseurl + 'search_products/detailed_product_search',
-            data: 'name=' + name + '&wid=' + whr + '&cid=' + cat + '&status=' + status + '&' + crsf_token + '=' + crsf_hash,
-            beforeSend: function () {
-                $("#customer-box").css("background", "#FFF url(" + baseurl + "assets/custom/load-ring.gif) no-repeat 165px");
-            },
-            success: function (data) {
-
-                $("#pos_item").html(data);
-
-            }
-        });
+        do_search();
     });
+    $('#categories').change(function () {
+        do_search();    
+    });
+    $('#sub-categories').change(function () {
+        do_search();    
+    });
+    $('#warehouses').change(function () {
+        do_search();
+    });
+    $('#locations').change(function () {
+        do_search();
+    });
+    $('#product_status').change(function () {
+        do_search();
+    });
+
+
 
     $('#v2_search_bar').keyup(function () {
         var whr = $('#v2_warehouses option:selected').val();

@@ -1,4 +1,9 @@
-<?php 
+<?php
+$lang['Categories'] = "Categories";
+$lang['Sub-Categories'] = "Sub-Categories";
+$lang['warehouses'] = "warehouses";
+$lang['Locations'] = "Locations";
+$lang['Status'] = "Status";
 $lang['Global Search'] = "Global Search";
 $lang['You have an older due the value is'] = "You have an older due the value is";
 $lang['Select Products'] = "Select Products";

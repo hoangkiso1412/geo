@@ -58,14 +58,13 @@ class Detailed_products extends CI_Controller
         $this->li_a = 'sales';
     }
 
-    //create invoice
-    public function search()
-    {
+    public function search(){
         if (!$this->registerlog->check($this->aauth->get_user()->id)) {
             redirect('register/create');
         }
         $this->load->model('customers_model', 'customers');
-        $this->load->model('categories_model');
+        $this->load->model('categories_model'); 
+        $this->load->model('Detailed_products_model', 'globalsearch');
         $this->load->model('plugins_model', 'plugins');
         $this->load->library("Common");
         $data['taxlist'] = $this->common->taxlist($this->config->item('tax'));
@@ -75,30 +74,24 @@ class Detailed_products extends CI_Controller
         $data['customergrouplist'] = $this->customers->group_list();
         $data['lastinvoice'] = $this->invocies->lastinvoice();
         $data['draft_list'] = $this->invocies->drafts();
-        $data['warehouse'] = $this->invocies->warehouses();
         $data['terms'] = $this->invocies->billingterms();
         $data['currency'] = $this->invocies->currencies();
         $head['title'] = "New Invoice";
         $head['usernm'] = $this->aauth->get_user()->username;
         $data['cat'] = $this->categories_model->category_list();
-        $data['warehouse'] = $this->categories_model->warehouse_list();
+        $data['sub_cat'] = $this->categories_model->all_sub_cat_list();
+        $data['warehouse'] = $this->globalsearch->warehouse_list();
+        $data['locations'] = $this->globalsearch->locations_list();
         $data['taxdetails'] = $this->common->taxdetail();
         $data['acc_list'] = $this->invocies->accountslist();
+        $head['s_mode'] = false;
+        $this->load->view('fixed/header-pos', $head);
+        $this->load->view('pos/detailed_product', $data);
 
-            $head['s_mode'] = false;
-            $this->load->view('fixed/header-pos', $head);
-            $this->load->view('pos/detailed_product', $data);
-
- 
+        
     }
 
-
-
-
-
-
-    public function view_over()
-    {
+    public function view_over(){
         $pid = $this->input->post('id');
         $this->db->select('geopos_products.*,geopos_warehouse.title');
         $this->db->from('geopos_products');
@@ -163,22 +156,9 @@ class Detailed_products extends CI_Controller
              }
         }
         $data['cat_name'] = $cat_name;
-
- 
-
-
-        	$sales_query = $this->db->query("SELECT geopos_invoices.tid,geopos_invoice_items.pid,geopos_invoice_items.qty,geopos_invoice_items.price,geopos_invoices.invoicedate FROM geopos_invoice_items LEFT JOIN geopos_invoices ON geopos_invoices.id=geopos_invoice_items.tid WHERE geopos_invoice_items.pid='".$pid."' AND geopos_invoices.status!='canceled' ");
-        	$sales_result = $sales_query->result_array();
-
-            $data['sales'] = $sales_result;
-
-
-
+        $sales_query = $this->db->query("SELECT geopos_invoices.tid,geopos_invoice_items.pid,geopos_invoice_items.qty,geopos_invoice_items.price,geopos_invoices.invoicedate FROM geopos_invoice_items LEFT JOIN geopos_invoices ON geopos_invoices.id=geopos_invoice_items.tid WHERE geopos_invoice_items.pid='".$pid."' AND geopos_invoices.status!='canceled' ");
+        $sales_result = $sales_query->result_array();
+        $data['sales'] = $sales_result;
         $this->load->view('pos/detailed-product-view-over', $data);
-
-
     }
-
-
-
 }

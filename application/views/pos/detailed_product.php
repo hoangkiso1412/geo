@@ -1,12 +1,7 @@
 <form method="post" id="data_form">
     <div class="row ">
-
         <div class="col-md-12 card  order-sm-first  order-md-2 border-amber bg-lighten-1 bg-faded round pt-1">
-
-
             <div class="row border-bottom-grey-blue  border-bottom-lighten-4">
-
-
                 <div class="col-md-3 pb-1">
                     <input type="text" class="form-control text-center round mousetrap"
                            name="product_barcode"
@@ -16,7 +11,7 @@
                 <div class="col-md-2  grey text-xs-center"><select
                             id="categories"
                             class="form-control round teal">
-                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
+                        <option value="0"><?php echo $this->lang->line('Categories') ?></option><?php
                         foreach ($cat as $row) {
                             $cid = $row['id'];
                             $title = $row['title'];
@@ -26,45 +21,45 @@
                     </select>
                 </div>
                 <div class="col-md-2  grey text-xs-center"><select
-                            id="categories"
+                            id="sub-categories"
                             class="form-control round teal">
-                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
-                        foreach ($cat as $row) {
+                        <option value="0"><?php echo $this->lang->line('Sub-Categories') ?></option><?php
+                        foreach ($sub_cat as $row) {
                             $cid = $row['id'];
                             $title = $row['title'];
-                            echo "<option value='$cid'>$title</option>";
+                            $parent =  $row['rel_id'];
+                            echo "<option value='$cid' parent='$parent'>$title</option>";
                         }
                         ?>
                     </select>
                 </div>
-                <div class="col-md-2  grey text-xs-center"><select
-                            id="categories"
-                            class="form-control round teal">
-                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
-                        foreach ($cat as $row) {
+                <div class="col-md-2  grey text-xs-center">
+                    <select id="locations" class="form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('Locations') ?></option><?php
+                        foreach ($locations as $row) {
                             $cid = $row['id'];
-                            $title = $row['title'];
+                            $title = $row['cname'];
                             echo "<option value='$cid'>$title</option>";
                         }
                         ?>
                     </select>
                 </div>
 
-                <div class="col-md-2  grey text-xs-center"><select
-                            id="warehouses"
-                            class="form-control round teal">
-                        <option value="0"><?php echo $this->lang->line('All') ?></option><?php
-                        foreach ($warehouse as $row) {
-                            $cid = $row['id'];
-                            $title = $row['title'];
-                            echo "<option value='$cid'>$title</option>";
-                        }
+                <div class="col-md-2  grey text-xs-center">
+                    <select id="warehouses" class="form-control round teal">
+                        <option value="0"><?php echo $this->lang->line('warehouses') ?></option>
+                        <?php 
+                            foreach ($warehouse as $row) {
+                                $cid = $row['id'];
+                                $title = $row['title'];
+                                echo "<option value='$cid'>$title</option>";
+                            }
                         ?>
                     </select></div>
                 <div class="col-md-1  grey text-xs-center"><select
                             id="product_status"
                             class="form-control round teal">
-                        <option value="0"><?php echo $this->lang->line('All') ?></option>
+                        <option value="0"><?php echo $this->lang->line('Status') ?></option>
                         <option value="1"><?php echo $this->lang->line('New') ?></option>
                         <option value="2"><?php echo $this->lang->line('Used') ?></option>
                 </select></div>

@@ -9,9 +9,6 @@ var precentCalc = function (total, percentageVal) {
 //format
 
 
-
-
-
 var rowTotal = function (numb) {
     //most res
     var result;

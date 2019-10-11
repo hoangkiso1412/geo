@@ -45,6 +45,21 @@ class Detailed_products_model extends CI_Model
         }
     }
 
+    public function warehouse_list(){
+        $where = '';
+        if (!BDATA) $where = "WHERE  (loc=0) ";
+        if ($this->aauth->get_user()->loc) {
+            $where = "WHERE  (loc=" . $this->aauth->get_user()->loc . " ) ";
+            if (BDATA) $where = "WHERE  (loc=" . $this->aauth->get_user()->loc . " OR geopos_warehouse.loc=0) ";
+        }
+        $query = $this->db->query("SELECT id,title FROM geopos_warehouse $where ORDER BY id DESC");
+        return $query->result_array();
+    }
+    
+    public function locations_list(){
+        $query = $this->db->query("SELECT id,cname FROM geopos_locations ORDER BY id DESC");
+        return $query->result_array();
+    }
 
     public function invoice_details($id, $eid = '')
     {
@@ -146,21 +161,15 @@ class Detailed_products_model extends CI_Model
 
     public function invoice_delete($id, $eid = '')
     {
-
         $this->db->trans_start();
-
         $this->db->select('status');
         $this->db->from('geopos_invoices');
         $this->db->where('id', $id);
         $query = $this->db->get();
         $result = $query->row_array();
-
           if ($this->aauth->get_user()->loc) {
             if ($eid) {
-
                 $res = $this->db->delete('geopos_invoices', array('id' => $id, 'eid' => $eid, 'loc' => $this->aauth->get_user()->loc));
-
-
             } else {
                 $res = $this->db->delete('geopos_invoices', array('id' => $id, 'loc' => $this->aauth->get_user()->loc));
             }
@@ -169,21 +178,13 @@ class Detailed_products_model extends CI_Model
         else {
             if (BDATA) {
                 if ($eid) {
-
                     $res = $this->db->delete('geopos_invoices', array('id' => $id, 'eid' => $eid));
-
-
                 } else {
                     $res = $this->db->delete('geopos_invoices', array('id' => $id));
                 }
             } else {
-
-
                 if ($eid) {
-
                     $res = $this->db->delete('geopos_invoices', array('id' => $id, 'eid' => $eid, 'loc' => 0));
-
-
                 } else {
                     $res = $this->db->delete('geopos_invoices', array('id' => $id, 'loc' => 0));
                 }
