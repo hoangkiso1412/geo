@@ -20,9 +20,9 @@ class Categories_model extends CI_Model
 {
     public function category_list($type = 0, $rel = 0)
     {
-        $query = $this->db->query("SELECT id,title
-FROM geopos_product_cat WHERE c_type='$type' AND rel_id='$rel'
-ORDER BY id DESC");
+        $query = $this->db->query("SELECT id,title,retail_discount,wholesale_discount
+        FROM geopos_product_cat WHERE c_type='$type' AND rel_id='$rel'
+        ORDER BY id DESC");
         return $query->result_array();
     }
     public function get_cat_details($type = 0, $rel = 0)

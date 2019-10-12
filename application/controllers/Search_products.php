@@ -370,7 +370,7 @@ class Search_products extends CI_Controller
 
         $result = $query->result_array();
         $i = 0;
-        echo $qw .'<div class="row match-height">';
+        echo '<div class="row match-height">';
         foreach ($result as $key => $row) {
             $out .= '<div class="col-2 border "><div class="rounded text-center mt-3 pb-3">
                     ' . ($row['favorite'] ? '<i class="fa fa-heart favorite-products"></i>' : '') .  (($row['bundle_products']== 'null') ?  '' :'<i class="fa fa-object-group bundle-products"></i>' ) .'

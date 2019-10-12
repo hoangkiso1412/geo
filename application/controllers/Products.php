@@ -131,7 +131,6 @@ class Products extends CI_Controller
     {
 
     	$product_name = $this->input->post('product_name', true);
-
         $catid = $this->input->post('product_cat');
         $warehouse = $this->input->post('product_warehouse');
         $product_code = $this->input->post('product_code');
@@ -155,7 +154,8 @@ class Products extends CI_Controller
         $code_type = $this->input->post('code_type');
         $sub_cat = $this->input->post('sub_cat');
         $brand = $this->input->post('brand');
-        $related_product = json_encode($this->input->post('related_product'));
+        $related_products_as_array = $this->input->post('related_product');
+        $related_product = json_encode($related_products_as_array);
         $favorite = $this->input->post('favorite') ? 1 : 0;
         $wholesale = $this->input->post('wholesale');
         $product_status = $this->input->post('product_status');
@@ -174,11 +174,10 @@ class Products extends CI_Controller
 	$discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
 	$discounnt_array = json_encode($discounnt_array);
 
-
-        $search_meta = '';
-        $search_meta .= $product_name.' ';
-        $search_meta .= $product_code.' ';
-        // add category to search_meta
+        // Search Meta 
+        $search_meta = ''; 
+        $search_meta .= $product_name.' && ';
+        $search_meta .= $product_code.' && ';
         $cats_list = $this->categories_model->category_list();
         $cat_name = '';
         foreach ($cats_list as $row) {
@@ -189,7 +188,8 @@ class Products extends CI_Controller
              	$cat_name = $title;
              }
         }
-        $search_meta .= $cat_name.' ';
+        $search_meta .= $cat_name.' && ';
+        
         // add warehouse to search_meta
         $warehouse_list = $this->categories_model->warehouse_list();
         $warehouse_name = '';
@@ -201,27 +201,27 @@ class Products extends CI_Controller
              	$warehouse_name = $title;
              }
         }
-        $search_meta .= $warehouse_name.' ';
+        $search_meta .= $warehouse_name.' && ';
 
 
         // add custom fields to search_meta
-         $custom_fields = $this->input->post('custom');
-         if( is_array($custom_fields) ) {
-	             foreach ($custom_fields as $key => $value) {
-	                if ($value) {
-	                     $search_meta .= $value.' ';
-	                }
+        $custom_fields = $this->input->post('custom');
+        if( is_array($custom_fields) ) {
+            foreach ($custom_fields as $key => $value) {
+                if ($value) {
+                    $search_meta .= $value.' && ';
+                }
+            }
+        }
 
-	             }
-         }
-
-
-
-           // if ( $this->products->check_product_name($product_name) > 0   ) {
-           //     $this->session->set_flashdata('msg', '<div class="alert alert-danger">Another product uses the same name !.</div>');
-           //     redirect(site_url('products/add'));
-           // }
-
+        //  Add the related products to Search meta
+        if(count($related_products_as_array) > 0){
+            foreach ($related_products_as_array as $id) {
+                $data = $this->products->get_product_data($id,'just_name');
+                $name = $data[0]['product_name'];
+                $search_meta .= $name .' && ';
+            }    
+        }
 
         //validate product_name
         $this->load->library("form_validation");
@@ -230,17 +230,13 @@ class Products extends CI_Controller
 
 	            if ($this->form_validation->run() == FALSE) {
 	                	echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
-	            } else {
-
+	            }else {
 			        if ($catid) {
 			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
 			        }
 	            }
 
         }
-
-
-
     }
 
 

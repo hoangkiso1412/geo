@@ -522,11 +522,7 @@ class Products_model extends CI_Model
         } elseif (!BDATA) {
             $whr = ' LEFT JOIN  geopos_warehouse on geopos_warehouse.id = geopos_products.warehouse WHERE geopos_warehouse.loc=0';
         }
-        $query = $this->db->query("SELECT
-COUNT(IF( geopos_products.qty > 0, geopos_products.qty, NULL)) AS instock,
-COUNT(IF( geopos_products.qty <= 0, geopos_products.qty, NULL)) AS outofstock,
-COUNT(geopos_products.qty) AS total
-FROM geopos_products $whr");
+        $query = $this->db->query("SELECT COUNT(IF( geopos_products.qty > 0, geopos_products.qty, NULL)) AS instock, COUNT(IF( geopos_products.qty <= 0, geopos_products.qty, NULL)) AS outofstock, COUNT(geopos_products.qty) AS total FROM geopos_products $whr");
         echo json_encode($query->result_array());
     }
 
@@ -746,6 +742,16 @@ FROM geopos_products $whr");
             return $query_result;
         } catch (\Throwable $th) {
             return [];
+        }
+    }
+    public function get_product_data($id , $request_name)
+    {
+        if( $request_name == 'just_name'){
+            $out = '';
+            $product_id = $id;
+            $query = "SELECT product_name  FROM geopos_products WHERE pid = ". $product_id;
+            $query_result = $this->db->query($query)->result_array();               
+            return $query_result;
         }
     }
 }

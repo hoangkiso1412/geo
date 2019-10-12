@@ -81,7 +81,7 @@
                                                  for="product_cat"><?php echo $this->lang->line('Product Category') ?>
                             *</label>
                         <select name="product_cat" id="product_cat" class="form-control required">
-                            <option r-sale = 'notset' w-sale = 'notset' value="" disabled="disabled" selected> -- Select Category -- </option>
+                            <option value="" disabled="disabled" selected> -- Select Category -- </option>
                             <?php
                             foreach ($cat as $row) {
                                 $cid = $row['id'];
@@ -105,62 +105,32 @@
 
                 </div>
 <script>
- $("#product_cat").change(function () {
-    calculate_prices();
-});
-$("#normal_sub_cat").change(function () {
-    calculate_prices();
-});
-
-$("#fproduct_price").bind("change paste keyup", function() {
-       alert($(this).val()); 
-});
 
 
 
 
-function numberizing(num){
-    num = parseFloat(num, 10);
-    if ( isNaN(num) ) {
-        num = parseFloat(0,10) ;
-    }
-    return num
-};
+
+
+
 
 function calculate_prices() {
     var checkBox = document.getElementById("calculate_profit");
     if (checkBox.checked == true){ // check box
 
-        var fproduct_price = parseFloat(document.getElementById('fproduct_price').value , 10);
-        if ( fproduct_price> 0 ) { //  category
+        var fproduct_price = document.getElementById('fproduct_price').value
+        if (fproduct_price !== '' ) { //  category
             var cat = document.getElementById('product_cat').value
             if (cat !== '' ) { //  category
-                // fields
                 var sub_cat = document.getElementById('normal_sub_cat').value
-                // sale ratios
-                var w_sale = numberizing($('#product_cat option:selected').attr('w-sale'));
-                var r_sale = numberizing($('#product_cat option:selected').attr('r-sale'));
-                var sub_w_sale = numberizing($('#normal_sub_cat option:selected').attr('w-sale'));
-                var sub_r_sale = numberizing($('#normal_sub_cat option:selected').attr('r-sale'));
-                // values
-                var current_r_price = 0 ;
-                var current_w_price = 0 ;
-
-                if (sub_cat  !== '' && sub_w_sale > 0 && sub_r_sale > 0) { //  sub category
-                    var current_w_price = fproduct_price +  fproduct_price * sub_w_sale / 100 ;
-                    var current_r_price = fproduct_price + fproduct_price * sub_r_sale / 100  ;
-                }else if(w_sale > 0 && r_sale > 0){
-                    var current_r_price = fproduct_price + ( fproduct_price * r_sale / 100 ) ;
-                    var current_w_price = fproduct_price + ( fproduct_price * w_sale / 100 ) ;
+                if (sub_cat) { //  sub category
+                    // var r_price r-sale
+                    var w_sale = $('#normal_sub_cat option:selected').attr('w-sale');
                 }else{
-                    var current_r_price = fproduct_price ;
-                    var current_w_price = fproduct_price ;
+                    var w_sale = $('#normal_sub_cat option:selected').attr('w-sale');
                 }
+                alert(w_sale);
 
-                // set values
-                document.getElementById("product_price").value = current_r_price ;
-                document.getElementById("wholesale").value = current_w_price ;
-                // disabling
+                // Display
                 document.getElementById("product_price").disabled = true;
                 document.getElementById("wholesale").disabled = true;
             }else{
@@ -181,6 +151,7 @@ function calculate_prices() {
   
 
 };
+
     $("#product_cat").on('change', function() {
         parent_cat = $('#product_cat').val(); 
         $.ajax({
@@ -294,7 +265,7 @@ function calculate_prices() {
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
                             <input type="text" name="fproduct_price" id="fproduct_price" class="form-control"
                                    placeholder="0.00" aria-describedby="sizing-addon1"
-                                   onkeypress="return isNumber(event)" onchange="calculate_prices()" >
+                                   onkeypress="return isNumber(event)">
                         </div>
                     </div>
                     <label class="col-sm-1 control-label"
@@ -760,6 +731,37 @@ function calculate_prices() {
         }
     });
 
+    $('#auto_profit').change(function() {
+        if (this.checked) {
+                alert('remove the check');
+            	document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+		        apply_auto_profit_prices();
+        } else {
+            alert('check ME');
+            $(".bundel_select").hide();
+            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+        }
+    });
+    function apply_auto_profit_prices(){
+            var purchase_price = parseFloat( document.getElementById('fproduct_price').value );
+            var cat_retail_discount = parseFloat( document.getElementById('cat_retail_discount').value );
+            var cat_wholesale_discount = parseFloat( document.getElementById('cat_wholesale_discount').value );
+
+            if(purchase_price > 0 && cat_retail_discount > 0 && cat_wholesale_discount > 0){
+                    document.getElementById('product_price').value = purchase_price - ( purchase_price * cat_retail_discount  / 100 );
+                    document.getElementById('wholesale').value = purchase_price - ( purchase_price * cat_wholesale_discount / 100 );
+            }else{
+                alert('Error : Please check the following \n  1) Set Purchase Order Price > 0 \n  2) Select Cateogry  \n  3) Make sure that you Set discount prices for this category in categories section');
+            document.getElementById('auto_profit').checked = false;
+            }
+    }
+
+    $('#fproduct_price').change(function() {
+        if (document.getElementById('auto_profit').checked) {
+            	apply_auto_profit_prices();
+        }
+    });
 
 
 
@@ -789,6 +791,11 @@ function calculate_prices() {
 
                 	document.getElementById('cat_retail_discount').value =   retail_discount;
                 	document.getElementById('cat_wholesale_discount').value =   wholesale_discount;
+
+                        if (document.getElementById('auto_profit').checked && purchase_price > 0) {
+                		document.getElementById('product_price').value = purchase_price - ( purchase_price * retail_discount  / 100 );
+                        	document.getElementById('wholesale').value = purchase_price - ( purchase_price * wholesale_discount / 100 );
+                        }
 	   	 }
 	});
 

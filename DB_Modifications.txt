@@ -1,2 +1,0 @@
-ALTER TABLE geopos_products ADD bundle_discount varchar(255) not null default '';
-ALTER TABLE geopos_products ADD search_meta varchar(255) not null default '';
