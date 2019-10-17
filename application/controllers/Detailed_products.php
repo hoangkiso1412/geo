@@ -87,8 +87,6 @@ class Detailed_products extends CI_Controller
         $head['s_mode'] = false;
         $this->load->view('fixed/header-pos', $head);
         $this->load->view('pos/detailed_product', $data);
-
-        
     }
 
     public function view_over(){

@@ -1,3 +1,9 @@
+<?php
+    echo "<pre>";
+    // print_r()
+    echo "</pre>";
+?>
+
 <div class="text-center modal-header">
     <h2><?php echo $product['product_name'] ; ?></h2> 
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span   aria-hidden="true">&times;</span></button>
@@ -9,10 +15,7 @@
 
 <table class="table table-striped table-bordered">
     <?php echo '<tr><td> ' . $this->lang->line('Barcodes') . ' : ' . $product['barcode'] . '</td></tr>'; ?>
-</table>
-
-
- 
+</table> 
 
 <?php $images_count = 1;?>
 
@@ -87,20 +90,20 @@ $("#bzoom").zoom({
 
         foreach ($product_variations as $product_variation) {
             echo '<tr><td><a href="' . base_url() . 'products/edit?id=' . $product_variation['pid'] . '" class="btn btn-primary btn-sm"><span class="icon-pencil"></span> ' . $this->lang->line('Edit') . '</a>  <div class="btn-group">
-                                    <button type="button" class="btn btn-blue dropdown-toggle   btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icon-print"></i>  ' . $this->lang->line('Print') . '                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="' . base_url() . 'products/barcode?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . '</a>
+                    <button type="button" class="btn btn-blue dropdown-toggle   btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icon-print"></i>  ' . $this->lang->line('Print') . '                                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="' . base_url() . 'products/barcode?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . '</a>
 
-                                        <div class="dropdown-divider"></div>
-                                         <a class="dropdown-item" href="' . base_url() . 'products/posbarcode?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . ' - Compact</a>
-                                          <div class="dropdown-divider"></div>
-                                             <a class="dropdown-item" href="' . base_url() . 'products/label?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('Product') . ' Label</a>
+                        <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="' . base_url() . 'products/posbarcode?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . ' - Compact</a>
+                            <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="' . base_url() . 'products/label?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('Product') . ' Label</a>
 
-                                        <div class="dropdown-divider"></div>
-                                         <a class="dropdown-item" href="' . base_url() . 'products/poslabel?id=' . $product_variation['pid'] . '" target="_blank"> Label - Compact</a>
+                        <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="' . base_url() . 'products/poslabel?id=' . $product_variation['pid'] . '" target="_blank"> Label - Compact</a>
 
-                                    </div>
-                                </div>   <a class="btn btn-pink  btn-sm" href="' . base_url() . 'products/report_product?id=' . $product_variation['pid'] . '" target="_blank"> <span class="icon-pie-chart2"></span> ' . $this->lang->line('Sales') . '</a>  ' . $product_variation['product_name'] . '</td><td>Code : ' . $product_variation['product_code'] . '</td><td> ' . $this->lang->line('Stock') . ' : ' . $product_variation['qty'] . ' </td></tr>';
+                    </div>
+                </div>   <a class="btn btn-pink  btn-sm" href="' . base_url() . 'products/report_product?id=' . $product_variation['pid'] . '" target="_blank"> <span class="icon-pie-chart2"></span> ' . $this->lang->line('Sales') . '</a>  ' . $product_variation['product_name'] . '</td><td>Code : ' . $product_variation['product_code'] . '</td><td> ' . $this->lang->line('Stock') . ' : ' . $product_variation['qty'] . ' </td></tr>';
         } ?>
     </table>
 <?php } ?>
@@ -156,10 +159,4 @@ $("#bzoom").zoom({
                 <td><strong><?php echo $purchase['price'] ?></strong></td>
             </tr>
             <?php } ?>
-</table>
-
-
-<hr>
-
-
-
+</table> <hr>

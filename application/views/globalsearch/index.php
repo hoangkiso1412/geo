@@ -63,7 +63,11 @@
                         <option value="1"><?php echo $this->lang->line('New') ?></option>
                         <option value="2"><?php echo $this->lang->line('Used') ?></option>
                 </select></div>
+
+
+
             </div>
+
 
             <div class="row">
                 <div class="col-md-12 pt-0" id="pos_item">
@@ -126,6 +130,8 @@
                         <td>Alt+N</td>
                         <td>Create New Invoice</td>
                     </tr>
+
+
                 </table>
             </div>
             <div class="modal-footer">
@@ -136,6 +142,13 @@
     </div>
 </div>
 
+
+   
+
+
+
+
+
 <script type="text/javascript">
     $.ajax({
         url: baseurl + 'search_products/detailed_product_search',
@@ -144,9 +157,6 @@
         data: 'cid=' + $('#categories').val() + '&wid=' + $('#warehouses option:selected').val() + '&' + crsf_token + '=' + crsf_hash + '&status=' + $('#product_status').val(),
         success: function (data) {
             $('#pos_item').html(data);
-        },
-        error: function(xhr, status, error) {
-            $('#pos_item').html(xhr.responseText);
         }
     });
 
@@ -158,36 +168,43 @@
 
         var actionurl = $('#view-action-url').val();
         $.ajax({
-            url: baseurl + 'detailed_products/view_over',
+            url: baseurl + actionurl,
             data: 'id=' + $('#view-object-id').val() + '&' + crsf_token + '=' + crsf_hash,
             type: 'POST',
             dataType: 'html',
             success: function (data) {
                 $('#view_object').html(data);
+
             },
             error: function(xhr, status, error) {
+                // alert(xhr.responseText);
                 $('#view_object').html(xhr.responseText);
             }
         });
     });
 </script>
+
         <div id="view_model" class="modal  fade">
+
             <div class="modal-dialog modal-lg">
                 <div class="modal-content ">
+
                     <div class="modal-body" id="view_object">
+                        
                     </div>
                     <div class="modal-footer">
                         <input type="hidden" id="view-object-id" value="">
+                        <input type="hidden" id="view-action-url" value="detailed_products/view_over">
                         <button type="button" data-dismiss="modal" class="btn"><?php echo $this->lang->line('Close') ?></button>
                     </div>
                 </div>
             </div>
         </div>
 
+
 <script src="<?php echo assets_url(); ?>assets/myjs/jquery-ui.js"></script>
-<script type="text/javascript">
-    var dtformat = $('#hdata').attr('data-df');
+<script type="text/javascript">var dtformat = $('#hdata').attr('data-df');
     var currency = $('#hdata').attr('data-curr');
-</script>
+    ;</script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products.js') . APPVER; ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products_control.js') . APPVER; ?>"></script>

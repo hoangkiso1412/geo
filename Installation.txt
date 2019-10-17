@@ -17,4 +17,4 @@ ALTER TABLE geopos_premissions MODIFY COLUMN module enum('Sales','Stock','Crm','
 INSERT INTO geopos_premissions (`module`,`r_1`,`r_2`,`r_3`,`r_4`,`r_5`,`r_6`,`r_7`,`r_8`) VALUES ('Products Variations','1','1','1','1','1','1','1','1' );
 INSERT INTO geopos_premissions (`module`,`r_1`,`r_2`,`r_3`,`r_4`,`r_5`,`r_6`,`r_7`,`r_8`) VALUES ('Variations Variables','1','1','1','1','1','1','1','1' );
 ALTER TABLE geopos_products CHANGE barcode barcode VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
-
+ALTER TABLE geopos_products ADD extra_barcodes VARCHAR(255) NOT NULL DEFAULT '' AFTER barcode; 
