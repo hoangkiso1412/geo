@@ -390,7 +390,6 @@ function calculate_prices() {
 
 
                 <div class="form-group row">
-
                     <label class="col-sm-2 col-form-label"><?php echo $this->lang->line('BarCode') ?></label>
                     <div class="col-sm-2">
                         <select class="form-control" name="code_type">
@@ -403,12 +402,20 @@ function calculate_prices() {
                             <option value="C39">C39</option>
                         </select>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <input type="text" placeholder="BarCode Numeric Digit 123112345671"
                                class="form-control margin-bottom" name="barcode"
                                onkeypress="return isNumber(event)">
                         <small>Leave blank if you want auto generated in EAN13.</small>
                     </div>
+
+                    <label class="col-sm-1 col-form-label"><?php echo $this->lang->line('Extra BarCodes') ?></label>
+                    <div class="col-sm-4">
+                        <input type="text" placeholder="seperate your barcodes with comma(,)"
+                               class="form-control margin-bottom" name="extrabarcodes"
+                               >
+                    </div>
+
                 </div>
                 <div class="form-group row">
 

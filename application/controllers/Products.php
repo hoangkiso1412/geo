@@ -144,6 +144,7 @@ class Products extends CI_Controller
         $image = $this->input->post('image');
         $unit = $this->input->post('unit', true);
         $barcode = $this->input->post('barcode');
+        $extrabarcodes = $this->input->post('extrabarcodes');
         $v_type = $this->input->post('v_type');
         $v_stock = $this->input->post('v_stock');
         $v_alert = $this->input->post('v_alert');
@@ -176,8 +177,9 @@ class Products extends CI_Controller
 
         // Search Meta 
         $search_meta = ''; 
-        $search_meta .= $product_name.' && ';
-        $search_meta .= $product_code.' && ';
+        $search_meta .= $product_name.' , ';
+        $search_meta .= $product_code.' , ';
+        $search_meta .= $extrabarcodes.' , ';
         $cats_list = $this->categories_model->category_list();
         $cat_name = '';
         foreach ($cats_list as $row) {
@@ -188,7 +190,7 @@ class Products extends CI_Controller
              	$cat_name = $title;
              }
         }
-        $search_meta .= $cat_name.' && ';
+        $search_meta .= $cat_name.' , ';
         
         // add warehouse to search_meta
         $warehouse_list = $this->categories_model->warehouse_list();
@@ -201,15 +203,14 @@ class Products extends CI_Controller
              	$warehouse_name = $title;
              }
         }
-        $search_meta .= $warehouse_name.' && ';
-
+        $search_meta .= $warehouse_name.' , ';
 
         // add custom fields to search_meta
         $custom_fields = $this->input->post('custom');
         if( is_array($custom_fields) ) {
             foreach ($custom_fields as $key => $value) {
                 if ($value) {
-                    $search_meta .= $value.' && ';
+                    $search_meta .= $value.' , ';
                 }
             }
         }
@@ -219,17 +220,16 @@ class Products extends CI_Controller
             foreach ($related_products_as_array as $id) {
                 $data = $this->products->get_product_data($id,'just_name');
                 $name = $data[0]['product_name'];
-                $search_meta .= $name .' && ';
+                $search_meta .= $name .' , ';
             }    
         }
 
         //validate product_name
         $this->load->library("form_validation");
         if ($this->input->post()) {
-                        $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
-
+                $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
 	            if ($this->form_validation->run() == FALSE) {
-	                	echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
+	                echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
 	            }else {
 			        if ($catid) {
 			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
@@ -581,64 +581,6 @@ class Products extends CI_Controller
 
         }
     }
-
-    public function view_over()
-    {
-        $pid = $this->input->post('id');
-        $this->db->select('geopos_products.*,geopos_warehouse.title');
-        $this->db->from('geopos_products');
-        $this->db->where('geopos_products.pid', $pid);
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
-
-        $query = $this->db->get();
-        $data['product'] = $query->row_array();
-
-        $this->db->select('geopos_products.*,geopos_warehouse.title');
-        $this->db->from('geopos_products');
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
-        $this->db->where('geopos_products.merge', 1);
-        $this->db->where('geopos_products.sub', $pid);
-        $query = $this->db->get();
-        $data['product_variations'] = $query->result_array();
-
-        $this->db->select('geopos_products.*,geopos_warehouse.title');
-        $this->db->from('geopos_products');
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
-        $this->db->where('geopos_products.sub', $pid);
-        $this->db->where('geopos_products.merge', 2);
-        $query = $this->db->get();
-        $data['product_warehouse'] = $query->result_array();
-
-
-        $this->load->view('products/view-over', $data);
-
-
-    }
-
 
     public function label()
     {

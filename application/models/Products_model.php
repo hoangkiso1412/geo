@@ -566,7 +566,7 @@ class Products_model extends CI_Model
         $this->db->where('id', $to_warehouse);
         $query = $this->db->get();
         $to_warehouse_name = $query->row_array()['title'];
-
+        $ips = "";
         $i = 0;
         foreach ($products_l as $row) {
             $qty = 0;
@@ -642,6 +642,20 @@ class Products_model extends CI_Model
                 $data['merge'] = 2;
                 $data['sub'] = $row;
                 $data['vb'] = $to_warehouse;
+
+                //  original ip 
+                $original_ip  =  $row ;
+                $ips .= $original_ip ;
+
+                // New added Fields 
+                $data['related_product'] = $pr['related_product'];
+                $data['favorite'] = $pr['favorite'];
+                $data['wholesale'] = $pr['wholesale'];
+                $data['product_status'] = $pr['product_status'];
+                $data['bundle_products'] = $pr['bundle_products'];
+                $data['bundle_discount'] = $pr['bundle_discount'];
+                $data['search_meta'] = $pr['search_meta'];
+                
                 if ($pr['merge'] == 2) {
                     $this->db->select('pid,product_name');
                     $this->db->from('geopos_products');
@@ -675,6 +689,20 @@ class Products_model extends CI_Model
                     $pid = $this->db->insert_id();
                     $this->movers(1, $pid, $qty, 0, 'Stock Transferred & Initialized W ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty  W $to_warehouse_name ID " . $pr2['pid'], $this->aauth->get_user()->username);
+
+                    // Custom  fields
+                    $old = $row ;
+                    $new = $pid ; 
+                    $customfields = "SELECT * FROM `geopos_custom_data` WHERE rid = $old ";
+                    $customfields = $this->db->query($customfields);
+                    $customfields = $customfields->result_array();
+            
+                    // pre($customfields);
+                    foreach ($customfields as $key => $field) {
+                        unset($customfields[$key]['id']);
+                        $customfields[$key]['rid'] =  $new ;
+                    }
+                    $this->db->insert_batch ('geopos_custom_data' , $customfields);            
                 }
 
                 $this->db->set('qty', "qty-$qty", false);
@@ -682,8 +710,6 @@ class Products_model extends CI_Model
                 $this->db->update('geopos_products');
                 $this->movers(1, $row, -$qty, 0, 'Stock Transferred WID ' . $to_warehouse_name);
             }
-
-
             $i++;
         }
 
@@ -692,7 +718,7 @@ class Products_model extends CI_Model
         }
 
         echo json_encode(array('status' => 'Success', 'message' =>
-            $this->lang->line('UPDATED')));
+            "new one is ". $pid  . "old one is  " .$row . $this->lang->line('UPDATED')));
     }
 
     public function meta_delete($name)

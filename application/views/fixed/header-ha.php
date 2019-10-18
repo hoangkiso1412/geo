@@ -1164,13 +1164,18 @@
             <?php }
             ?>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo base_url(); ?>detailed_products/search">
-                        <i class="fa fa-search"></i>
-                        <span><?php echo $this->lang->line('Global Search') ?></span>
-                    </a>
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo base_url(); ?>detailed_products/search">
+                    <i class="fa fa-search"></i>
+                    <span><?php echo $this->lang->line('Global Search') ?></span>
+                </a>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo base_url(); ?>testing/index">
+                    <i class="fa fa-clock"></i>
+                    <span><?php echo $this->lang->line('testing') ?></span>
+                </a>
+            </li>
 
 
             <?php if ($this->aauth->get_user()->roleid < 5) {

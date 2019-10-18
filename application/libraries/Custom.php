@@ -31,7 +31,6 @@ class Custom
 
     function save_fields_data($rid = 0, $r_type = 0)
     {
-        
         $custom = $this->PI->input->post('custom', true);
         $images = $this->PI->input->post('images', true);
          if(is_array($custom) || is_array($images)) {
