@@ -45,43 +45,137 @@
                             <select name="product_cat" class="form-control" id="product_cat">
                             <option value=''>Select</option>
                             <?php
-                            foreach ($cat as $row) {
-                                $cid = $row['id'];
-                                $title = $row['title'];
-
-	                                $v =  $product['pcat'];
-	                                $sel = ($cid == $v) ? 'selected="selected"' : '';
-
-                                echo "<option value=".$cid." ".$sel.">".$title."</option>";
-                            }
+                                foreach ($cat as $row) {
+                                    $cid = $row['id'];
+                                    $title = $row['title'];
+                                    $rsale = $row['retail_discount'];
+                                    $wsale = $row['wholesale_discount'];
+                                    echo "<option r-sale = '$rsale' w-sale = '$wsale' value='$cid'>$title</option>";
+                                }
                             ?>
 
                             </select>
 
                         </div>
 
-
-                        <div class="col-sm-6"><label class="col-form-label"
-                                                     for="sub_cat"><?php echo $this->lang->line('Sub') ?><?php echo $this->lang->line('Category') ?></label>
-                            <select id="sub_cat" name="sub_cat" class="form-control select-box">
-                            <option value=''>Select</option>
-                            <?php
-                            foreach ($cat_sub_list as $row) {
-                                $cid = $row['id'];
-                                $title = $row['title'];
-
-	                                $v =  $product['sub'];
-	                                $sel = ($cid == $v) ? 'selected="selected"' : '';
-
-                                echo "<option value=".$cid." ".$sel.">".$title."</option>";
-                            }
-                            ?>
-
+                        <div class="col-sm-6"><label class="col-form-label" for="sub_cat"><?php echo $this->lang->line('Sub') ?> <?php echo $this->lang->line('Category') ?></label>
+                            <select id="normal_sub_cat" name="sub_cat" class="form-control required">
                             </select>
-
-
                         </div>
                     </div>
+                
+
+
+
+<script>
+ $("#product_cat").change(function () {
+    calculate_prices();
+});
+$("#normal_sub_cat").change(function () {
+    calculate_prices();
+});
+$("#fproduct_price").on('change' , function () {
+    alert('sssssss');
+    calculate_prices();
+});
+
+function numberizing(num){
+    num = parseFloat(num, 10);
+    if ( isNaN(num) ) {
+        num = parseFloat(0,10) ;
+    }
+    return num
+};
+
+function calculate_prices() {
+    var checkBox = document.getElementById("calculate_profit");
+    if (checkBox.checked == true){ // check box
+
+        var fproduct_price = parseFloat(document.getElementById('fproduct_price').value , 10);
+        if ( fproduct_price> 0 ) { //  category
+            var cat = document.getElementById('product_cat').value
+            if (cat !== '' ) { //  category
+                // fields
+                var sub_cat = document.getElementById('normal_sub_cat').value
+                // sale ratios
+                var w_sale = numberizing($('#product_cat option:selected').attr('w-sale'));
+                var r_sale = numberizing($('#product_cat option:selected').attr('r-sale'));
+                var sub_w_sale = numberizing($('#normal_sub_cat option:selected').attr('w-sale'));
+                var sub_r_sale = numberizing($('#normal_sub_cat option:selected').attr('r-sale'));
+                // values
+                var current_r_price = 0 ;
+                var current_w_price = 0 ;
+
+                if (sub_cat  !== '' && sub_w_sale > 0 && sub_r_sale > 0) { //  sub category
+                    var current_w_price = fproduct_price +  fproduct_price * sub_w_sale / 100 ;
+                    var current_r_price = fproduct_price + fproduct_price * sub_r_sale / 100  ;
+                }else if(w_sale > 0 && r_sale > 0){
+                    var current_r_price = fproduct_price + ( fproduct_price * r_sale / 100 ) ;
+                    var current_w_price = fproduct_price + ( fproduct_price * w_sale / 100 ) ;
+                }else{
+                    var current_r_price = fproduct_price ;
+                    var current_w_price = fproduct_price ;
+                }
+
+                // set values
+                document.getElementById("product_price").value = current_r_price ;
+                document.getElementById("wholesale").value = current_w_price ;
+                // disabling
+                document.getElementById("product_price").disabled = true;
+                document.getElementById("wholesale").disabled = true;
+            }else{
+                alert('Please select Product Category first');
+                document.getElementById("calculate_profit").checked = false;
+            }
+
+        }else{
+            alert('Please insert Purchace Price first');
+            document.getElementById("calculate_profit").checked = false;
+        }
+    } else {
+        document.getElementById("product_price").disabled = false;
+        document.getElementById("wholesale").disabled = false;
+    }
+
+  
+  
+
+};
+    $("#product_cat").on('change', function() {
+        parent_cat = $('#product_cat').val(); 
+        $.ajax({
+            url: baseurl + 'products/sub_cat?id='+parent_cat,
+            dataType: 'json',
+            type: 'POST',
+            quietMillis: 50,
+            data: function (product) {
+                return {
+                    product: product,
+                    '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                };
+            },
+            success: function(data){
+                console.log(data);
+                var category = document.getElementById('product_cat');
+                category = category.options[category.selectedIndex].text;
+
+                if(data.length > 0){
+                    var options = "<option>Sub of "+ category +" </option>";
+                    $.each(data, function(key, option) {
+                        options += '<option r-sale = "'+option['retail_discount']+'" w-sale = "'+option['wholesale_discount']+'" value="'+option['id']+'">'+option['title']+'</option>' 
+                    });
+                    document.getElementById("normal_sub_cat").disabled = false;
+                }else{
+                    var options = "<option>NO SUBS for "+ category +" </option>";
+                    document.getElementById("normal_sub_cat").disabled = true;
+                }
+                document.getElementById('normal_sub_cat').innerHTML = options;
+            }
+	});
+
+    });
+</script>
+
 
                     <div class="form-group row">
 
@@ -116,7 +210,6 @@
                                 </div>
 
                             </div>
-
                         </div>
                     </div>
                     <div class="form-group row">
@@ -167,18 +260,18 @@
                     </div>
                     <div class="form-group row">
 
-                        <label class="col-sm-2 col-form-label"><?php echo $this->lang->line('Product Wholesale Price') ?></label>
+                        <label class="col-sm-2 col-form-label"><?php echo $this->lang->line('Purchased Price') ?></label>
 
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" name="fproduct_price" class="form-control"
+                                <input type="text" name="fproduct_price" class="form-control" id="fproduct_price"
                                        placeholder="0.00" aria-describedby="sizing-addon1"
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['fproduct_price'], 0, $this->aauth->get_user()->loc) ?>">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="input-group mt-1">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" <?php echo ($product['is_bundle'] ? 'checked' : '') ?> class="custom-control-input" name="bundle" id="bundle">
@@ -187,6 +280,12 @@
 
                             </div>
 
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="input-group mt-1">
+                                <label class="" ><?php echo $this->lang->line('Auto Profit'); ?></label>
+                                <input type="checkbox" class="" name="calculate_profit" id="calculate_profit" onchange="calculate_prices()">
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -463,10 +562,12 @@
                                         class="col-sm-2 col-form-label"><?= $row['name'] ?></label>
                                     <div class="col-sm-6">
                                         <input type="file" name="files" id="files-<?php echo $row['id'] ?>" multiple />
-                                        <?php foreach (json_decode($row['data']) as $key => $image) { ?>
+                                        <?php 
+                                            if( is_array(json_decode($row['data'])) && count(json_decode($row['data'])) >  0 ){
+                                            foreach (json_decode($row['data']) as $key => $image) { ?>
                                             <img class="images_display-<?php echo $row['id'] ?>" src="<?php echo base_url() ?>userfiles/custom_images/<?php echo $image ?>" width="200px" alt="">
                                             <input type="hidden" name="images[<?= $row['id'] ?>][<?php echo $key ?>]" value="<?php echo $image ?>">                                            
-                                        <?php } ?>
+                                        <?php }} ?>
                                         <div id="uploaded_images-<?php echo $row['id'] ?>" class="row"></div>
                                     </div>
                                 </div>
@@ -510,9 +611,8 @@
                     <div class="form-group row">
                         <input type="hidden" name="image" id="image" value="<?php echo $product['image'] ?>">
                         <label class="col-sm-2 col-form-label"></label>
-
                         <div class="col-sm-4">
-                            <input type="submit" id="submit-data" class="btn btn-success margin-bottom"
+                            <input type="submit" id="submit-data" class="btn btn-success margin-bottom free-disapled-inputs"
                                    value="<?php echo $this->lang->line('Update') ?>"
                                    data-loading-text="Updating...">
                             <input type="hidden" value="products/editproduct" id="action-url">
@@ -523,7 +623,14 @@
                 </form>
             </div>
         </div>
+<script>
+     $(document).on('click', ".free-disapled-inputs", function (e) {
+    document.getElementById('wholesale').disabled = false;
+    document.getElementById('product_price').disabled = false; 
+    document.getElementById('fproduct_price').disabled = false; 
+});
 
+</script>
         <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js');
         $invoice['tid'] = 0; ?>"></script>
         <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
@@ -581,11 +688,11 @@
         if (this.checked) {
             $(".bundel_select").show();
             $(".select2-container--default").width('100%');
-            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
             document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         } else {
             $(".bundel_select").hide();
-            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+            document.getElementById('product_price').disabled = document.getElementById('wholesale').disabled  = false;
             document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         }
     });
@@ -603,13 +710,13 @@
             <?php if ($product['is_bundle']) { ?>
 		            $(".bundel_select").show();
 		            $(".select2-container--default").width('100%');
-		            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
 		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
             	            update_bundle_prices();
 
 	    <?php } else {   ?>
 		            $(".bundel_select").hide();
-		            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = false;
 		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
             <?php } ?>
             
@@ -791,4 +898,6 @@
         }
     });
 <?php } ?>
+
+
 </script>

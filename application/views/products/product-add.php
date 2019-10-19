@@ -22,42 +22,42 @@
             <form method="post" id="data_form">
                 <input type="hidden" name="act" value="add_product">
                 <div class="form-group row">
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-  $( function() {
+                    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+                    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+                    <script>
+                    $( function() {
 
-	function return_product_id(prod, values) {
-	  for (var i = 0, len = values.length; i < len; i++) {
-	    if (values[i][1] == prod) {
-               var edit_location = baseurl + 'products/edit?id=' + values[i][0];
-	       //alert(edit_location);
-	      document.location.href = edit_location;
-	      break;
-	    }
-	  }
-	}
+                        function return_product_id(prod, values) {
+                        for (var i = 0, len = values.length; i < len; i++) {
+                            if (values[i][1] == prod) {
+                                var edit_location = baseurl + 'products/edit?id=' + values[i][0];
+                            //alert(edit_location);
+                            document.location.href = edit_location;
+                            break;
+                            }
+                        }
+                        }
 
-	var Product_List = [
-	      <?php
-		foreach ($products_list as $row) {
-	                 $pid = $row['pid'];
-	                 $title = $row['product_name'];
-	          echo '["'.$pid.'", "'.$title.' : Edit "],';
-	      }
-	      ?>
-	];
+                        var Product_List = [
+                            <?php
+                            foreach ($products_list as $row) {
+                                        $pid = $row['pid'];
+                                        $title = $row['product_name'];
+                                echo '["'.$pid.'", "'.$title.' : Edit "],';
+                            }
+                            ?>
+                        ];
 
-	$( "#product_name" ).autocomplete({
-	        source: Product_List.map(function(val){return val[1]}),
-	 select: function (event, ui) {
-	// return id of selected product
-	            	return_product_id(ui.item.value, Product_List);
-	     // end of product list loop
-	 }
-	});
-  } );
-  </script>
+                        $( "#product_name" ).autocomplete({
+                                source: Product_List.map(function(val){return val[1]}),
+                        select: function (event, ui) {
+                        // return id of selected product
+                                        return_product_id(ui.item.value, Product_List);
+                            // end of product list loop
+                        }
+                        });
+                    } );
+                    </script>     
 
 
 
@@ -83,13 +83,13 @@
                         <select name="product_cat" id="product_cat" class="form-control required">
                             <option r-sale = 'notset' w-sale = 'notset' value="" disabled="disabled" selected> -- Select Category -- </option>
                             <?php
-                            foreach ($cat as $row) {
-                                $cid = $row['id'];
-                                $title = $row['title'];
-                                $rsale = $row['retail_discount'];
-                                $wsale = $row['wholesale_discount'];
-                                echo "<option r-sale = '$rsale' w-sale = '$wsale' value='$cid'>$title</option>";
-                            }
+                                foreach ($cat as $row) {
+                                    $cid = $row['id'];
+                                    $title = $row['title'];
+                                    $rsale = $row['retail_discount'];
+                                    $wsale = $row['wholesale_discount'];
+                                    echo "<option r-sale = '$rsale' w-sale = '$wsale' value='$cid'>$title</option>";
+                                }
                             ?>
                         </select>
                     </div>
@@ -104,119 +104,6 @@
                     </div>
 
                 </div>
-<script>
- $("#product_cat").change(function () {
-    calculate_prices();
-});
-$("#normal_sub_cat").change(function () {
-    calculate_prices();
-});
-
-$("#fproduct_price").bind("change paste keyup", function() {
-       alert($(this).val()); 
-});
-
-
-
-
-function numberizing(num){
-    num = parseFloat(num, 10);
-    if ( isNaN(num) ) {
-        num = parseFloat(0,10) ;
-    }
-    return num
-};
-
-function calculate_prices() {
-    var checkBox = document.getElementById("calculate_profit");
-    if (checkBox.checked == true){ // check box
-
-        var fproduct_price = parseFloat(document.getElementById('fproduct_price').value , 10);
-        if ( fproduct_price> 0 ) { //  category
-            var cat = document.getElementById('product_cat').value
-            if (cat !== '' ) { //  category
-                // fields
-                var sub_cat = document.getElementById('normal_sub_cat').value
-                // sale ratios
-                var w_sale = numberizing($('#product_cat option:selected').attr('w-sale'));
-                var r_sale = numberizing($('#product_cat option:selected').attr('r-sale'));
-                var sub_w_sale = numberizing($('#normal_sub_cat option:selected').attr('w-sale'));
-                var sub_r_sale = numberizing($('#normal_sub_cat option:selected').attr('r-sale'));
-                // values
-                var current_r_price = 0 ;
-                var current_w_price = 0 ;
-
-                if (sub_cat  !== '' && sub_w_sale > 0 && sub_r_sale > 0) { //  sub category
-                    var current_w_price = fproduct_price +  fproduct_price * sub_w_sale / 100 ;
-                    var current_r_price = fproduct_price + fproduct_price * sub_r_sale / 100  ;
-                }else if(w_sale > 0 && r_sale > 0){
-                    var current_r_price = fproduct_price + ( fproduct_price * r_sale / 100 ) ;
-                    var current_w_price = fproduct_price + ( fproduct_price * w_sale / 100 ) ;
-                }else{
-                    var current_r_price = fproduct_price ;
-                    var current_w_price = fproduct_price ;
-                }
-
-                // set values
-                document.getElementById("product_price").value = current_r_price ;
-                document.getElementById("wholesale").value = current_w_price ;
-                // disabling
-                document.getElementById("product_price").disabled = true;
-                document.getElementById("wholesale").disabled = true;
-            }else{
-                alert('Please select Product Category first');
-                document.getElementById("calculate_profit").checked = false;
-            }
-
-        }else{
-            alert('Please insert Purchace Price first');
-            document.getElementById("calculate_profit").checked = false;
-        }
-    } else {
-        document.getElementById("product_price").disabled = false;
-        document.getElementById("wholesale").disabled = false;
-    }
-
-  
-  
-
-};
-    $("#product_cat").on('change', function() {
-        parent_cat = $('#product_cat').val(); 
-        $.ajax({
-            url: baseurl + 'products/sub_cat?id='+parent_cat,
-            dataType: 'json',
-            type: 'POST',
-            quietMillis: 50,
-            data: function (product) {
-                return {
-                    product: product,
-                    '<?=$this->security->get_csrf_token_name()?>': crsf_hash
-                };
-            },
-            success: function(data){
-                console.log(data);
-                var category = document.getElementById('product_cat');
-                category = category.options[category.selectedIndex].text;
-
-                if(data.length > 0){
-                    var options = "<option>Sub of "+ category +" </option>";
-                    $.each(data, function(key, option) {
-                        options += '<option r-sale = "'+option['retail_discount']+'" w-sale = "'+option['wholesale_discount']+'" value="'+option['id']+'">'+option['title']+'</option>' 
-                    });
-                    document.getElementById("normal_sub_cat").disabled = false;
-                }else{
-                    var options = "<option>NO SUBS for "+ category +" </option>";
-                    document.getElementById("normal_sub_cat").disabled = true;
-                }
-                document.getElementById('normal_sub_cat').innerHTML = options;
-            }
-	});
-
-    });
-</script>
-
-
                 <div class="form-group row">
 
                     <label class="col-sm-2 col-form-label"
@@ -581,7 +468,7 @@ function calculate_prices() {
                     <label class="col-sm-2 col-form-label"></label>
 
                     <div class="col-sm-4">
-                        <input type="submit" id="submit-data" class="btn btn-lg btn-blue margin-bottom"
+                        <input type="submit" id="submit-data" class="btn btn-lg btn-blue margin-bottom free-disapled-inputs"
                                value="<?php echo $this->lang->line('Add product') ?>" data-loading-text="Adding...">
                         <input type="hidden" value="products/addproduct" id="action-url">
                     </div>
@@ -683,6 +570,110 @@ function calculate_prices() {
 <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js'); ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
 <script>
+ $("#product_cat").change(function () {
+    calculate_prices();
+});
+$("#normal_sub_cat").change(function () {
+    calculate_prices();
+});
+
+function numberizing(num){
+    num = parseFloat(num, 10);
+    if ( isNaN(num) ) {
+        num = parseFloat(0,10) ;
+    }
+    return num
+};
+
+function calculate_prices() {
+    var checkBox = document.getElementById("calculate_profit");
+    if (checkBox.checked == true){ // check box
+
+        var fproduct_price = parseFloat(document.getElementById('fproduct_price').value , 10);
+        if ( fproduct_price> 0 ) { //  category
+            var cat = document.getElementById('product_cat').value;
+            if (cat !== '' ) { //  category
+                // fields
+                var sub_cat = document.getElementById('normal_sub_cat').value
+                // sale ratios
+                var w_sale = numberizing($('#product_cat option:selected').attr('w-sale'));
+                var r_sale = numberizing($('#product_cat option:selected').attr('r-sale'));
+                var sub_w_sale = numberizing($('#normal_sub_cat option:selected').attr('w-sale'));
+                var sub_r_sale = numberizing($('#normal_sub_cat option:selected').attr('r-sale'));
+                // values
+                var current_r_price = 0 ;
+                var current_w_price = 0 ;
+
+                if (sub_cat  !== '' && sub_w_sale > 0 && sub_r_sale > 0) { //  sub category
+                    var current_w_price = fproduct_price +  fproduct_price * sub_w_sale / 100 ;
+                    var current_r_price = fproduct_price + fproduct_price * sub_r_sale / 100  ;
+                }else if(w_sale > 0 && r_sale > 0){
+                    var current_r_price = fproduct_price + ( fproduct_price * r_sale / 100 ) ;
+                    var current_w_price = fproduct_price + ( fproduct_price * w_sale / 100 ) ;
+                }else{
+                    var current_r_price = fproduct_price ;
+                    var current_w_price = fproduct_price ;
+                }
+
+                // set values
+                document.getElementById("product_price").value = current_r_price ;
+                document.getElementById("wholesale").value = current_w_price ;
+                // disabling
+                document.getElementById("product_price").disabled = true;
+                document.getElementById("wholesale").disabled = true;
+            }else{
+                alert('Please select Product Category first');
+                document.getElementById("calculate_profit").checked = false;
+            }
+
+        }else{
+            alert('Please insert Purchace Price first');
+            document.getElementById("calculate_profit").checked = false;
+        }
+    } else {
+        document.getElementById("product_price").disabled = false;
+        document.getElementById("wholesale").disabled = false;
+    }
+
+  
+  
+
+};
+    $("#product_cat").on('change', function() {
+        parent_cat = $('#product_cat').val(); 
+        $.ajax({
+            url: baseurl + 'products/sub_cat?id='+parent_cat,
+            dataType: 'json',
+            type: 'POST',
+            quietMillis: 50,
+            data: function (product) {
+                return {
+                    product: product,
+                    '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                };
+            },
+            success: function(data){
+                console.log(data);
+                var category = document.getElementById('product_cat');
+                category = category.options[category.selectedIndex].text;
+
+                if(data.length > 0){
+                    var options = "<option>Sub of "+ category +" </option>";
+                    $.each(data, function(key, option) {
+                        options += '<option r-sale = "'+option['retail_discount']+'" w-sale = "'+option['wholesale_discount']+'" value="'+option['id']+'">'+option['title']+'</option>' 
+                    });
+                    document.getElementById("normal_sub_cat").disabled = false;
+                }else{
+                    var options = "<option>NO SUBS for "+ category +" </option>";
+                    document.getElementById("normal_sub_cat").disabled = true;
+                }
+                document.getElementById('normal_sub_cat').innerHTML = options;
+            }
+	});
+
+    });
+</script>
+<script>
     /*jslint unparam: true */
     /*global window, $ */
     $(function () {
@@ -758,11 +749,11 @@ function calculate_prices() {
         if (this.checked) {
             $(".bundel_select").show();
             $(".select2-container--default").width('100%');
-            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = true;
+            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
             document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         } else {
             $(".bundel_select").hide();
-            document.getElementById('product_price').readOnly  = document.getElementById('wholesale').readOnly = false;
+            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = false;
             document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
         }
     });
@@ -904,20 +895,25 @@ function calculate_prices() {
 	$("#bundle_products, #bundle_p_discount_factor, #bundle_w_discount_factor").on('change', function () {
 		update_bundle_prices();
 	});
-	$("#bundle_p_discount_amount, #bundle_w_discount_amount").on("input",function(e){
-        	update_bundle_prices();
+	$("#bundle_p_discount_amount, #bundle_w_discount_amount").on("change",function(e){
+        var bundle_p_discount_amount = document.getElementById('bundle_p_discount_amount').value;
+        if(bundle_p_discount_amount.length === 0){
+            document.getElementById('bundle_p_discount_amount').value = 0;
+        }
+        var bundle_w_discount_amount = document.getElementById('bundle_w_discount_amount').value;
+        if(bundle_w_discount_amount.length === 0){
+            document.getElementById('bundle_p_discount_amount').value = 0;
+        }
+
+    	update_bundle_prices();
 	});
 
+ $(document).on('click', ".free-disapled-inputs", function (e) {
+    document.getElementById('wholesale').disabled = false;
+    document.getElementById('product_price').disabled = false; 
+    document.getElementById('fproduct_price').disabled = false; 
+});
 
-
-
-
-
-
-
-
-</script>
-<script>
 <?php foreach ($custom_fields as $row) { ?>
     $('#files-<?php echo $row['id'] ?>').change(function(e){
         e.preventDefault();
@@ -933,9 +929,6 @@ function calculate_prices() {
             else {
                 form_data.append("files[]", files[count]);
             }
-            
-            
-
         }
         if(error == '') {
             $.ajax({

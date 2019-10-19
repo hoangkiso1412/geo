@@ -335,10 +335,12 @@ class Search_products extends CI_Controller
         if(strlen($name) >= 2){
             $name =  explode(',' , $name);
             foreach ($name as $keyword) {
-                $qw .= " AND  (geopos_products.search_meta LIKE '%$keyword%') ";
+                $or = "";
                 if(is_numeric($keyword)){
-                    $qw .= " AND  (geopos_products.barcode LIKE '%$name%') "; 
+                    $or = " OR  geopos_products.barcode LIKE '%$keyword%' "; 
                 }
+                $qw .= " AND  ( geopos_products.search_meta LIKE '%$keyword%'   $or  ) ";
+
             }    
         }
         if($qw != ''){
