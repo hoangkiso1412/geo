@@ -32,7 +32,7 @@
 
                         <div class="col-sm-6">
                             <input type="text" placeholder="Product Name"
-                                   class="form-control margin-bottom  required" name="product_name"
+                                   class="form-control margin-bottom  required" name="product_name" id="product_name"
                                    value="<?php echo $product['product_name'] ?>">
                         </div>
                     </div>
@@ -78,7 +78,6 @@ $("#fproduct_price").on('change' , function () {
     alert('sssssss');
     calculate_prices();
 });
-
 function numberizing(num){
     num = parseFloat(num, 10);
     if ( isNaN(num) ) {
@@ -86,11 +85,9 @@ function numberizing(num){
     }
     return num
 };
-
 function calculate_prices() {
     var checkBox = document.getElementById("calculate_profit");
     if (checkBox.checked == true){ // check box
-
         var fproduct_price = parseFloat(document.getElementById('fproduct_price').value , 10);
         if ( fproduct_price> 0 ) { //  category
             var cat = document.getElementById('product_cat').value
@@ -105,7 +102,6 @@ function calculate_prices() {
                 // values
                 var current_r_price = 0 ;
                 var current_w_price = 0 ;
-
                 if (sub_cat  !== '' && sub_w_sale > 0 && sub_r_sale > 0) { //  sub category
                     var current_w_price = fproduct_price +  fproduct_price * sub_w_sale / 100 ;
                     var current_r_price = fproduct_price + fproduct_price * sub_r_sale / 100  ;
@@ -116,7 +112,6 @@ function calculate_prices() {
                     var current_r_price = fproduct_price ;
                     var current_w_price = fproduct_price ;
                 }
-
                 // set values
                 document.getElementById("product_price").value = current_r_price ;
                 document.getElementById("wholesale").value = current_w_price ;
@@ -127,7 +122,6 @@ function calculate_prices() {
                 alert('Please select Product Category first');
                 document.getElementById("calculate_profit").checked = false;
             }
-
         }else{
             alert('Please insert Purchace Price first');
             document.getElementById("calculate_profit").checked = false;
@@ -136,10 +130,8 @@ function calculate_prices() {
         document.getElementById("product_price").disabled = false;
         document.getElementById("wholesale").disabled = false;
     }
-
   
   
-
 };
     $("#product_cat").on('change', function() {
         parent_cat = $('#product_cat').val(); 
@@ -158,7 +150,6 @@ function calculate_prices() {
                 console.log(data);
                 var category = document.getElementById('product_cat');
                 category = category.options[category.selectedIndex].text;
-
                 if(data.length > 0){
                     var options = "<option>Sub of "+ category +" </option>";
                     $.each(data, function(key, option) {
@@ -172,7 +163,6 @@ function calculate_prices() {
                 document.getElementById('normal_sub_cat').innerHTML = options;
             }
 	});
-
     });
 </script>
 
@@ -189,10 +179,8 @@ function calculate_prices() {
                             foreach ($warehouse as $row) {
                                 $cid = $row['id'];
                                 $title = $row['title'];
-
 	                                $v =  $product['warehouse'];
 	                                $sel = ($cid == $v) ? 'selected="selected"' : '';
-
                                 echo "<option value=".$cid." ".$sel.">".$title."</option>";
                             }
                             ?>
@@ -285,6 +273,7 @@ function calculate_prices() {
                             <div class="input-group mt-1">
                                 <label class="" ><?php echo $this->lang->line('Auto Profit'); ?></label>
                                 <input type="checkbox" class="" name="calculate_profit" id="calculate_profit" onchange="calculate_prices()">
+                                <input type="hidden" class="" name="calculate_profit_value" id="calculate_profit_value" value = '0'>
                             </div>
                         </div>
                     </div>
@@ -423,18 +412,14 @@ function calculate_prices() {
                             <select id="related_product" name="related_product[]" class="form-control required select-box"
                                         multiple="multiple">
                                         <?php
-
                                         foreach ($products_list as $row) {
                                             $cid = $row['pid'];
                                             $title = $row['product_name'];
-
                                             $row['wholesale'] = is_numeric($row['wholesale']) ? $row['wholesale'] : 0;
                                             $row['product_price'] = is_numeric($row['product_price']) ? $row['product_price'] : 0;
                                             $title_full =  $row['product_name'] . ':' . $row['product_price']. ':' .$row['wholesale'];
-
 	                                	$v =  json_decode($product['related_product']);
 	                                	$sel = (is_array($v) && in_array($cid, $v)) ? 'selected="selected"' : '';
-
                                    	    echo "<option value=".$cid." ".$sel.">".$title_full."</option>";
                                         }
                                         ?>
@@ -447,21 +432,16 @@ function calculate_prices() {
 		                        <select id="bundle_products" name="bundle_products[]" class="form-control required select-box"
 		                                    multiple="multiple">
 		                                    <?php
-
 		                                foreach ($products_list as $row) {
 		                                    $cid = $row['pid'];
 		                                    $title = $row['product_name'];
-
                                                     $row['wholesale'] = is_numeric($row['wholesale']) ? $row['wholesale'] : 0;
                                                     $row['product_price'] = is_numeric($row['product_price']) ? $row['product_price'] : 0;
                                                     $title_full =  $row['product_name'] . ':' . $row['product_price']. ':' .$row['wholesale'];
-
 			                                $v =  json_decode($product['bundle_products']);
 			                                $sel = (is_array($v) && in_array($cid, $v)) ? 'selected="selected"' : '';
-
 		                                    echo "<option value=".$cid." ".$sel.">".$title_full."</option>";
 		                                }
-
 		                                ?>
 		                        </select>
                             </div>
@@ -537,7 +517,6 @@ function calculate_prices() {
                             <div class="col-sm-6">
                                 <select name="custom[<?= $row['id'] ?>]" class="form-control b_input">
                                     <?php
-
                                                 foreach (json_decode($row['value_data']) as $data) {
                                                     echo "<option ". ($row['data'] == $data ? 'selected' : '' ) ." value='$data'>$data</option>";
                                                 }
@@ -627,9 +606,9 @@ function calculate_prices() {
      $(document).on('click', ".free-disapled-inputs", function (e) {
     document.getElementById('wholesale').disabled = false;
     document.getElementById('product_price').disabled = false; 
-    document.getElementById('fproduct_price').disabled = false; 
-});
+    document.getElementById('fproduct_price').disabled = false;
 
+});
 </script>
         <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js');
         $invoice['tid'] = 0; ?>"></script>
@@ -651,7 +630,6 @@ function calculate_prices() {
                             $('#files').html('<tr><td><a data-url="<?php echo base_url() ?>products/file_handling?op=delete&name=' + file.name + '&invoice=<?php echo $invoice['tid'] ?>" class="aj_delete"><i class="btn-danger btn-sm icon-trash-a"></i> ' + file.name + ' </a><img style="max-height:200px;" src="<?php echo base_url() ?>userfiles/product/' + file.name + '"></td></tr>');
                             img = file.name;
                         });
-
                         $('#image').val(img);
                     },
                     progressall: function (e, data) {
@@ -664,15 +642,11 @@ function calculate_prices() {
                 }).prop('disabled', !$.support.fileInput)
                     .parent().addClass($.support.fileInput ? undefined : 'disabled');
             });
-
             $(document).on('click', ".aj_delete", function (e) {
                 e.preventDefault();
-
                 var aurl = $(this).attr('data-url');
                 var obj = $(this);
-
                 jQuery.ajax({
-
                     url: aurl,
                     type: 'GET',
                     dataType: 'json',
@@ -681,9 +655,7 @@ function calculate_prices() {
                         obj.remove();
                     }
                 });
-
             });
-
     $('#bundle').change(function() {
         if (this.checked) {
             $(".bundel_select").show();
@@ -697,46 +669,35 @@ function calculate_prices() {
         }
     });
     $("#bundle_products").select2();
-
             
             $("#related_product").select2();
-
             <?php if ($product['related_product'] != 'null' && $product['bundle_products']) { ?>
                 const related_val = <?php echo ($product['related_product'] != 'null' && $product['bundle_products'] ? $product['related_product'] : '') ?>;
                 $('#related_product').val(related_val).trigger('change');
             <?php } ?>
-
-
             <?php if ($product['is_bundle']) { ?>
 		            $(".bundel_select").show();
 		            $(".select2-container--default").width('100%');
 		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
 		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
             	            update_bundle_prices();
-
 	    <?php } else {   ?>
 		            $(".bundel_select").hide();
 		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = false;
 		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
             <?php } ?>
             
-
             $("#wfrom").on('change', function () {
                 //$('#related_product, #bundle_products').empty().trigger("change");
                 var tips = $('#wfrom').val();
                 update_categories_from_warehouse(tips);
-
             });
-
             <?php if ($product['warehouse']) { ?>
             	 var tips = <?php echo $product['warehouse'];?>;
                  update_categories_from_warehouse(tips);
             <?php } ?>
-
-
      function update_categories_from_warehouse(tips){
                 $("#related_product, #bundle_products").select2({
-
                     tags: [],
                     ajax: {
                         url: baseurl + 'products/stock_transfer_products?wid=' + tips,
@@ -744,23 +705,18 @@ function calculate_prices() {
                         type: 'POST',
                         quietMillis: 50,
                         data: function (product) {
-
                             return {
                                 product: product,
                                 '<?=$this->security->get_csrf_token_name()?>': crsf_hash
-
                             };
                         },
                         processResults: function (data) {
 	                    return {
 	                        results: $.map(data, function (item) {
-
 				    // check if prices are correct
 				    item.wholesale = isNumeric(item.wholesale) ? item.wholesale : 0;
-
 				    // check if prices are correct
 				    item.product_price = isNumeric(item.product_price) ? item.product_price : 0;
-
 	                            return {
 	                                text: item.product_name + ':' + item.product_price + ':' + item.wholesale,
 	                                id: item.pid
@@ -771,12 +727,9 @@ function calculate_prices() {
                     }
                 });
      }
-
-
      function isNumeric(n) {
     	return !isNaN(parseFloat(n)) && isFinite(n);
      }
-
      function apply_discount(total_price, discount_amount, discount_factor){
 	if(discount_factor == 'percent'){
 		return ( parseFloat( total_price ) - ( parseFloat( total_price ) *  parseFloat( discount_amount )  / 100 ) ).toFixed(2);
@@ -786,7 +739,6 @@ function calculate_prices() {
                 return ( parseFloat( total_price ) ).toFixed(2);
         }
      }
-
      function update_bundle_prices(){
              var retail_price = 0;
              var wholesale_price = 0;
@@ -797,41 +749,26 @@ function calculate_prices() {
 	     $("#bundle_products :selected").map(function(i, el) {
              		var current_item =  $(el).text();
                         var current_item_spilit = current_item.split(":");
-
                         retail_price = ( parseFloat( retail_price ) + parseFloat( current_item_spilit[1] ) ).toFixed(2);
                         wholesale_price = ( parseFloat( wholesale_price ) +  parseFloat( current_item_spilit[2] ) ).toFixed(2);
 	    		//return $(el).val();
 		}).get();
-
                 retail_price = apply_discount(retail_price, bundle_p_discount_amount, bundle_p_discount_factor);
                 wholesale_price = apply_discount(wholesale_price, bundle_w_discount_amount, bundle_w_discount_factor);
-
                 document.getElementById('product_price').value= retail_price;
                 document.getElementById('wholesale').value= wholesale_price;
      }
-
-
-
 	$("#bundle_products, #bundle_p_discount_factor, #bundle_w_discount_factor").on('change', function () {
 		update_bundle_prices();
 	});
-
-
 	$("#bundle_p_discount_amount, #bundle_w_discount_amount").on("input",function(e){
         	update_bundle_prices();
 	});
-
-
-
-
-
-
             $("#sub_cat").select2();
             $("#product_cat").on('change', function () {
                 $("#sub_cat").val('').trigger('change');
                 var tips = $('#product_cat').val();
                 $("#sub_cat").select2({
-
                     ajax: {
                         url: baseurl + 'products/sub_cat?id=' + tips,
                         dataType: 'json',
@@ -875,7 +812,6 @@ function calculate_prices() {
             }
             console.log(name)
             
-
         }
         if(error == '') {
             $.ajax({
@@ -898,6 +834,39 @@ function calculate_prices() {
         }
     });
 <?php } ?>
-
-
 </script>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $( function() {
+
+        function return_product_id(prod, values) {
+        for (var i = 0, len = values.length; i < len; i++) {
+            if (values[i][1] == prod) {
+                var edit_location = baseurl + 'products/edit?id=' + values[i][0];
+            //alert(edit_location);
+            document.location.href = edit_location;
+            break;
+            }
+        }
+        }
+
+        var Product_List = [
+            <?php
+            foreach ($products_list as $row) {
+                        $pid = $row['pid'];
+                        $title = $row['product_name'];
+                echo '["'.$pid.'", "'.$title.' : Edit "],';
+            }
+            ?>
+        ];
+
+        $( "#product_name" ).autocomplete({
+            source: Product_List.map(function(val){return val[1]}),
+        select: function (event, ui) {
+            return_product_id(ui.item.value, Product_List);
+        }
+        });
+    } );
+</script>  

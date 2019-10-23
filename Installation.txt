@@ -18,3 +18,6 @@ INSERT INTO geopos_premissions (`module`,`r_1`,`r_2`,`r_3`,`r_4`,`r_5`,`r_6`,`r_
 INSERT INTO geopos_premissions (`module`,`r_1`,`r_2`,`r_3`,`r_4`,`r_5`,`r_6`,`r_7`,`r_8`) VALUES ('Variations Variables','1','1','1','1','1','1','1','1' );
 ALTER TABLE geopos_products CHANGE barcode barcode VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 ALTER TABLE geopos_products ADD extra_barcodes VARCHAR(255) NOT NULL DEFAULT '' AFTER barcode; 
+ALTER TABLE geopos_products ADD UNIQUE(product_code);
+ALTER TABLE geopos_products ADD auto_prices INT NOT NULL DEFAULT '0' AFTER search_meta; 
+ALTER TABLE geopos_product_cat ADD update_prices INT NOT NULL DEFAULT '0' AFTER wholesale_discount; 

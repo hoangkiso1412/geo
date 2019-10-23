@@ -77,7 +77,15 @@
                         </div>
                     </div>
 
-
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="product_cat_name"><?php echo $this->lang->line('Update Products Prices') ?></label>
+                        <div class="col-sm-6">
+                            <select name="update_prices" class="form-control">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
 
 
 

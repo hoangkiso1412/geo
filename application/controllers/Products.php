@@ -157,7 +157,8 @@ class Products extends CI_Controller
         $brand = $this->input->post('brand');
         $related_products_as_array = $this->input->post('related_product');
         $related_product = json_encode($related_products_as_array);
-        $favorite = $this->input->post('favorite') ? 1 : 0;
+        $favorite = $this->input->post('favorite') ? 1 : 0; 
+        $calculate_profit_value = $this->input->post('calculate_profit_value');
         $wholesale = $this->input->post('wholesale');
         $product_status = $this->input->post('product_status');
         $bundle_products = json_encode($this->input->post('bundle_products'));
@@ -168,14 +169,14 @@ class Products extends CI_Controller
         $bundle_w_discount_factor = json_encode($this->input->post('bundle_w_discount_factor'));
 
 
-	$discounnt_array = array();
-	$discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
-	$discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
-	$discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
-	$discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
-	$discounnt_array = json_encode($discounnt_array);
+        $discounnt_array = array();
+        $discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
+        $discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
+        $discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
+        $discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
+        $discounnt_array = json_encode($discounnt_array);
 
-        // Search Meta 
+        // Search Meta
         $search_meta = ''; 
         $search_meta .= $product_name.' , ';
         $search_meta .= $product_code.' , ';
@@ -232,7 +233,7 @@ class Products extends CI_Controller
 	                echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
 	            }else {
 			        if ($catid) {
-			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
+			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value);
 			        }
 	            }
 

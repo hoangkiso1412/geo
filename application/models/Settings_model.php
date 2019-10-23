@@ -47,13 +47,13 @@ class Settings_model extends CI_Model
         $this->db->where('id', $id);
         if ($this->db->update('geopos_system')) {
             echo json_encode(array('status' => 'Success', 'message' =>
-                $this->lang->line('UPDATED')));
-                  if ($data_share != BDATA) {
-            $config_file_path = APPPATH . "config/constants.php";
-            $config_file = file_get_contents($config_file_path);
-            $config_file = str_replace("('BDATA', '".BDATA."')", "('BDATA', '$data_share')", $config_file);
-            file_put_contents($config_file_path, $config_file);
-        }
+            $this->lang->line('UPDATED')));
+            if ($data_share != BDATA) {
+                $config_file_path = APPPATH . "config/constants.php";
+                $config_file = file_get_contents($config_file_path);
+                $config_file = str_replace("('BDATA', '".BDATA."')", "('BDATA', '$data_share')", $config_file);
+                file_put_contents($config_file_path, $config_file);
+            }
         } else {
             echo json_encode(array('status' => 'Error', 'message' =>
                 $this->lang->line('ERROR')));

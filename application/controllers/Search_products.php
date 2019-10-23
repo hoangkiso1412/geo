@@ -350,7 +350,7 @@ class Search_products extends CI_Controller
         }
         $query  = " SELECT geopos_products.* FROM geopos_products ";
         $query .= " $join WHERE (geopos_products.qty>0) $qw   ";
-        $query .= " GROUP BY product_code  DESC LIMIT 18 ";
+        $query .= " GROUP BY product_code  DESC ";
 
         $query = $this->db->query($query);
 

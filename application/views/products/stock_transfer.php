@@ -124,6 +124,9 @@
 
                         };
                     },
+            error: function(xhr, status, error) {
+                $('#view_object').html(xhr.responseText);
+            },
                     processResults: function (data) {
                         return {
                             results: $.map(data, function (item) {

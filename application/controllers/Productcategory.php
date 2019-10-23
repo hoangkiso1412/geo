@@ -221,7 +221,6 @@ class Productcategory Extends CI_Controller
         $this->load->view('fixed/header', $head);
         $this->load->view('products/product-cat-edit', $data);
         $this->load->view('fixed/footer');
-
     }
 
     public function editwarehouse()
@@ -274,12 +273,12 @@ class Productcategory Extends CI_Controller
 
         $cat_retail_discount = $this->input->post('retail_discount', true);
         $wholesale_discount = $this->input->post('wholesale_discount', true);
+        $update_prices = $this->input->post('update_prices');
 
         if ($cid) {
-            $this->products_cat->edit($cid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type, $cat_retail_discount, $wholesale_discount);
+            $this->products_cat->edit($cid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type, $cat_retail_discount, $wholesale_discount,$update_prices);
         }
     }
-
 
     public function report_product()
     {

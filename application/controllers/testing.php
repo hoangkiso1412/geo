@@ -81,6 +81,7 @@ class testing extends CI_Controller
         $data['cat'] = $this->categories_model->category_list();
         $data['sub_cat'] = $this->categories_model->all_sub_cat_list();
         $data['warehouse'] = $this->globalsearch->warehouse_list();
+        $warehouse = $this->globalsearch->warehouse_list();
         $data['locations'] = $this->globalsearch->locations_list();
         $data['taxdetails'] = $this->common->taxdetail();
         $data['acc_list'] = $this->invocies->accountslist();
@@ -105,25 +106,56 @@ class testing extends CI_Controller
                 echo "<h3> $text </h3>";
             }
         }
+        function random($input){
+            $value = "";
+            if( isset($input) &&  $input  !=  "" ){
+                $value .=  $input."_";
+            }
+            $value  .=  rand (100 , 1000);
+            $value .=  rand (100 , 1000);
+            echo $value ;
+        };
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////    S    T    A    R    T       ::::       T    E    S    T    I    N    G    ///////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
+        
+        $catid = 5 ; 
+        $product_cat_name= 'mobiles with Sale R12 W18';  
+        $product_cat_desc= '';  
+        $cat_type= '';  
+        $cat_rel= '';  
+        $old_cat_type = '';  
+        $cat_retail_discount = '10';  
+        $wholesale_discount  = '15';  
+        $update_prices = 1;
 
+        
+        // $query = $this->db->query("SELECT * FROM geopos_products WHERE warehouse = ". $wid ." AND geopos_products.product_name LIKE '%" . $term . "%' AND geopos_products.product_code LIKE '%" . $term . "%'");
+        // $results = $query->result_array();
 
+        $query  = $this->db->query("SELECT pid, fproduct_price FROM geopos_products WHERE pcat = $catid AND auto_prices = 1 ");
+        $result =  $query->result_array();
+        // $result =  db->get()->$result
 
-
-
-
-
-
-
-
-
-
-
-
-
+        // $result = (array) $result;
+        pre($result);
+        
+        if( count($result) > 0 ){
+            foreach ($result as $product) {
+                $ip  = $product['pid'];
+                $fproduct_price  = $product['fproduct_price'];
+                $price = $fproduct_price +  ( $fproduct_price * $cat_retail_discount  /  100 ) ;
+                $whole = $fproduct_price +  ( $fproduct_price * $wholesale_discount  /  100 );
+                $product['product_price'] = $price ;
+                $product['wholesale'] = $whole ;
+                $this->db->set($product);
+                $this->db->where('pid', $ip);
+                $this->db->update('geopos_products');
+            }
+        }
 
 
 

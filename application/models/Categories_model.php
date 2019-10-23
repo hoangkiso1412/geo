@@ -128,7 +128,7 @@ p.pid='$id' $qj ");
                 $this->lang->line('ERROR')));
         }
     }
-    public function edit($catid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type, $cat_retail_discount = 0, $wholesale_discount = 0)
+    public function edit($catid, $product_cat_name, $product_cat_desc, $cat_type, $cat_rel, $old_cat_type, $cat_retail_discount , $wholesale_discount ,  $update_prices)
     {
          if (!$cat_rel) $cat_rel = 0;
         $data = array(
@@ -137,7 +137,8 @@ p.pid='$id' $qj ");
             'c_type' => $cat_type,
             'rel_id' => $cat_rel,
             'retail_discount' => $cat_retail_discount,
-            'wholesale_discount' => $wholesale_discount
+            'wholesale_discount' => $wholesale_discount,
+            'update_prices' => $update_prices,
         );
         $this->db->set($data);
         $this->db->where('id', $catid);
@@ -151,9 +152,27 @@ p.pid='$id' $qj ");
             $this->aauth->applog("[Category Edited] $product_cat_name ID " . $catid, $this->aauth->get_user()->username);
             echo json_encode(array('status' => 'Success', 'message' =>
                 $this->lang->line('UPDATED')));
+
+            if ($update_prices == 1){
+                $query  = $this->db->query("SELECT pid, fproduct_price FROM geopos_products WHERE pcat = $catid AND auto_prices = 1");
+                $result =  $query->result_array();
+        
+                if( count($result) > 0 ){
+                    foreach ($result as $product) {
+                        $ip  = $product['pid'];
+                        $fproduct_price  = $product['fproduct_price'];
+                        $price = $fproduct_price +  ( $fproduct_price * $cat_retail_discount  /  100 ) ;
+                        $whole = $fproduct_price +  ( $fproduct_price * $wholesale_discount  /  100 );
+                        $product['product_price'] = $price ;
+                        $product['wholesale'] = $whole ;
+                        $this->db->set($product);
+                        $this->db->where('pid', $ip);
+                        $this->db->update('geopos_products');
+                    }
+                }
+            }
         } else {
-            echo json_encode(array('status' => 'Error', 'message' =>
-                $this->lang->line('ERROR')));
+            echo json_encode(array('status' => 'Error', 'message' =>$this->lang->line('ERROR')));
         }
     }
     public function editwarehouse($catid, $product_cat_name, $product_cat_desc, $lid)

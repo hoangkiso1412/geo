@@ -22,45 +22,6 @@
             <form method="post" id="data_form">
                 <input type="hidden" name="act" value="add_product">
                 <div class="form-group row">
-                    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-                    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-                    <script>
-                    $( function() {
-
-                        function return_product_id(prod, values) {
-                        for (var i = 0, len = values.length; i < len; i++) {
-                            if (values[i][1] == prod) {
-                                var edit_location = baseurl + 'products/edit?id=' + values[i][0];
-                            //alert(edit_location);
-                            document.location.href = edit_location;
-                            break;
-                            }
-                        }
-                        }
-
-                        var Product_List = [
-                            <?php
-                            foreach ($products_list as $row) {
-                                        $pid = $row['pid'];
-                                        $title = $row['product_name'];
-                                echo '["'.$pid.'", "'.$title.' : Edit "],';
-                            }
-                            ?>
-                        ];
-
-                        $( "#product_name" ).autocomplete({
-                                source: Product_List.map(function(val){return val[1]}),
-                        select: function (event, ui) {
-                        // return id of selected product
-                                        return_product_id(ui.item.value, Product_List);
-                            // end of product list loop
-                        }
-                        });
-                    } );
-                    </script>     
-
-
-
                     <div class="col-sm-6"><label class="col-form-label"
                                                  for="product_name"><?php echo $this->lang->line('Product Name') ?>
                             *</label>
@@ -137,6 +98,7 @@
                             <div class="custom-control custom-checkbox">
                             <label class="col-sm-12 col-form-label" for="product_cat"><?php echo $this->lang->line('Auto Profit') ? $this->lang->line('Auto Profit') : 'Auto Profit' ?></label>
                                 <input type="checkbox" class="" name="calculate_profit" id="calculate_profit" onchange="calculate_prices()">
+                                <input type="text" class="" name="calculate_profit_value" id="calculate_profit_value" value = "0" >
                             </div>
 
                         </div>
@@ -588,11 +550,13 @@ function numberizing(num){
 function calculate_prices() {
     var checkBox = document.getElementById("calculate_profit");
     if (checkBox.checked == true){ // check box
-
         var fproduct_price = parseFloat(document.getElementById('fproduct_price').value , 10);
-        if ( fproduct_price> 0 ) { //  category
+        if ( fproduct_price> 0 ) { //  purchased price
             var cat = document.getElementById('product_cat').value;
             if (cat !== '' ) { //  category
+                // update the status of auto calculate 
+                document.getElementById('calculate_profit_value').value = 1 ;
+
                 // fields
                 var sub_cat = document.getElementById('normal_sub_cat').value
                 // sale ratios
@@ -633,6 +597,8 @@ function calculate_prices() {
     } else {
         document.getElementById("product_price").disabled = false;
         document.getElementById("wholesale").disabled = false;
+        // update the status of auto calculate 
+        document.getElementById('calculate_profit_value').value = 0 ;
     }
 
   
@@ -951,3 +917,37 @@ function calculate_prices() {
     });
 <?php } ?>
 </script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $( function() {
+
+        function return_product_id(prod, values) {
+        for (var i = 0, len = values.length; i < len; i++) {
+            if (values[i][1] == prod) {
+                var edit_location = baseurl + 'products/edit?id=' + values[i][0];
+            //alert(edit_location);
+            document.location.href = edit_location;
+            break;
+            }
+        }
+        }
+
+        var Product_List = [
+            <?php
+            foreach ($products_list as $row) {
+                        $pid = $row['pid'];
+                        $title = $row['product_name'];
+                echo '["'.$pid.'", "'.$title.' : Edit "],';
+            }
+            ?>
+        ];
+
+        $( "#product_name" ).autocomplete({
+            source: Product_List.map(function(val){return val[1]}),
+        select: function (event, ui) {
+            return_product_id(ui.item.value, Product_List);
+        }
+        });
+    } );
+</script>  

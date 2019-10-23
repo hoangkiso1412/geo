@@ -160,7 +160,7 @@ class Products_model extends CI_Model
 
 
 
-    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '', $product_status, $bundle_products, $discounnt_array,$search_meta)
+    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '', $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value)
     {
         $ware_valid = $this->valid_warehouse($warehouse);
         if (!$sub_cat) {
@@ -206,7 +206,8 @@ class Products_model extends CI_Model
                         'product_status' => $product_status,
                         'bundle_products' => $bundle_products,
                         'bundle_discount' => $discounnt_array,
-                        'search_meta' => $search_meta
+                        'search_meta' => $search_meta ,
+                        'auto_prices' => $calculate_profit_value , 
                     );
                 } else {
                     $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
@@ -236,7 +237,8 @@ class Products_model extends CI_Model
                         'product_status' => $product_status,
                         'bundle_products' => $bundle_products,
                         'bundle_discount' => $discounnt_array,
-                        'search_meta' => $search_meta
+                        'search_meta' => $search_meta,
+                        'auto_prices' => $calculate_profit_value , 
                     );
                 }
                 $this->db->trans_start();
@@ -558,6 +560,24 @@ class Products_model extends CI_Model
 
     public function transfer($from_warehouse, $products_l, $to_warehouse, $qty)
     {
+        function transfer_custom_fields($old,$new){
+            $old  = (int)$old;
+            $new  = (int)$new;
+            
+            if(is_numeric($old) && is_numeric($new)){
+                $customfields = "SELECT * FROM `geopos_custom_data` WHERE rid = $old ";
+                $customfields = $this->db->query($customfields);
+                $customfields = $customfields->result_array();
+                if( count($customfields) > 0 ){
+                    foreach ($customfields as $key => $field) {
+                        unset($customfields[$key]['id']);
+                        $customfields[$key]['rid'] =  $new ;
+                    }
+                    $this->db->insert_batch ('geopos_custom_data' , $customfields);     
+                }    
+            }
+        }
+    
         $updateArray = array();
         $move = false;
         $qtyArray = explode(',', $qty);
@@ -566,7 +586,6 @@ class Products_model extends CI_Model
         $this->db->where('id', $to_warehouse);
         $query = $this->db->get();
         $to_warehouse_name = $query->row_array()['title'];
-        $ips = "";
         $i = 0;
         foreach ($products_l as $row) {
             $qty = 0;
@@ -643,10 +662,6 @@ class Products_model extends CI_Model
                 $data['sub'] = $row;
                 $data['vb'] = $to_warehouse;
 
-                //  original ip 
-                $original_ip  =  $row ;
-                $ips .= $original_ip ;
-
                 // New added Fields 
                 $data['related_product'] = $pr['related_product'];
                 $data['favorite'] = $pr['favorite'];
@@ -690,19 +705,7 @@ class Products_model extends CI_Model
                     $this->movers(1, $pid, $qty, 0, 'Stock Transferred & Initialized W ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty  W $to_warehouse_name ID " . $pr2['pid'], $this->aauth->get_user()->username);
 
-                    // Custom  fields
-                    $old = $row ;
-                    $new = $pid ; 
-                    $customfields = "SELECT * FROM `geopos_custom_data` WHERE rid = $old ";
-                    $customfields = $this->db->query($customfields);
-                    $customfields = $customfields->result_array();
-            
-                    // pre($customfields);
-                    foreach ($customfields as $key => $field) {
-                        unset($customfields[$key]['id']);
-                        $customfields[$key]['rid'] =  $new ;
-                    }
-                    $this->db->insert_batch ('geopos_custom_data' , $customfields);            
+                    transfer_custom_fields($row,$pid);
                 }
 
                 $this->db->set('qty', "qty-$qty", false);
@@ -718,7 +721,7 @@ class Products_model extends CI_Model
         }
 
         echo json_encode(array('status' => 'Success', 'message' =>
-            "new one is ". $pid  . "old one is  " .$row . $this->lang->line('UPDATED')));
+            "new one is ". $pid  . " old one is  " .$row . $this->lang->line('UPDATED')));
     }
 
     public function meta_delete($name)
@@ -737,7 +740,6 @@ class Products_model extends CI_Model
         $row = $query->row_array();
         return $row;
     }
-
 
     public function movers($type = 0, $rid1 = 0, $rid2 = 0, $rid3 = 0, $note = '')
     {

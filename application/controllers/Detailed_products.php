@@ -90,90 +90,9 @@ class Detailed_products extends CI_Controller
     }
 
     public function view_over(){
+        $this->load->model('Detailed_products_model', 'globalsearch');
         $pid = $this->input->post('id');
-        $this->db->select('geopos_products.*,geopos_warehouse.title,geopos_locations.cname');
-        $this->db->from('geopos_products');
-        $this->db->where('geopos_products.pid', $pid);
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        $this->db->join('geopos_locations', 'geopos_warehouse.loc = geopos_locations.id');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
-        $query = $this->db->get();
-        $data['product'] = $query->row_array();
-        $product_code = $data['product']['product_code'];
-
-        $this->db->select('geopos_products.*,geopos_warehouse.title');
-        $this->db->from('geopos_products');
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
-        $this->db->where('geopos_products.merge', 1);
-        $this->db->where('geopos_products.sub', $pid);
-        $query = $this->db->get();
-        $data['product_variations'] = $query->result_array();
-
-        //  For Warahouses Table
-        $this->db->select('geopos_products.*,geopos_warehouse.title,geopos_locations.cname');
-        $this->db->from('geopos_products');
-        $this->db->join('geopos_warehouse', 'geopos_products.warehouse =  geopos_warehouse.id');
-        $this->db->join('geopos_locations', 'geopos_warehouse.loc = geopos_locations.id');
-        $this->db->where('geopos_products.product_code', $product_code);
-        $query = $this->db->get();
-        $data['product_warehouse'] = $query->result_array();
-
-        $group_data = array();
-        foreach ($data['product_warehouse'] as $key=> $product) {
-            $group_data[$product['pid']]['warehouse'] = $product['title'];
-            $group_data[$product['pid']]['location'] = $product['cname'];
-        }
-        $data['group_data'] = $group_data;
-
-        $this->load->library("Custom");
-        $data['custom_fields'] = $this->custom->view_edit_fields($pid, 4);
-
-        $this->load->model('categories_model');
-        $cats_list = $this->categories_model->category_list();
-        $cat_name = '';
-        foreach ($cats_list as $row) {
-            $cid = $row['id'];
-            $title = $row['title'];
-
-            if($cid == $data['product']['pcat']){
-                $cat_name = $title;
-            }
-        }
-        $data['cat_name'] = $cat_name;
-
-        // Sales Report
-        $sales_query = "SELECT geopos_invoices.tid,geopos_invoice_items.pid,geopos_invoice_items.qty,geopos_invoice_items.price,geopos_invoices.invoicedate ";
-        $sales_query .= " FROM geopos_invoice_items ";
-        $sales_query .= " LEFT JOIN geopos_invoices ON geopos_invoices.id=geopos_invoice_items.tid ";
-        $sales_query .= " WHERE geopos_invoices.status!='canceled' AND (  ";
-        $counter =  0 ;
-        $or = '';
-        foreach ($group_data as $key => $id) {
-            if($counter > 0 ){
-                $or = " OR ";
-            }
-            $sales_query .= " $or geopos_invoice_items.pid= '$key' ";
-            $counter ++ ;
-        }
-        $sales_query .= " )";
-        $sales_query = $this->db->query($sales_query);
-        $sales_result = $sales_query->result_array();
-        $data['sales'] = $sales_result;
+        $this->globalsearch->popup_data($pid);
         $this->load->view('pos/detailed-product-view-over', $data);
     }
 }
