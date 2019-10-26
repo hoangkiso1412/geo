@@ -109,7 +109,9 @@ class Products extends CI_Controller
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="' . base_url() . 'products/barcode?id=' . $pid . '" target="_blank"> ' . $this->lang->line('BarCode') . '</a><div class="dropdown-divider"></div> <a class="dropdown-item" href="' . base_url() . 'products/posbarcode?id=' . $pid . '" target="_blank"> ' . $this->lang->line('BarCode') . ' - Compact</a> <div class="dropdown-divider"></div>
                                              <a class="dropdown-item" href="' . base_url() . 'products/label?id=' . $pid . '" target="_blank"> ' . $this->lang->line('Product') . ' Label</a><div class="dropdown-divider"></div>
-                                         <a class="dropdown-item" href="' . base_url() . 'products/poslabel?id=' . $pid . '" target="_blank"> Label - Compact</a></div></div><a class="btn btn-pink  btn-sm" href="' . base_url() . 'products/report_product?id=' . $pid . '" target="_blank"> <span class="fa fa-pie-chart"></span> ' . $this->lang->line('Sales') . '</a><div class="btn-group">
+                                         <a class="dropdown-item" href="' . base_url() . 'products/poslabel?id=' . $pid . '" target="_blank"> Label - Compact</a></div></div><a class="btn btn-pink  btn-sm" href="' . base_url() . 'products/report_product?id=' . $pid . '" target="_blank"> <span class="fa fa-pie-chart"></span> ' . $this->lang->line('Sales') . '</a>' 
+                                         .'<a class="btn btn-danger btn-sm" href="' . base_url() . 'products/history?id=' . $pid . '" target="_blank"> <span class="fa fa-pie-chart"></span>  ' . $this->lang->line('History') . '</a>'
+                                         .'<div class="btn-group">
                                     <button type="button" class="btn btn btn-primary dropdown-toggle   btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-cog"></i>  </button>
                                     <div class="dropdown-menu">
 &nbsp;<a href="' . base_url() . 'products/edit?id=' . $pid . '"  class="btn btn-purple btn-sm"><span class="fa fa-edit"></span>' . $this->lang->line('Edit') . '</a><div class="dropdown-divider"></div>&nbsp;<a href="#" data-object-id="' . $pid . '" class="btn btn-danger btn-sm  delete-object"><span class="fa fa-trash"></span>' . $this->lang->line('Delete') . '</a>
@@ -238,6 +240,7 @@ class Products extends CI_Controller
 	            }
 
         }
+        
     }
 
 
@@ -686,7 +689,14 @@ class Products extends CI_Controller
             $this->load->view('fixed/footer');
         }
     }
-
+    public function history(){
+        $head['title'] = "Prices History";
+        $this->load->model('products_model', 'products');
+        $data['data'] = $this->products->prices_changes_list();
+        $this->load->view('fixed/header', $head);
+        $this->load->view('products/history', $data);
+        $this->load->view('fixed/footer');
+    }
     public function custom_label()
     {
         if ($this->input->post()) {

@@ -122,42 +122,28 @@ class testing extends CI_Controller
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         
-        $catid = 5 ; 
-        $product_cat_name= 'mobiles with Sale R12 W18';  
-        $product_cat_desc= '';  
-        $cat_type= '';  
-        $cat_rel= '';  
-        $old_cat_type = '';  
-        $cat_retail_discount = '10';  
-        $wholesale_discount  = '15';  
-        $update_prices = 1;
+        // Insert INTO geopos_products_prices_history (pid,product_price,fproduct_price,wholesale) VALUES (9,788,333,130)
+        
+        $num = 8 ;
 
         
-        // $query = $this->db->query("SELECT * FROM geopos_products WHERE warehouse = ". $wid ." AND geopos_products.product_name LIKE '%" . $term . "%' AND geopos_products.product_code LIKE '%" . $term . "%'");
-        // $results = $query->result_array();
-
-        $query  = $this->db->query("SELECT pid, fproduct_price FROM geopos_products WHERE pcat = $catid AND auto_prices = 1 ");
-        $result =  $query->result_array();
-        // $result =  db->get()->$result
-
-        // $result = (array) $result;
-        pre($result);
         
-        if( count($result) > 0 ){
-            foreach ($result as $product) {
-                $ip  = $product['pid'];
-                $fproduct_price  = $product['fproduct_price'];
-                $price = $fproduct_price +  ( $fproduct_price * $cat_retail_discount  /  100 ) ;
-                $whole = $fproduct_price +  ( $fproduct_price * $wholesale_discount  /  100 );
-                $product['product_price'] = $price ;
-                $product['wholesale'] = $whole ;
-                $this->db->set($product);
-                $this->db->where('pid', $ip);
-                $this->db->update('geopos_products');
-            }
-        }
+        $result = $num >5  ? 'more' : 'less';
+        text($result);
 
 
+
+        $data = array(
+            'pid'               => 100 ,
+            'product_price'     => 203 ,
+        );
+        //$this->db->insert('geopos_products_prices_history', $data ) ; 
+        $pid = 44 ;
+        $query = $this->db->query("SELECT * FROM geopos_products_prices_history  WHERE pid  =  $pid");
+
+        pre($query->result_array());
+        
+        
 
 
 

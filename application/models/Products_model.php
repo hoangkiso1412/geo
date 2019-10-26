@@ -252,6 +252,15 @@ class Products_model extends CI_Model
                     echo json_encode(array('status' => 'Error', 'message' =>
                         $this->lang->line('ERROR')));
                 }
+                // History Table 
+                $data = array(
+                    'pid'               => $pid ,
+                    'product_price'     => $product_price ,
+                    'fproduct_price'    => $factoryprice ,
+                    'wholesale'         => $wholesale ,
+                );
+                $this->db->insert('geopos_products_prices_history', $data ) ;            
+
                 if ($v_type) {
                     foreach ($v_type as $key => $value) {
                         if ($v_type[$key] && numberClean($v_stock[$key]) > 0.00) {
@@ -412,7 +421,7 @@ class Products_model extends CI_Model
 
     public function edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat = '', $b_id = '', $related_product, $favorite ='', $wholesale, $product_status, $bundle_products, $discounnt_array, $search_meta)
     {
-        $this->db->select('qty');
+        $this->db->select('qty,product_price,fproduct_price,wholesale');
         $this->db->from('geopos_products');
         $this->db->where('pid', $pid);
         $query = $this->db->get();
@@ -508,6 +517,26 @@ class Products_model extends CI_Model
                     $this->lang->line('ERROR')));
             }
         }
+        // History Table 
+                // Insert INTO geopos_products_prices_history (pid,product_price,fproduct_price,wholesale) VALUES (9,788,333,130)
+
+        $data =  array(
+            'pid'  => $pid,
+        );
+        if($r_n['product_price'] != $product_price){
+            $data['product_price'] = $product_price ;
+        }
+        if($r_n['fproduct_price'] != $factoryprice){
+            $data['fproduct_price'] = $factoryprice;
+        }
+        if($r_n['wholesale'] != $wholesale){
+            $data['wholesale'] = $wholesale;
+        }
+
+        if( count($data) > 1 ){
+            $this->db->insert('geopos_products_prices_history', $data ) ;       
+        }
+
         $this->custom->edit_save_fields_data($pid, 4);
     }
 
@@ -781,5 +810,28 @@ class Products_model extends CI_Model
             $query_result = $this->db->query($query)->result_array();               
             return $query_result;
         }
+    }
+    public function prices_changes_list()
+    {
+        $pid = $this->input->get('id');
+        
+        $no =  0 ; 
+        $output =  '';
+        $list = $this->db->query("SELECT * FROM geopos_products_prices_history  WHERE pid  =  $pid");
+        $list = $list->result_array();
+
+        if( count($list) > 0 ){
+            foreach ($list as $change) {
+                $no ++ ;
+                $product_price  = $change['product_price'] !== NULL  ? $change['product_price'] : $this->lang->line('__no changes__');
+                $wholesale      = $change['wholesale'] !== NULL  ? $change['wholesale'] : $this->lang->line('__no changes__');
+                $fproduct_price  = $change['fproduct_price'] !== NULL  ? $change['fproduct_price'] : $this->lang->line('__no changes__');
+                $date           = $change['date'];
+                $output .= "<tr role='row' class='odd'><td>$no</td><td>$fproduct_price</td><td>$product_price</td><td>$wholesale</td><td>$date</td></tr>";
+            }
+        }else {
+            $output =  "<tr role='row' class='odd'><td>".$this->lang->line('No Saved changes in the prices for this products')."</td></tr>";
+        }
+        return $output;
     }
 }

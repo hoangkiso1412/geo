@@ -171,9 +171,10 @@
                         dataType: 'html',
                         success: function (data) {
                             $('#view_object').html(data);
-
+                        },
+                        error: function(xhr, status, error) {
+                            $('#view_object').html(xhr.responseText);
                         }
-
                     });
 
                 });

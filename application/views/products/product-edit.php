@@ -680,11 +680,13 @@ function calculate_prices() {
 		            $(".select2-container--default").width('100%');
 		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
 		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+
             	            update_bundle_prices();
 	    <?php } else {   ?>
 		            $(".bundel_select").hide();
 		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = false;
-		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+		            document.getElementById('product_price').value = 0;
+		            document.getElementById('wholesale').value = 0;
             <?php } ?>
             
             $("#wfrom").on('change', function () {
