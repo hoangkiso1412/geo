@@ -76,7 +76,7 @@ class Detailed_products extends CI_Controller
         $data['draft_list'] = $this->invocies->drafts();
         $data['terms'] = $this->invocies->billingterms();
         $data['currency'] = $this->invocies->currencies();
-        $head['title'] = "New Invoice";
+        $head['title'] = "Global Search";
         $head['usernm'] = $this->aauth->get_user()->username;
         $data['cat'] = $this->categories_model->category_list();
         $data['sub_cat'] = $this->categories_model->all_sub_cat_list();
@@ -91,8 +91,8 @@ class Detailed_products extends CI_Controller
 
     public function view_over(){
         $this->load->model('Detailed_products_model', 'globalsearch');
-        $pid = $this->input->post('id');
-        $this->globalsearch->popup_data($pid);
+        $pid  = $this->input->post('id');
+        $data = $this->globalsearch->popup_data($pid);
         $this->load->view('pos/detailed-product-view-over', $data);
     }
 }

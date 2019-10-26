@@ -51,17 +51,20 @@ class Custom
                 }
                  
              }
-             foreach ($images as $keyImage => $image) {
-                if ($image) {
-                    $dataImage = array(
-                        'field_id' => $keyImage,
-                        'rid' => $rid,
-                        'module' => $r_type,
-                        'data' => json_encode($image)
-                    );
-                    $datalistImage[$dindexImage] = $dataImage;
-                    $dindexImage++;
-                }
+             if(is_array($images)){
+                foreach ($images as $keyImage => $image) {
+                    if ($image) {
+                        $dataImage = array(
+                            'field_id' => $keyImage,
+                            'rid' => $rid,
+                            'module' => $r_type,
+                            'data' => json_encode($image)
+                        );
+                        $datalistImage[$dindexImage] = $dataImage;
+                        $dindexImage++;
+                    }
+                 }
+    
              }
             if($dindex) $this->PI->db->insert_batch('geopos_custom_data', $datalist);
             if($dindexImage) $this->PI->db->insert_batch('geopos_custom_data', $datalistImage);

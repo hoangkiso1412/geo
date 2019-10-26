@@ -158,7 +158,18 @@ class Products extends CI_Controller
         $sub_cat = $this->input->post('sub_cat');
         $brand = $this->input->post('brand');
         $related_products_as_array = $this->input->post('related_product');
-        $related_product = json_encode($related_products_as_array);
+        if(is_array($related_products_as_array)){
+            $related_product = json_encode($related_products_as_array);
+        }else {
+            $related_product = NULL;
+        }
+
+
+
+
+
+
+
         $favorite = $this->input->post('favorite') ? 1 : 0; 
         $calculate_profit_value = $this->input->post('calculate_profit_value');
         $wholesale = $this->input->post('wholesale');
@@ -219,7 +230,7 @@ class Products extends CI_Controller
         }
 
         //  Add the related products to Search meta
-        if(count($related_products_as_array) > 0){
+        if(is_array($related_products_as_array) && count($related_products_as_array) > 0){
             foreach ($related_products_as_array as $id) {
                 $data = $this->products->get_product_data($id,'just_name');
                 $name = $data[0]['product_name'];

@@ -459,6 +459,7 @@ class Detailed_products_model extends CI_Model
         $query = $this->db->get();
         $data['product_variations'] = $query->result_array();
 
+        /*
         //  For Warahouses Table
         $this->db->select('geopos_products.*,geopos_warehouse.title,geopos_locations.cname');
         $this->db->from('geopos_products');
@@ -495,7 +496,7 @@ class Detailed_products_model extends CI_Model
         $sales_query = "SELECT geopos_invoices.tid,geopos_invoice_items.pid,geopos_invoice_items.qty,geopos_invoice_items.price,geopos_invoices.invoicedate ";
         $sales_query .= " FROM geopos_invoice_items ";
         $sales_query .= " LEFT JOIN geopos_invoices ON geopos_invoices.id=geopos_invoice_items.tid ";
-        $sales_query .= " WHERE geopos_invoices.status!='canceled' AND (  ";
+        $sales_query .= " WHERE geopos_invoices.status!='canceled' AND ". json_encode($group_data)." (  ";
         $counter =  0 ;
         $or = '';
         foreach ($group_data as $key => $id) {
@@ -509,5 +510,12 @@ class Detailed_products_model extends CI_Model
         $sales_query = $this->db->query($sales_query);
         $sales_result = $sales_query->result_array();
         $data['sales'] = $sales_result;
+        */
+
+        /*
+
+        */
+
+
     }
 }

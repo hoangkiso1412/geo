@@ -56,6 +56,7 @@ class testing extends CI_Controller
         }
         $this->load->library("Custom");
         $this->li_a = 'sales';
+        echo "<title>testing</title>";
     }
 
     public function index(){
@@ -123,32 +124,19 @@ class testing extends CI_Controller
         
         
         // Insert INTO geopos_products_prices_history (pid,product_price,fproduct_price,wholesale) VALUES (9,788,333,130)
-        
-        $num = 8 ;
-
-        
-        
-        $result = $num >5  ? 'more' : 'less';
-        text($result);
-
-
-
-        $data = array(
-            'pid'               => 100 ,
-            'product_price'     => 203 ,
-        );
-        //$this->db->insert('geopos_products_prices_history', $data ) ; 
-        $pid = 44 ;
-        $query = $this->db->query("SELECT * FROM geopos_products_prices_history  WHERE pid  =  $pid");
-
-        pre($query->result_array());
-        
-        
-
-
-
-
-
+        echo $this->aauth->get_user()->loc ;
+        $qw =  "";
+        if ($this->aauth->get_user()->loc) { //  if i active spicific warehous it will return 1 or it will return nothing 
+            $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
+            if (BDATA) {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
+            } else {
+                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
+            }
+        } elseif (!BDATA) {
+            $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
+            $qw .= '(geopos_warehouse.loc=0) AND ';
+        }
 
 
 

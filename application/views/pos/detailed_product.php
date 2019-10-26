@@ -62,6 +62,7 @@
                         <option value="0"><?php echo $this->lang->line('Status') ?></option>
                         <option value="1"><?php echo $this->lang->line('New') ?></option>
                         <option value="2"><?php echo $this->lang->line('Used') ?></option>
+                        <option value="3"><?php echo $this->lang->line('As New') ?></option>
                 </select></div>
             </div>
 

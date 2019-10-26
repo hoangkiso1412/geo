@@ -242,6 +242,8 @@ function calculate_prices() {
                             <select name="product_status" id="product_status" class="form-control required">
                                 <option <?php echo ($product['product_status'] == 1 ? 'selected' : '') ?> value='1'><?php echo $this->lang->line('New') ?></option>
                                 <option <?php echo ($product['product_status'] == 2 ? 'selected' : '') ?> value='2'><?php echo $this->lang->line('Used') ?></option>
+                                <option <?php echo ($product['product_status'] == 3 ? 'selected' : '') ?> value='3'><?php echo $this->lang->line('As New') ?></option>
+
                             </select>
                         </div>
 

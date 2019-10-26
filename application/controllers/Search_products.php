@@ -26,6 +26,7 @@ class Search_products extends CI_Controller
         $this->load->library("Aauth");
         $this->load->model('search_model');
         $this->load->model('products_model', 'products');
+        $this->load->model('test');
 
         if (!$this->aauth->is_loggedin()) {
             redirect('/user/', 'refresh');
@@ -300,7 +301,7 @@ class Search_products extends CI_Controller
         echo $out;
     }
 
-    //  for the global search page
+    //  Global Search
     public function detailed_product_search() 
     {        
         $out = '';
@@ -330,7 +331,6 @@ class Search_products extends CI_Controller
         if ($cid > 0) { // Category
             $qw .= " AND (geopos_products.pcat='$cid') ";
         }
-
         $bar = '';
         if(strlen($name) >= 2){
             $name =  explode(',' , $name);
@@ -350,11 +350,38 @@ class Search_products extends CI_Controller
         }
         $query  = " SELECT geopos_products.* FROM geopos_products ";
         $query .= " $join WHERE (geopos_products.qty>0) $qw   ";
-        $query .= " GROUP BY product_code  DESC ";
-
+        $query .= " GROUP BY product_code ORDER BY pid  DESC ";
         $query = $this->db->query($query);
-
         $result = $query->result_array();
+
+        //  Related :  save all the related in array then remove what showed in the last query then show the rest
+        $related  =  array(); 
+        foreach ($result as $key => $product) {
+            $parents[]= $product['pid'];  
+            if( $product['related_product'] != NULL &&  $product['related_product'] != 'null'){
+                    $current_relateds =  json_decode($product['related_product']);
+                    $related = array_merge($related,$current_relateds);
+            }
+        }
+        $related =  array_unique($related);
+        foreach ($related as $id) {
+            if(in_array($id,$parents)){
+                unset($related[$id]);
+            }
+        }
+        if (count($related) >  0) {
+            $whr =  "" ;
+            foreach ($related as $key => $id) {
+                $or   = $key > 0 ?  " OR "  : " ";
+                $whr .= " $or pid =  $id ";
+            }
+            $query2  = " SELECT * FROM geopos_products ";
+            $query2 .= "WHERE $whr ";
+            $query2 = $this->db->query($query2);
+            $result2 = $query2->result_array();     
+        }
+        $result = array_merge ($result, $result2);
+
         $i = 0;
         echo $qw.'<div class="row match-height">';
         foreach ($result as $key => $row) {
