@@ -92,7 +92,7 @@ class Detailed_products extends CI_Controller
     public function view_over(){
         $this->load->model('Detailed_products_model', 'globalsearch');
         $pid  = $this->input->post('id');
-        $data = $this->globalsearch->popup_data($pid);
+        $data['data'] = $this->globalsearch->popup_data($pid);
         $this->load->view('pos/detailed-product-view-over', $data);
     }
 }

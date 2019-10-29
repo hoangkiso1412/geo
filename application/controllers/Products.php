@@ -773,6 +773,15 @@ class Products extends CI_Controller
             $this->load->view('fixed/footer');
         }
     }
-
-
+    public function check_product_code()
+    {
+        $code = $this->input->get('code');
+        $query = " SELECT geopos_products.pid , geopos_warehouse.loc  FROM geopos_products ";
+        $query .= " LEFT JOIN geopos_warehouse ON geopos_products.warehouse = geopos_warehouse.id ";
+        $query .= " WHERE  geopos_products.product_code =  '$code'  AND geopos_warehouse.loc = 3 LIMIT 1 ";
+        $query = $this->db->query($query);
+        $query =   $query->result_array();
+        $return =  count($query) >  0  ? $query[0]['pid'] :  0 ;
+        echo  $return ;
+    }
 }

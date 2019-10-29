@@ -33,7 +33,7 @@
                     <div class="col-sm-6"><label class="col-form-label"
                                                  for="product_code"><?php echo $this->lang->line('Product Code') ?></label>
                         <input type="text" placeholder="Product Code"
-                               class="form-control required" name="product_code">
+                               class="form-control required" id="product_code" name="product_code">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -98,7 +98,7 @@
                             <div class="custom-control custom-checkbox">
                             <label class="col-sm-12 col-form-label" for="product_cat"><?php echo $this->lang->line('Auto Profit') ? $this->lang->line('Auto Profit') : 'Auto Profit' ?></label>
                                 <input type="checkbox" class="" name="calculate_profit" id="calculate_profit" onchange="calculate_prices()">
-                                <input type="text" class="" name="calculate_profit_value" id="calculate_profit_value" value = "0" >
+                                <input type="text" class="" style= "display: none" name="calculate_profit_value" id="calculate_profit_value" value = "0" >
                             </div>
 
                         </div>
@@ -533,6 +533,22 @@
 <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js'); ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
 <script>
+    $(document).on('change', "#product_code", function (e) {    
+        var code= document.getElementById("product_code").value ; 
+        jQuery.ajax({
+            url: baseurl + 'products/check_product_code?code='+code,
+            dataType: 'json',
+            type: 'GET',
+            quietMillis: 50,
+            success: function(data){
+                if(data != 0){ // not results
+                    alert('<?php echo $this->lang->line('this code is used before please choose onother one') ?>');
+                    document.getElementById("product_code").value =  "" ;
+                }
+            }
+        });
+    });
+
  $("#product_cat").change(function () {
     calculate_prices();
 });
@@ -620,7 +636,6 @@ function calculate_prices() {
                 };
             },
             success: function(data){
-                console.log(data);
                 var category = document.getElementById('product_cat');
                 category = category.options[category.selectedIndex].text;
 
@@ -639,8 +654,7 @@ function calculate_prices() {
 	});
 
     });
-</script>
-<script>
+
     /*jslint unparam: true */
     /*global window, $ */
     $(function () {
@@ -689,6 +703,7 @@ function calculate_prices() {
         });
 
     });
+
 
 
     $(document).on('click', ".tr_clone_add", function (e) {

@@ -1,7 +1,15 @@
 <?php
+    
     echo "<pre>";
-    // print_r()
+// print_r($data);
     echo "</pre>";
+    $product =  $data['product'];
+    $custom_fields = $data['custom_fields'];
+    $product_code = $product['cat_name'];
+    // $product_variation =  $data['product_variation'];
+    $product_stocks =  $data['product_stocks'];
+    $sales = $data['sales'];
+    $Locs_n_wars = $data['Locs_n_wars'] ;
 ?>
 
 <div class="text-center modal-header">
@@ -10,7 +18,7 @@
 </div>
 
 <table class="table table-striped table-bordered">
-    <?php echo '<tr><td>' . $this->lang->line('Cat') . ' :'.$cat_name.'</td> <td> '.$this->lang->line('Code').' : ' . $product['product_code'] . '</td>  </tr>'; ?>
+    <?php echo '<tr><td>' . $this->lang->line('Cat') . ' :'.$product['cat_name'].'</td> <td> '.$this->lang->line('Code').' : ' . $product['product_code'] . '</td>  </tr>'; ?>
 </table>
 
 <table class="table table-striped table-bordered">
@@ -56,86 +64,32 @@ $("#bzoom").zoom({
     autoplay : false
 });
 </script>
-
-
-<!--
-<h5><?php echo $product['product_name'] . ' (' . $product['title'] . ')'; ?></h5>
-<table class="table">
-    <?php echo '<tr><td>' . $product['product_name'] . '</td><td>Code : ' . $product['product_code'] . '</td><td> ' . $this->lang->line('Stock') . ' : ' . $product['qty'] . '<br><br><a href="' . base_url() . 'products/edit?id=' . $product['pid'] . '" class="btn btn-primary btn-sm"><span class="icon-pencil"></span> ' . $this->lang->line('Edit') . '</a>  <div class="btn-group">
-                    <button type="button" class="btn btn-blue dropdown-toggle   btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icon-print"></i>  ' . $this->lang->line('Print') . '                                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="' . base_url() . 'products/barcode?id=' . $product['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . '</a>
-
-                        <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="' . base_url() . 'products/posbarcode?id=' . $product['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . ' - Compact</a>
-                            <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="' . base_url() . 'products/label?id=' . $product['pid'] . '" target="_blank"> ' . $this->lang->line('Product') . ' Label</a>
-
-                        <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="' . base_url() . 'products/poslabel?id=' . $product['pid'] . '" target="_blank"> Label - Compact</a>
-
-                    </div>
-                </div>   <a class="btn btn-pink  btn-sm" href="' . base_url() . 'products/report_product?id=' . $product['pid'] . '" target="_blank"> <span class="icon-pie-chart2"></span> ' . $this->lang->line('Sales') . '</a> </td></tr>'; ?>
-</table>
-
--->
-
-<?php if ($product_variations) {
-
-    echo '<h6>' . $this->lang->line('Products') . ' ' . $this->lang->line('Variations') . '</h6>';
-    ?>
-
-    <table class="table table-striped table-bordered">
-        <?php
-
-        foreach ($product_variations as $product_variation) {
-            echo '<tr><td><a href="' . base_url() . 'products/edit?id=' . $product_variation['pid'] . '" class="btn btn-primary btn-sm"><span class="icon-pencil"></span> ' . $this->lang->line('Edit') . '</a>  <div class="btn-group">
-                    <button type="button" class="btn btn-blue dropdown-toggle   btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icon-print"></i>  ' . $this->lang->line('Print') . '                                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="' . base_url() . 'products/barcode?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . '</a>
-
-                        <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="' . base_url() . 'products/posbarcode?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('BarCode') . ' - Compact</a>
-                            <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="' . base_url() . 'products/label?id=' . $product_variation['pid'] . '" target="_blank"> ' . $this->lang->line('Product') . ' Label</a>
-
-                        <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="' . base_url() . 'products/poslabel?id=' . $product_variation['pid'] . '" target="_blank"> Label - Compact</a>
-
-                    </div>
-                </div>   <a class="btn btn-pink  btn-sm" href="' . base_url() . 'products/report_product?id=' . $product_variation['pid'] . '" target="_blank"> <span class="icon-pie-chart2"></span> ' . $this->lang->line('Sales') . '</a>  ' . $product_variation['product_name'] . '</td><td>Code : ' . $product_variation['product_code'] . '</td><td> ' . $this->lang->line('Stock') . ' : ' . $product_variation['qty'] . ' </td></tr>';
-        } ?>
-    </table>
-<?php } ?>
-    <h5><?php echo  $this->lang->line('Stocks'); ?></h5>
-    <table class="table table-striped table-bordered">
-            <tr>
-                <td><strong><?php echo $this->lang->line('Location') ?></strong></td>
-                <td><strong><?php echo $this->lang->line('Warehouse') ?></strong></td>
-                <td><strong><?php echo $this->lang->line('Stock') ?></strong></td>
-                <td><strong><?php echo $this->lang->line('Purchase Price') ?></strong></td>
-                <td><strong><?php echo $this->lang->line('Retail Price') ?></strong></td>
-                <td><strong><?php echo $this->lang->line('Wholesale Price') ?></strong></td>
-            </tr>
-        <?php
-            $stock = 0 ;
-            foreach ($product_warehouse as $product_variation) {
-                echo '<tr><td>' .$product_variation['cname']. '</td><td>' . $product_variation['title'] . '</td><td> ' . $product_variation['qty'] . '  </td> <td> ' . $product_variation['fproduct_price'] . '</td>  <td>' .$product_variation['product_price'].'</td> <td> '. $product_variation['wholesale'] . '</td>';
-                    echo '</tr>';
-                    $stock += (int)$product_variation['qty'] ;
-            } 
-        ?>
+<h5><?php echo  $this->lang->line('Stocks'); ?></h5>
+<table class="table table-striped table-bordered">
         <tr>
-            <td colspan="2"><strong><?php echo $this->lang->line('Stock') ?></strong></td>
-            <td><strong><?php echo $stock; ?></strong></td>
+            <td><strong><?php echo $this->lang->line('Location') ?></strong></td>
+            <td><strong><?php echo $this->lang->line('Warehouse') ?></strong></td>
+            <td><strong><?php echo $this->lang->line('Stock') ?></strong></td>
+            <td><strong><?php echo $this->lang->line('Purchase Price') ?></strong></td>
+            <td><strong><?php echo $this->lang->line('Retail Price') ?></strong></td>
+            <td><strong><?php echo $this->lang->line('Wholesale Price') ?></strong></td>
         </tr>
-    </table>
-<?php //}
-?>
+    <?php
+        $stock = 0 ;
+        foreach ($product_stocks as $product_variation) {
+            echo '<tr><td>' .$product_variation['cname']. '</td><td>' . $product_variation['title'] . '</td><td> ' . $product_variation['qty'] . '  </td> <td> ' . $product_variation['fproduct_price'] . '</td>  <td>' .$product_variation['product_price'].'</td> <td> '. $product_variation['wholesale'] . '</td>';
+                echo '</tr>';
+                $stock += (int)$product_variation['qty'] ;
+        } 
+    ?>
+    <tr>
+        <td colspan="2"><strong><?php echo $this->lang->line('Stock') ?></strong></td>
+        <td><strong><?php echo $stock; ?></strong></td>
+    </tr>
+</table>
 <hr>
-
-
-
+<?php 
+if(count($sales) >  0 ){ ?>
 <h5><?php echo  $this->lang->line('Sales') . ' ( ' . $this->lang->line('Invoices').' : '.count($sales) . ' )'; ?></h5>
 <table class="table table-striped table-bordered">
 
@@ -146,17 +100,32 @@ $("#bzoom").zoom({
                 <td><strong><?php echo $this->lang->line('Qty') ?></strong></td>
                 <td><strong><?php echo $this->lang->line('Price') ?></strong></td>
             </tr>
+
             <?php 
             foreach ($sales as $purchase) { 
                 
                 ?>
 
                 <tr>
-                <td><strong><?php echo $group_data[$purchase['pid']]['location']; ?></strong></td>
+                <td><strong><?php echo $Locs_n_wars[$purchase['pid']]['location']; ?></strong></td>
                 <td><strong><?php echo $purchase['tid'] ?></strong></td>
                 <td><strong><?php echo $purchase['invoicedate'] ?></strong></td>
                 <td><strong><?php echo $purchase['qty'] ?></strong></td>
                 <td><strong><?php echo $purchase['price'] ?></strong></td>
             </tr>
-            <?php } ?>
-</table> <hr>
+            <?php }
+            ?>
+            <?php ?>
+            </table> <hr>
+<?php 
+            
+}
+?>
+
+
+
+<?php    
+    echo "<pre>";
+    //print_r($Locs_n_wars);
+    echo "</pre>";
+?>

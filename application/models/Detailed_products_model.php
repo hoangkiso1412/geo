@@ -426,96 +426,59 @@ class Detailed_products_model extends CI_Model
         return $query->result_array();
     }
     public function popup_data($pid){
-        $this->db->select('geopos_products.*,geopos_warehouse.title,geopos_locations.cname');
+        // Main Product Data
+        $this->db->select('geopos_products.*,geopos_product_cat.title  AS cat_name');
         $this->db->from('geopos_products');
         $this->db->where('geopos_products.pid', $pid);
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        $this->db->join('geopos_locations', 'geopos_warehouse.loc = geopos_locations.id');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
+        $this->db->join('geopos_product_cat', 'geopos_product_cat.id = geopos_products.pcat');
         $query = $this->db->get();
         $data['product'] = $query->row_array();
-        $product_code = $data['product']['product_code'];
-
-        $this->db->select('geopos_products.*,geopos_warehouse.title');
-        $this->db->from('geopos_products');
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-        if ($this->aauth->get_user()->loc) {
-            $this->db->group_start();
-            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
-            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
-            $this->db->group_end();
-        } elseif (!BDATA) {
-            $this->db->where('geopos_warehouse.loc', 0);
-        }
-        $this->db->where('geopos_products.merge', 1);
-        $this->db->where('geopos_products.sub', $pid);
-        $query = $this->db->get();
-        $data['product_variations'] = $query->result_array();
-
-        /*
-        //  For Warahouses Table
-        $this->db->select('geopos_products.*,geopos_warehouse.title,geopos_locations.cname');
-        $this->db->from('geopos_products');
-        $this->db->join('geopos_warehouse', 'geopos_products.warehouse =  geopos_warehouse.id');
-        $this->db->join('geopos_locations', 'geopos_warehouse.loc = geopos_locations.id');
-        $this->db->where('geopos_products.product_code', $product_code);
-        $query = $this->db->get();
-        $data['product_warehouse'] = $query->result_array();
-
-        $group_data = array();
-        foreach ($data['product_warehouse'] as $key=> $product) {
-            $group_data[$product['pid']]['warehouse'] = $product['title'];
-            $group_data[$product['pid']]['location'] = $product['cname'];
-        }
-        $data['group_data'] = $group_data;
-
+        
+        // Gallary Images
         $this->load->library("Custom");
         $data['custom_fields'] = $this->custom->view_edit_fields($pid, 4);
 
-        $this->load->model('categories_model');
-        $cats_list = $this->categories_model->category_list();
-        $cat_name = '';
-        foreach ($cats_list as $row) {
-            $cid = $row['id'];
-            $title = $row['title'];
+        // Warahouses Table
+        $product_code =  $data['product']['product_code'];
+        $this->db->select('geopos_products.*,geopos_warehouse.title,geopos_locations.cname');
+        $this->db->from('geopos_products');
+        $this->db->join('geopos_warehouse', 'geopos_products.warehouse =  geopos_warehouse.id','LEFT');
+        $this->db->join('geopos_locations', 'geopos_warehouse.loc = geopos_locations.id','LEFT');
+        $this->db->where('geopos_products.product_code', $product_code);
+        $query = $this->db->get();
+        $data['product_stocks'] = $query->result_array();
 
-            if($cid == $data['product']['pcat']){
-                $cat_name = $title;
-            }
+        $Locs_n_wars    = array(); // Locations and warehouses so we don't sql them again
+        $family_members = array(); // collect the product and all the other products with the same PRODUCT_CODE
+        foreach ($data['product_stocks'] as $key=> $product) {
+            $Locs_n_wars[$product['pid']]['warehouse'] = $product['title'];
+            $Locs_n_wars[$product['pid']]['location'] = $product['cname'];
+            $family_members[] =   $product['pid'] ;
         }
-        $data['cat_name'] = $cat_name;
+        $data['Locs_n_wars'] = $Locs_n_wars;
 
-        // Sales Report
+        // Sales Table
         $sales_query = "SELECT geopos_invoices.tid,geopos_invoice_items.pid,geopos_invoice_items.qty,geopos_invoice_items.price,geopos_invoices.invoicedate ";
         $sales_query .= " FROM geopos_invoice_items ";
         $sales_query .= " LEFT JOIN geopos_invoices ON geopos_invoices.id=geopos_invoice_items.tid ";
-        $sales_query .= " WHERE geopos_invoices.status!='canceled' AND ". json_encode($group_data)." (  ";
-        $counter =  0 ;
-        $or = '';
-        foreach ($group_data as $key => $id) {
-            if($counter > 0 ){
-                $or = " OR ";
-            }
-            $sales_query .= " $or geopos_invoice_items.pid= '$key' ";
-            $counter ++ ;
+        $sales_query .= " WHERE geopos_invoices.status!='canceled' AND (  ";
+        foreach ($family_members as $key => $id) {
+            $or =  $key > 0 ? " OR " :  " ";
+            $sales_query .= " $or geopos_invoice_items.pid= '$id' ";
         }
         $sales_query .= " )";
         $sales_query = $this->db->query($sales_query);
         $sales_result = $sales_query->result_array();
         $data['sales'] = $sales_result;
-        */
-
-        /*
-
-        */
 
 
+
+
+
+
+
+
+
+        return $data ;
     }
 }

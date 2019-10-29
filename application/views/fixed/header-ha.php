@@ -1171,7 +1171,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<?php echo base_url(); ?>testing/index">
+                <a class="nav-link" href="<?php echo base_url(); ?>testing">
                     <i class="fa fa-clock"></i>
                     <span><?php echo $this->lang->line('testing') ?></span>
                 </a>

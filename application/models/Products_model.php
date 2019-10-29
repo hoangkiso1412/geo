@@ -586,27 +586,23 @@ class Products_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function transfer_custom_fields($old,$new){
+        $old  = (int)$old;
+        $new  = (int)$new;
+        $customfields = "SELECT * FROM `geopos_custom_data` WHERE rid = $old ";
+        $customfields = $this->db->query($customfields);
+        $customfields = $customfields->result_array();
+        if( count($customfields) > 0 ){
+            foreach ($customfields as $key => $field) {
+                unset($customfields[$key]['id']);
+                $customfields[$key]['rid'] =  $new ;
+            }
+            $this->db->insert_batch ('geopos_custom_data' , $customfields);     
+        }    
+    }
 
     public function transfer($from_warehouse, $products_l, $to_warehouse, $qty)
-    {
-        function transfer_custom_fields($old,$new){
-            $old  = (int)$old;
-            $new  = (int)$new;
-            
-            if(is_numeric($old) && is_numeric($new)){
-                $customfields = "SELECT * FROM `geopos_custom_data` WHERE rid = $old ";
-                $customfields = $this->db->query($customfields);
-                $customfields = $customfields->result_array();
-                if( count($customfields) > 0 ){
-                    foreach ($customfields as $key => $field) {
-                        unset($customfields[$key]['id']);
-                        $customfields[$key]['rid'] =  $new ;
-                    }
-                    $this->db->insert_batch ('geopos_custom_data' , $customfields);     
-                }    
-            }
-        }
-    
+    {    
         $updateArray = array();
         $move = false;
         $qtyArray = explode(',', $qty);
@@ -734,7 +730,7 @@ class Products_model extends CI_Model
                     $this->movers(1, $pid, $qty, 0, 'Stock Transferred & Initialized W ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty  W $to_warehouse_name ID " . $pr2['pid'], $this->aauth->get_user()->username);
 
-                    transfer_custom_fields($row,$pid);
+                    $this->transfer_custom_fields($row,$pid);
                 }
 
                 $this->db->set('qty', "qty-$qty", false);
@@ -750,7 +746,7 @@ class Products_model extends CI_Model
         }
 
         echo json_encode(array('status' => 'Success', 'message' =>
-            "new one is ". $pid  . " old one is  " .$row . $this->lang->line('UPDATED')));
+            $this->lang->line('UPDATED')));
     }
 
     public function meta_delete($name)

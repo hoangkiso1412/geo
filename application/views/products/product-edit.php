@@ -207,8 +207,8 @@ function calculate_prices() {
 
                         <div class="col-sm-6">
                             <input type="text" placeholder="Product Code"
-                                   class="form-control required" name="product_code"
-                                   value="<?php echo $product['product_code'] ?>">
+                                   class="form-control required" name="product_code" id="product_code"
+                                   value="<?php echo $product['product_code'] ?>" disabled>
                         </div>
                         <label class="col-sm-1 col-form-label"><?php echo $this->lang->line('Wholesale-Price') ?>*</label>
 
@@ -607,8 +607,9 @@ function calculate_prices() {
 <script>
      $(document).on('click', ".free-disapled-inputs", function (e) {
     document.getElementById('wholesale').disabled = false;
-    document.getElementById('product_price').disabled = false; 
+    document.getElementById('product_price').disabled = false;  
     document.getElementById('fproduct_price').disabled = false;
+    document.getElementById('product_code').disabled = false;
 
 });
 </script>

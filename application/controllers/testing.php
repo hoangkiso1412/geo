@@ -58,7 +58,81 @@ class testing extends CI_Controller
         $this->li_a = 'sales';
         echo "<title>testing</title>";
     }
+    
+    public function detailed_product_search() 
+    {   
+        function relateds_loop($result,$extra){
+            
 
+
+
+
+
+            /*
+            //  Related :  save all the related in array then remove what showed in the last query then show the rest
+            $related  =  array(); 
+            foreach ($result as $key => $product) {
+                $parents[]= $product['pid'];  
+                if( $product['related_product'] != NULL &&  $product['related_product'] != 'null'){
+                        $current_relateds =  json_decode($product['related_product']);
+                        $related = array_merge($related,$current_relateds);
+                }
+            }
+            $this->test->pre($related);
+            $related =  array_unique($related);  // remove all duplicated results 
+            foreach ($related as $id) { //
+                if(in_array($id,$parents)){
+                    unset($related[$id]);
+                }
+            }
+            if (count($related) >  0) {
+                $whr =  "" ;
+                foreach ($related as $key => $id) {
+                    $or   = $key > 0 ?  " OR "  : " ";
+                    $whr .= " $or pid =  $id ";
+                }
+                $query2  = " SELECT * FROM geopos_products ";
+                $query2 .= " WHERE $whr ";
+                $query2 .= " GROUP BY product_code DESC ";
+                echo $query2 ;
+                $query2 = $this->db->query($query2);
+                $result2 = $query2->result_array();    
+                $result = array_merge ($result, $result2); 
+            }
+            */
+            return $result ; 
+        }
+        $out = '';
+        $name = "p4" ;
+        $qw = '';
+        $join = '';
+        $bar = '';
+        if(strlen($name) >= 2){
+            $name =  explode(',' , $name);
+            foreach ($name as $keyword) {
+                $or = "";
+                if(is_numeric($keyword)){
+                    $or = " OR  geopos_products.barcode LIKE '%$keyword%' "; 
+                }
+                $qw .= " AND  ( geopos_products.search_meta LIKE '%$keyword%'   $or  ) ";
+
+            }    
+        }
+        if($qw != ''){
+            $where = " WHERE ";
+        }else {
+            $where = "";
+        }
+        $query  = " SELECT pid,product_code,related_product FROM geopos_products ";
+        $query .= " $join WHERE (geopos_products.qty>0) $qw   ";
+        $query .= " GROUP BY product_code DESC ";
+        $query = $this->db->query($query);
+        $result = $query->result_array();
+        $extra =  array () ;  
+        $result =  relateds_loop($result,$extra);
+        pre($result) ;
+    }
+    
     public function index(){
         if (!$this->registerlog->check($this->aauth->get_user()->id)) {
             redirect('register/create');
@@ -121,25 +195,69 @@ class testing extends CI_Controller
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////    S    T    A    R    T       ::::       T    E    S    T    I    N    G    ///////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
         
-        
-        // Insert INTO geopos_products_prices_history (pid,product_price,fproduct_price,wholesale) VALUES (9,788,333,130)
-        echo $this->aauth->get_user()->loc ;
-        $qw =  "";
-        if ($this->aauth->get_user()->loc) { //  if i active spicific warehous it will return 1 or it will return nothing 
-            $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            if (BDATA) {
-                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' OR geopos_warehouse.loc=0) AND ';
-            } else {
-                $qw .= '(geopos_warehouse.loc=' . $this->aauth->get_user()->loc . ' ) AND ';
-            }
+
+
+
+
+
+
+
+
+
+        $this->detailed_product_search();
+
+
+
+
+
+
+
+
+
+
+
+    /*
+     *
+     * 
+     * 
+     * 
+     * 
+     
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if ($this->aauth->get_user()->loc) {
+            $this->db->group_start();
+            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
+
+            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+            $this->db->group_end();
         } elseif (!BDATA) {
-            $join = 'LEFT JOIN geopos_warehouse ON geopos_warehouse.id=geopos_products.warehouse';
-            $qw .= '(geopos_warehouse.loc=0) AND ';
+            $this->db->where('geopos_warehouse.loc', 0);
         }
 
 
 
+        // re($this->globalsearch->main_date(53));
+
+
+            $query5 = "SELECT * FROM geopos_products";
+            $query5 = $this->db->query($query5);
+            $data['products_list'] = $query5->result_array();
 
 
 
@@ -153,20 +271,12 @@ class testing extends CI_Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+     *
+     * 
+     * 
+     * 
+     * 
+     */
 
 
 

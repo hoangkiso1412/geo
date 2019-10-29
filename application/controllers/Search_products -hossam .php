@@ -358,12 +358,13 @@ class Search_products extends CI_Controller
             //  Related :  save all the related in array then remove what showed in the last query then show the rest
             $related  =  array(); 
             foreach ($result as $key => $product) {
-                $parents['related_product']= $product['pid'];  
+                $parents[]= $product['pid'];  
                 if( $product['related_product'] != NULL &&  $product['related_product'] != 'null'){
                         $current_relateds =  json_decode($product['related_product']);
                         $related = array_merge($related,$current_relateds);
                 }
             }
+            $this->test->pre($related);
             $related =  array_unique($related);  // remove all duplicated results 
             foreach ($related as $id) { //
                 if(in_array($id,$parents)){
@@ -379,38 +380,11 @@ class Search_products extends CI_Controller
                 $query2  = " SELECT * FROM geopos_products ";
                 $query2 .= " WHERE $whr ";
                 $query2 .= " GROUP BY product_code DESC ";
+                echo $query2 ;
                 $query2 = $this->db->query($query2);
                 $result2 = $query2->result_array();    
-                $result = array_merge ($result, $result2);
-
-
-                //  related of the related
-                $related2 =  array();
-                foreach ($result as $key => $product) {
-                    $parents['related_product']= $product['pid'];
-                    if( $product['related_product'] != NULL &&  $product['related_product'] != 'null'){
-                        $current_relateds =  json_decode($product['related_product']);
-                        $related2 = array_merge($related2,$current_relateds);
-                    }
-                }
-                $related2 =  array_unique($related2);  // remove all duplicated results 
-                foreach ($related2 as $id) { //
-                    if(in_array($id,$parents)){
-                        unset($related2[$id]);
-                    }
-                }
-                $whr =  "" ;
-                foreach ($related2 as $key => $id) {
-                    $or   = $key > 0 ?  " OR "  : " ";
-                    $whr .= " $or pid =  $id ";
-                }
-                $query3  = " SELECT * FROM geopos_products ";
-                $query3 .= " WHERE $whr ";
-                $query3 .= " GROUP BY product_code DESC ";
-                $query3 = $this->db->query($query3);
-                $result3 = $query3->result_array();    
-                $result = array_merge ($result, $result3);
-            }
+                $result = array_merge ($result, $result2); 
+        }
         }
 
         $i = 0;
