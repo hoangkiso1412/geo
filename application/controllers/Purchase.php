@@ -54,6 +54,8 @@ class Purchase extends CI_Controller
         $head['usernm'] = $this->aauth->get_user()->username;
         $data['warehouse'] = $this->purchase->warehouses();
         $data['taxdetails'] = $this->common->taxdetail();
+        $this->load->model('categories_model');
+        $data['cat'] = $this->categories_model->category_list();
         $this->load->view('fixed/header', $head);
         $this->load->view('purchase/newinvoice', $data);
         $this->load->view('fixed/footer');
