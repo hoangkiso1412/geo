@@ -259,7 +259,8 @@ class testing extends CI_Controller
             $query5 = $this->db->query($query5);
             $data['products_list'] = $query5->result_array();
 
-
+        //                        ($TABLE , $ALL_NEW_DATA , when condition $ALL_NEW_DATA[$keys])
+        // $this->db->update_batch('geopos_products', $old_data, 'pid');
 
 
 

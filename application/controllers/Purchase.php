@@ -137,7 +137,7 @@ class Purchase extends CI_Controller
         $data = array('tid' => $invocieno, 'invoicedate' => $bill_date, 'invoiceduedate' => $bill_due_date, 'subtotal' => $subtotal, 'shipping' => $shipping, 'ship_tax' => $shipping_tax, 'ship_tax_type' => $ship_taxtype, 'total' => $total, 'notes' => $notes, 'csd' => $customer_id, 'eid' => $this->aauth->get_user()->id, 'taxstatus' => $tax, 'discstatus' => $discstatus, 'format_discount' => $discountFormat, 'refer' => $refer, 'term' => $pterms, 'loc' => $this->aauth->get_user()->loc, 'multi' => $currency);
 
 
-        if ($this->db->insert('geopos_purchase', $data)) {
+        if (/*$this->db->insert('geopos_purchase', $data) */  2> 1) {
             $invocieno = $this->db->insert_id();
 
             $pid = $this->input->post('pid');
@@ -158,6 +158,36 @@ class Purchase extends CI_Controller
             $product_unit = $this->input->post('unit');
             $product_hsn = $this->input->post('hsn');
 
+            // get the current qtys and prices
+            if(count($pid) >  0 ){
+                $whr =  " ";
+                foreach ($pid as $key => $id) {
+                    $or     = $key > 0  ? " OR " :  " " ;
+                    $whr .= ("  $or pid = $id  ")   ;
+                }
+                $this->db->select('pid,product_name,product_price,fproduct_price,taxrate,disrate,qty');
+                $this->db->from('geopos_products');
+                $this->db->WHERE ($whr);
+                $old_data = $this->db->get();
+                $old_data = $old_data->result_array();
+            }
+            
+            //  Merge the Old && New Data
+            foreach ($pid as $key => $current_id) {
+                $product_key          = array_search($current_id, array_column($old_data, 'pid'));
+                $old_purchase_price   = (int)$old_data[$product_key]['fproduct_price'];
+                $old_qty              = (int)$old_data[$product_key]['qty'];
+                $new_purchase_price   = (int)rev_amountExchange_s($product_price[$key], $currency, $this->aauth->get_user()->loc);
+                $new_qty              = (int)numberClean($product_qty[$key]);
+                $final_purchase_price = ($old_purchase_price * $old_qty + $new_purchase_price * $new_qty)/ ($old_qty + $new_qty)  ;
+                $final_qty            = $old_qty + $new_qty;
+
+                // Prepare data for DP inserting
+                $old_data[$product_key]['fproduct_price'] = $final_purchase_price ;
+                $old_data[$product_key]['qty'] = $final_qty ; 
+            }
+            // Update DB
+            $this->db->update_batch('geopos_products', $old_data, 'pid');
 
             foreach ($pid as $key => $value) {
                 $total_discount += numberClean(@$ptotal_disc[$key]);

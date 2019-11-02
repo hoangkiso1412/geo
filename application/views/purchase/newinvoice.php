@@ -182,22 +182,25 @@
                                     data-target="#selectProducts">Select Products</a>
                                 <table class="table-responsive tfr my_stripe">
                                     <thead>
-
                                         <tr class="item_header bg-gradient-directional-amber">
                                             <th width="30%" class="text-center">
                                                 <?php echo $this->lang->line('Item Name') ?>
                                             </th>
-                                            <th width="8%" class="text-center">
-                                                <?php echo $this->lang->line('Quantity') ?>
+                                            <th width="10%" class="text-center">
+                                                <?php echo $this->lang->line('Qty') ?>
                                             </th>
-                                            <th width="10%" class="text-center"><?php echo $this->lang->line('Rate') ?>
+                                            <th width="10%" class="text-center"><?php echo $this->lang->line('Purchase Price') ?>
+                                            </th>
+                                            <th width="10%" class="text-center"><?php echo $this->lang->line('Retail Price') ?>
+                                            </th>
+                                            <th width="10%" class="text-center"><?php echo $this->lang->line('Wholesale Price') ?>
                                             </th>
                                             <th width="10%" class="text-center">
                                                 <?php echo $this->lang->line('Tax') ?>(%)
                                             </th>
                                             <th width="10%" class="text-center"><?php echo $this->lang->line('Tax') ?>
                                             </th>
-                                            <th width="7%" class="text-center">
+                                            <th width="10%" class="text-center">
                                                 <?php echo $this->lang->line('Discount') ?>
                                             </th>
                                             <th width="10%" class="text-center">
@@ -210,28 +213,45 @@
                                     </thead>
                                     <tbody id="jquery-tbody" v-show="checkProducts.length == 0">
                                         <tr>
-                                            <td><input type="text" class="form-control text-center"
-                                                    name="product_name[]"
-                                                    placeholder="<?php echo $this->lang->line('Enter Product name') ?>"
-                                                    id='productname-0'>
+                                            <td>
+                                                <input type="text" class="form-control text-center"
+                                                name="product_name[]"
+                                                placeholder="<?php echo $this->lang->line('Enter Product name') ?>"
+                                                id='productname-0'>
                                             </td>
-                                            <td><input type="text" class="form-control req amnt" name="product_qty[]"
-                                                    id="amount-0" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" value="1">
+                                            <td>
+                                                <input type="text" class="form-control req amnt" name="product_qty[]"
+                                                id="amount-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" value="1">
                                             </td>
-                                            <td><input type="text" class="form-control req prc" name="product_price[]"
-                                                    id="price-0" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off"></td>
-                                            <td><input type="text" class="form-control vat " name="product_tax[]"
-                                                    id="vat-0" onkeypress="return isNumber(event)"
-                                                    onkeyup="rowTotal('0'), billUpyog()" autocomplete="off"></td>
+                                            <td>
+                                                <input type="text" class="form-control req prc" name="product_price[]"
+                                                id="price-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off">
+                                            </td>
+                                            <td><input type="text" class="form-control req prc" name="retail_price[]"
+                                                id="retail-price-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control req prc" name="wholesale_price[]"
+                                                id="wholesale-price-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control vat " name="product_tax[]"
+                                                id="vat-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off">
+                                            </td>
                                             <td class="text-center" id="texttaxa-0">0</td>
-                                            <td><input type="text" class="form-control discount"
-                                                    name="product_discount[]" onkeypress="return isNumber(event)"
-                                                    id="discount-0" onkeyup="rowTotal('0'), billUpyog()"
-                                                    autocomplete="off"></td>
-                                            <td><span
-                                                    class="currenty"><?php echo $this->config->item('currency'); ?></span>
+                                            <td>
+                                                <input type="text" class="form-control discount"
+                                                name="product_discount[]" onkeypress="return isNumber(event)"
+                                                id="discount-0" onkeyup="rowTotal('0'), billUpyog()"
+                                                autocomplete="off">
+                                            </td>
+                                            <td>
+                                                <span class="currenty"><?php echo $this->config->item('currency'); ?></span>
                                                 <strong><span class='ttlText' id="result-0">0</span></strong></td>
                                             <td class="text-center">
 
@@ -245,10 +265,33 @@
                                                 name="hsn[]" id="hsn-0" value="">
                                         </tr>
                                         <tr>
-                                            <td colspan="8"><textarea id="dpid-0" class="form-control"
+                                            <td colspan="1">
+                                                <p><?php echo $this->lang->line('Want to calculate the prices depend on old profit ratio ?') ?></p>
+                                            </td>
+                                            <td colspan="1" class="text-center">
+                                                <input type="checkbox" id="calculate-prices-0" >
+                                            </td>
+                                            <td colspan="1">
+                                                <input type="text" class="form-control req prc"
+                                                id="old-purchase-price-0" onkeypress="return isNumber(event)"
+                                                autocomplete="off" disabled>
+                                            </td>
+                                            <td colspan="1">
+                                                <input type="text" class="form-control req prc" 
+                                                id="old-retail-price-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" disabled>
+                                            </td>
+                                            <td colspan="1">
+                                                <input type="text" class="form-control req prc" 
+                                                id="old-wholesale-price-0" onkeypress="return isNumber(event)"
+                                                onkeyup="rowTotal('0'), billUpyog()" autocomplete="off" disabled>
+                                            </td>
+                                            <td colspan="5"><textarea id="dpid-0" class="form-control"
                                                     name="product_description[]"
                                                     placeholder="<?php echo $this->lang->line('Enter Product description'); ?>"
-                                                    autocomplete="off"></textarea><br></td>
+                                                    autocomplete="off"></textarea><br>
+                                            </td>
+
                                         </tr>
 
                                         <tr class="last-item-row">

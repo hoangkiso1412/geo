@@ -96,11 +96,11 @@ class Search_products extends CI_Controller
             $qw .= '(geopos_warehouse.loc=0) AND ';
         }
         if ($name) {
-            $query = $this->db->query("SELECT geopos_products.pid,geopos_products.product_name,geopos_products.product_code,geopos_products.fproduct_price,geopos_products.taxrate,geopos_products.disrate,geopos_products.product_des,geopos_products.unit FROM geopos_products $join WHERE " . $qw . "UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' OR UPPER(geopos_products.product_code) LIKE '" . strtoupper($name) . "%' LIMIT 6");
+            $query = $this->db->query("SELECT geopos_products.pid,geopos_products.product_name,geopos_products.product_code,geopos_products.fproduct_price,geopos_products.product_price,geopos_products.wholesale,geopos_products.taxrate,geopos_products.disrate,geopos_products.product_des,geopos_products.unit FROM geopos_products $join WHERE " . $qw . "UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' OR UPPER(geopos_products.product_code) LIKE '" . strtoupper($name) . "%' LIMIT 6");
 
             $result = $query->result_array();
             foreach ($result as $row) {
-                $name = array($row['product_name'], amountExchange_s($row['fproduct_price'], 0, $this->aauth->get_user()->loc), $row['pid'], amountFormat_general($row['taxrate']), amountFormat_general($row['disrate']), $row['product_des'], $row['unit'], $row['product_code'], $row_num);
+                $name = array($row['product_name'], amountExchange_s($row['fproduct_price'], 0, $this->aauth->get_user()->loc), $row['pid'], amountFormat_general($row['taxrate']), amountFormat_general($row['disrate']), $row['product_des'], $row['unit'], $row['product_code'], $row_num , amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) ,  amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc));
                 array_push($out, $name);
             }
             echo json_encode($out);
@@ -281,6 +281,7 @@ class Search_products extends CI_Controller
         $i = 0;
         echo '<div class="row match-height">';
         foreach ($result as $key => $row) {
+            echo "sssssssssssssssssssssssss" ;
             $related_products = implode(',', json_decode($row['related_product'],true));
             $query3 = "SELECT geopos_products.* FROM geopos_products WHERE pid in(". $related_products . ',' .");";
             $query3 = $this->db->query($query);    
