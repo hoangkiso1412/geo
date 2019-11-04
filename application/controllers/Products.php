@@ -489,9 +489,35 @@ class Products extends CI_Controller
         $wid = $this->input->get('wid');
         $customer = $this->input->post('product');
         $term = @$customer['term'];
-        // $result = $this->products->products_list($wid, $terms);
         $query = $this->db->query("SELECT * FROM geopos_products WHERE warehouse = ". $wid ." AND geopos_products.product_name LIKE '%" . $term . "%' AND geopos_products.product_code LIKE '%" . $term . "%'");
         $results = $query->result_array();
+        echo json_encode($results);
+    }
+    public function new_stock_transfer_products()
+    {
+        $from = $this->input->get('from');
+        $query =  "SELECT geopos_products.pid, geopos_products.product_name FROM geopos_products WHERE warehouse = $from ";
+        $query = $this->db->query($query);
+        $results = $query->result_array();
+        echo json_encode($results);
+    }
+    public function product_transfer_data()
+    {
+        $pid = $this->input->get('pid');
+        $from = $this->input->get('from');
+        $to = $this->input->get('to');
+
+        $query =  "SELECT geopos_products.product_code , geopos_products.pid , geopos_products.qty AS from_qty FROM geopos_products WHERE warehouse = $from  AND geopos_products.pid = $pid ";
+        $query = $this->db->query($query);
+        $results = $query->result_array();
+        $query = "SELECT SUM(qty) AS qty FROM geopos_products WHERE warehouse = $to  AND product_code = '" . $results[0]['product_code'] . "'";
+        $query = $this->db->query($query);
+        $results2 = $query->result_array();
+
+        // edit numbers format
+        $results[0]['from_qty'] = number_format($results[0]['from_qty']);
+        $results[0]['to_qty'] =  $results2[0]['qty'] != '' ? number_format($results2[0]['qty']) : 0 ;
+
         echo json_encode($results);
     }
 
@@ -530,7 +556,84 @@ class Products extends CI_Controller
             $this->load->view('fixed/footer');
         }
     }
+    public function create_transfer()
+    {
+        if ($this->input->post()) {
+            $qtys       = $_POST['qty'];
+            $products   = $_POST['products'];
+            $stocks     = array(); 
+            foreach ($products as $key => $pid) {
+                if($pid != 0){ // the defult value if not products selected
+                    $stocks[$key]['pid']    = $pid;
+                    $stocks[$key]['qty']    = $qtys[$key];
+                    $stocks[$key]['w_from']   = $_POST['from_value'];
+                    $stocks[$key]['w_to']     = $_POST['to_value'];    
+                    $stocks[$key]['status'] = 1;    // allready created 1 , allready prepared 2 , allready recieved 3
+                }
+            }
+            $this->db->insert_batch('geopos_tranfering_products', $stocks);
 
+        }else {
+            $data['cat'] = $this->categories_model->category_list();
+            $data['warehouse'] = $this->categories_model->warehouse_list();
+            $head['title'] = "Create Transfer";
+            $head['usernm'] = $this->aauth->get_user()->username;
+            $this->load->view('fixed/header', $head);
+            $this->load->view('products/create_transfer', $data);
+            $this->load->view('fixed/footer');
+        }
+    }
+    public function prepare_transfer(){
+        if ($this->input->post()) {
+            $qts= $_POST['qty'] ;
+            $update_array =  array();
+            foreach ($qts as $key => $qty) { 
+                $update_array[$key]['id'] =  $_POST['ids'][$key]; 
+                $update_array[$key]['qty'] = $qty; 
+                $update_array[$key]['status'] = 2; 
+            }
+            $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
+
+        }else {
+            $data['products']   = $this->products->out_transfered_products();
+            $head['title']      = "Prepare Transfer";
+            $head['usernm']     = $this->aauth->get_user()->username;
+            $this->load->view('fixed/header', $head);
+            $this->load->view('products/prepare_transfer', $data);
+            $this->load->view('fixed/footer');
+        }
+    }
+    public function received_transfer(){
+        if ($this->input->post()) {
+
+            $qts= $_POST['qty'] ;
+            $update_array =  array();
+            foreach ($qts as $key => $qty) { 
+                $update_array[$key]['id'] =  $_POST['ids'][$key]; 
+                $update_array[$key]['qty'] = $qty; 
+                $update_array[$key]['status'] = 3; 
+            }
+            $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
+
+
+
+
+
+            $qtys = "";
+            foreach ($_POST['qty'] as $key => $qty) {
+                $comma =  $key >  0 ? "," : "" ;
+                $qtys .= $comma.$qty;
+            }
+            $this->products->transfer($_POST['from'],$_POST['ids'],$_POST['to'],$qtys);
+        }else {
+            $data['products']   = $this->products->received_transfer();
+            $head['title']      = "Prepare Transfer";
+            $head['usernm']     = $this->aauth->get_user()->username;
+            $this->load->view('fixed/header', $head);
+            $this->load->view('products/received_transfer', $data);
+            $this->load->view('fixed/footer');
+        }
+    }
 
     public function file_handling()
     {

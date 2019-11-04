@@ -651,8 +651,7 @@ function calculate_prices() {
                 }
                 document.getElementById('normal_sub_cat').innerHTML = options;
             }
-	});
-
+	    });
     });
 
     /*jslint unparam: true */

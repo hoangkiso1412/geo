@@ -179,7 +179,7 @@
 
                             <div id="saman-row">
                                 <a href="#" class="btn btn-info mb-2" data-toggle="modal"
-                                    data-target="#selectProducts"><?php echo $this->lang->line('Select Products') ?></a>
+                                    data-target="#selectProducts">Select Products</a>
                                 <table class="table-responsive tfr my_stripe">
                                     <thead>
                                         <tr class="item_header bg-gradient-directional-amber">

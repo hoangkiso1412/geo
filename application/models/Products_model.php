@@ -830,4 +830,25 @@ class Products_model extends CI_Model
         }
         return $output;
     }
+    public function out_transfered_products()
+    {
+        $query = "SELECT geopos_tranfering_products.* , geopos_warehouse.title As w_to_name , geopos_products.product_name , geopos_products.product_code , geopos_products.qty As max_available ";
+        $query .= " FROM geopos_tranfering_products "; 
+        $query .= " LEFT JOIN geopos_warehouse ON geopos_warehouse.id = geopos_tranfering_products.w_to "; 
+        $query .= " LEFT JOIN geopos_products  ON geopos_products.pid = geopos_tranfering_products.pid "; 
+        $query .= " WHERE geopos_tranfering_products.status =  1 ";
+        $query_result = $this->db->query($query)->result_array();
+        return $query_result ;
+    }
+    public function received_transfer()
+    {
+        $query = "SELECT geopos_tranfering_products.* , geopos_warehouse.title As w_from_name , geopos_products.product_name , geopos_products.product_code , geopos_products.qty As max_available ";
+        $query .= " FROM geopos_tranfering_products "; 
+        $query .= " LEFT JOIN geopos_warehouse ON geopos_warehouse.id = geopos_tranfering_products.w_from "; 
+        $query .= " LEFT JOIN geopos_products  ON geopos_products.pid = geopos_tranfering_products.pid "; 
+        $query .= " WHERE geopos_tranfering_products.status =  2 ";
+        $query_result = $this->db->query($query)->result_array();
+        return $query_result ;
+    }
+
 }

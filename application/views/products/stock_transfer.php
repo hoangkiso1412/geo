@@ -117,7 +117,6 @@
                     type: 'POST',
                     quietMillis: 50,
                     data: function (product) {
-
                         return {
                             product: product,
                             '<?=$this->security->get_csrf_token_name()?>': crsf_hash

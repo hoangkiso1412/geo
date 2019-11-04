@@ -691,13 +691,23 @@
                                             data-toggle="dropdown"><i
                                         class="ft-sliders"></i><?php echo $this->lang->line('Warehouses'); ?></a>
                         </li>
-                        <li data-menu=""><a class="dropdown-item"
-                                            href="<?php echo base_url(); ?>products/stock_transfer"
-                                            data-toggle="dropdown"><i
-                                        class="ft-wind"></i><?php echo $this->lang->line('Stock Transfer'); ?></a>
+                        <li class="dropdown dropdown-submenu" data-menu="dropdown-submenu">
+                            <a class="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
+                                <i class="ft-wind"></i>
+                                <?php echo $this->lang->line('Stock Transfer'); ?>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li data-menu="">
+                                    <a class="dropdown-item" href="<?= base_url(); ?>products/create_transfer" data-toggle="dropdown"> <?php echo $this->lang->line('Create Transfer'); ?></a>
+                                </li>
+                                <li data-menu="">
+                                    <a class="dropdown-item" href="<?php echo base_url(); ?>products/prepare_transfer" data-toggle="dropdown"><?= $this->lang->line('Prepare Transfer'); ?></a>
+                                </li>
+                                <li data-menu="">
+                                    <a class="dropdown-item" href="<?php echo base_url(); ?>products/received_transfer" data-toggle="dropdown"><?= $this->lang->line('Received Transfer'); ?></a>
+                                </li>
+                            </ul>
                         </li>
-                        </li>
-
                         <li class="dropdown dropdown-submenu" data-menu="dropdown-submenu"><a
                                     class="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown"><i
                                         class="icon-handbag"></i> <?php echo $this->lang->line('Purchase Order') ?></a>

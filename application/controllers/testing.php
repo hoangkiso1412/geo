@@ -162,61 +162,15 @@ class testing extends CI_Controller
         $data['acc_list'] = $this->invocies->accountslist();
         $head['s_mode'] = false;
 
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
 
-        function pre($array , $title= NULL){
-            echo "<h3>$title</h3><pre>";
-            print_r ($array);
-            echo "</pre></br>";
-        }
-        function text( $text= NULL){
-            global $post_owner;
-            global $post_screen;
-            global $post_process;
-
-            if ($text == NULL) {
-                echo "<h6> A long text to be shown in places when you can't see results so perhaps you will need to make a standard check . You can serchh for me in the page with sssss .</h6>";
-            }else {
-                echo "<h3> $text </h3>";
-            }
-        }
-        function random($input){
-            $value = "";
-            if( isset($input) &&  $input  !=  "" ){
-                $value .=  $input."_";
-            }
-            $value  .=  rand (100 , 1000);
-            $value .=  rand (100 , 1000);
-            echo $value ;
-        };
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////    S    T    A    R    T       ::::       T    E    S    T    I    N    G    ///////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-        
-
-
-
-
-
-
-
-
-
-        $this->detailed_product_search();
-
-
-
-
-
-
-
-
-
+        $products   = $this->products->out_transfered_products();
+        pre($products);
 
 
     /*
