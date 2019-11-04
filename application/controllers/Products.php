@@ -604,8 +604,7 @@ class Products extends CI_Controller
         }
     }
     public function received_transfer(){
-        if ($this->input->post()) {
-
+        if ($this->input->post()) { 
             $qts= $_POST['qty'] ;
             $update_array =  array();
             foreach ($qts as $key => $qty) { 
@@ -614,8 +613,6 @@ class Products extends CI_Controller
                 $update_array[$key]['status'] = 3; 
             }
             $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
-
-
 
 
 
