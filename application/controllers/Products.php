@@ -36,7 +36,6 @@ class Products extends CI_Controller
         $this->load->model('categories_model');
         $this->load->library("Custom");
         $this->li_a = 'stock';
-
     }
 
     public function index()
@@ -164,12 +163,6 @@ class Products extends CI_Controller
             $related_product = NULL;
         }
 
-
-
-
-
-
-
         $favorite = $this->input->post('favorite') ? 1 : 0; 
         $calculate_profit_value = $this->input->post('calculate_profit_value');
         $wholesale = $this->input->post('wholesale');
@@ -180,7 +173,6 @@ class Products extends CI_Controller
         $bundle_p_discount_factor = json_encode($this->input->post('bundle_p_discount_factor'));
         $bundle_w_discount_amount = json_encode($this->input->post('bundle_w_discount_amount'));
         $bundle_w_discount_factor = json_encode($this->input->post('bundle_w_discount_factor'));
-
 
         $discounnt_array = array();
         $discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
@@ -241,15 +233,14 @@ class Products extends CI_Controller
         //validate product_name
         $this->load->library("form_validation");
         if ($this->input->post()) {
-                $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
-	            if ($this->form_validation->run() == FALSE) {
-	                echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
-	            }else {
-			        if ($catid) {
-			            $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value);
-			        }
-	            }
-
+            $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
+            if ($this->form_validation->run() == FALSE) {
+                echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
+            }else {
+                if ($catid) {
+                    $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value);
+                }
+            }
         }
         
     }
@@ -375,15 +366,12 @@ class Products extends CI_Controller
         $bundle_w_discount_amount = json_encode($this->input->post('bundle_w_discount_amount'));
         $bundle_w_discount_factor = json_encode($this->input->post('bundle_w_discount_factor'));
 
-
-	$discounnt_array = array();
-	$discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
-	$discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
-	$discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
-	$discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
-	$discounnt_array = json_encode($discounnt_array);
-
-
+        $discounnt_array = array();
+        $discounnt_array['bundle_p_discount_amount'] = $bundle_p_discount_amount;
+        $discounnt_array['bundle_p_discount_factor'] = $bundle_p_discount_factor;
+        $discounnt_array['bundle_w_discount_amount'] = $bundle_w_discount_amount;
+        $discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
+        $discounnt_array = json_encode($discounnt_array);
 
         $search_meta = '';
         $search_meta .= $product_name.' ';
@@ -426,20 +414,15 @@ class Products extends CI_Controller
         }
         $search_meta .= $warehouse_name.' ';
 
-
-
         // add custom fields to search_meta
-         $custom_fields = $this->input->post('custom');
-         if( is_array($custom_fields) ) {
-	             foreach ($custom_fields as $key => $value) {
-	                if ($value) {
-	                     $search_meta .= $value.' ';
-	                }
-
-	             }
-         }
-
-
+        $custom_fields = $this->input->post('custom');
+        if( is_array($custom_fields) ) {
+            foreach ($custom_fields as $key => $value) {
+                if ($value) {
+                        $search_meta .= $value.' ';
+                }
+            }
+        }
 
         if (!$sub_cat) $sub_cat = 0;
         $brand = $this->input->post('brand');
@@ -621,7 +604,7 @@ class Products extends CI_Controller
                 $comma =  $key >  0 ? "," : "" ;
                 $qtys .= $comma.$qty;
             }
-            $this->products->transfer($_POST['from'],$_POST['ids'],$_POST['to'],$qtys);
+            $this->products->transfer($_POST['from'],$_POST['pids'],$_POST['to'],$qtys);
         }else {
             $data['products']   = $this->products->received_transfer();
             $head['title']      = "Prepare Transfer";
@@ -875,13 +858,15 @@ class Products extends CI_Controller
     }
     public function check_product_code()
     {
+        $loc =  $this->aauth->get_user()->loc ;
+        //echo  "loc :  " . $loc ;
         $code = $this->input->get('code');
         $query = " SELECT geopos_products.pid , geopos_warehouse.loc  FROM geopos_products ";
         $query .= " LEFT JOIN geopos_warehouse ON geopos_products.warehouse = geopos_warehouse.id ";
-        $query .= " WHERE  geopos_products.product_code =  '$code'  AND geopos_warehouse.loc = 3 LIMIT 1 ";
+        $query .= " WHERE  geopos_products.product_code =  '$code'  AND geopos_warehouse.loc = $loc LIMIT 1 ";
         $query = $this->db->query($query);
         $query =   $query->result_array();
-        $return =  count($query) >  0  ? $query[0]['pid'] :  0 ;
+        $return =  count($query);
         echo  $return ;
     }
 }

@@ -166,7 +166,7 @@ p.pid='$id' $qj ");
                 $this->lang->line('UPDATED')));
 
             if ($update_prices == 1){
-                $query  = $this->db->query("SELECT pid, fproduct_price FROM geopos_products WHERE pcat = $catid AND auto_prices = 1");
+                $query  = $this->db->query("SELECT pid, fproduct_price FROM geopos_products WHERE pcat = $catid AND sub_id =  0 AND auto_prices = 1");
                 $result =  $query->result_array();
         
                 if( count($result) > 0 ){

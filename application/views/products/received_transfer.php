@@ -40,7 +40,7 @@
                                     <tr id="tr-<?php echo  $key; ?>">
                                         <td>
                                             <?php echo $product['product_name']; ?>
-                                            <input type="hidden" value="<?php echo $product['pid']; ?>">
+                                            <input type="hidden" name="pids[]" value="<?php echo $product['pid']; ?>">
                                             <input type="hidden" name="ids[]" value="<?php echo $product['id']; ?>">
                                         </td>
                                         <td id="code-0"><?php echo $product['product_code']; ?></td>

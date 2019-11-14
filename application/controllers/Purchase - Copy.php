@@ -15,7 +15,9 @@
  *  * here- http://codecanyon.net/licenses/standard/
  * ***********************************************************************
  */
+
 defined('BASEPATH') OR exit('No direct script access allowed');
+
 class Purchase extends CI_Controller
 {
     public function __construct()
@@ -26,11 +28,16 @@ class Purchase extends CI_Controller
         if (!$this->aauth->is_loggedin()) {
             redirect('/user/', 'refresh');
         }
+
         if (!$this->aauth->premission(2)) {
+
             exit('<h3>Sorry! You have insufficient permissions to access this section</h3>');
+
         }
         $this->li_a = 'stock';
+
     }
+
     //create invoice
     public function create()
     {
@@ -48,14 +55,16 @@ class Purchase extends CI_Controller
         $data['warehouse'] = $this->purchase->warehouses();
         $data['taxdetails'] = $this->common->taxdetail();
         $this->load->model('categories_model');
-        $data['cats'] = $this->categories_model->category_list();
+        $data['cat'] = $this->categories_model->category_list();
         $this->load->view('fixed/header', $head);
         $this->load->view('purchase/newinvoice', $data);
         $this->load->view('fixed/footer');
     }
+
     //edit invoice
     public function edit()
     {
+
         $tid = $this->input->get('id');
         $data['id'] = $tid;
         $data['title'] = "Purchase Order $tid";
@@ -75,7 +84,9 @@ class Purchase extends CI_Controller
         $this->load->view('fixed/header', $head);
         $this->load->view('purchase/edit', $data);
         $this->load->view('fixed/footer');
+
     }
+
     //invoices list
     public function index()
     {
@@ -85,6 +96,7 @@ class Purchase extends CI_Controller
         $this->load->view('purchase/invoices');
         $this->load->view('fixed/footer');
     }
+
     //action
     public function action()
     {
@@ -112,6 +124,7 @@ class Purchase extends CI_Controller
         } else {
             $discstatus = 1;
         }
+
         if ($customer_id == 0) {
             echo json_encode(array('status' => 'Error', 'message' =>
                 "Please add a new supplier or search from a previous added!"));
@@ -124,8 +137,11 @@ class Purchase extends CI_Controller
         $bill_date = datefordatabase($invoicedate);
         $bill_due_date = datefordatabase($invocieduedate);
         $data = array('tid' => $invocieno, 'invoicedate' => $bill_date, 'invoiceduedate' => $bill_due_date, 'subtotal' => $subtotal, 'shipping' => $shipping, 'ship_tax' => $shipping_tax, 'ship_tax_type' => $ship_taxtype, 'total' => $total, 'notes' => $notes, 'csd' => $customer_id, 'eid' => $this->aauth->get_user()->id, 'taxstatus' => $tax, 'discstatus' => $discstatus, 'format_discount' => $discountFormat, 'refer' => $refer, 'term' => $pterms, 'loc' => $this->aauth->get_user()->loc, 'multi' => $currency);
-        if ($this->db->insert('geopos_purchase', $data)) {
+
+
+        if (/*$this->db->insert('geopos_purchase', $data) */  2> 1) {
             $invocieno = $this->db->insert_id();
+
             $pid = $this->input->post('pid');
             $productlist = array();
             $prodindex = 0;
@@ -135,10 +151,6 @@ class Purchase extends CI_Controller
             $product_name1 = $this->input->post('product_name', true);
             $product_qty = $this->input->post('product_qty');
             $product_price = $this->input->post('product_price');
-            $retail_price = $this->input->post('retail_price');
-            $wholesale_price = $this->input->post('wholesale_price');
-            $old_pprice = $this->input->post('old_pprice');
-            $old_qty = $this->input->post('old_qty');
             $product_tax = $this->input->post('product_tax');
             $product_discount = $this->input->post('product_discount');
             $product_subtotal = $this->input->post('product_subtotal');
@@ -147,29 +159,43 @@ class Purchase extends CI_Controller
             $product_des = $this->input->post('product_description', true);
             $product_unit = $this->input->post('unit');
             $product_hsn = $this->input->post('hsn');
-            $cats = $this->input->post('cats');
-            $sub_cats = $this->input->post('sub-cats');
-            $auto_prices = $this->input->post('auto-prices');
+
+            // get the current qtys and prices
+            if(count($pid) >  0 ){
+                $whr =  " ";
+                foreach ($pid as $key => $id) {
+                    $or     = $key > 0  ? " OR " :  " " ;
+                    $whr .= ("  $or pid = $id  ")   ;
+                }
+                $this->db->select('pid,product_name,product_price,fproduct_price,taxrate,disrate,qty');
+                $this->db->from('geopos_products');
+                $this->db->WHERE ($whr);
+                $old_data = $this->db->get();
+                $old_data = $old_data->result_array();
+            }
+            
+            //  Merge the Old && New Data
+            foreach ($pid as $key => $current_id) {
+                $product_key          = array_search($current_id, array_column($old_data, 'pid'));
+                $old_purchase_price   = (int)$old_data[$product_key]['fproduct_price'];
+                $old_qty              = (int)$old_data[$product_key]['qty'];
+                $new_purchase_price   = (int)rev_amountExchange_s($product_price[$key], $currency, $this->aauth->get_user()->loc);
+                $new_qty              = (int)numberClean($product_qty[$key]);
+                $final_purchase_price = ($old_purchase_price * $old_qty + $new_purchase_price * $new_qty)/ ($old_qty + $new_qty)  ;
+                $final_qty            = $old_qty + $new_qty;
+
+                // Prepare data for DP inserting
+                $old_data[$product_key]['fproduct_price'] = $final_purchase_price ;
+                $old_data[$product_key]['qty'] = $final_qty ; 
+            }
+            // Update DB
+            $this->db->update_batch('geopos_products', $old_data, 'pid');
 
             foreach ($pid as $key => $value) {
                 $total_discount += numberClean(@$ptotal_disc[$key]);
                 $total_tax += numberClean($ptotal_tax[$key]);
 
-                $current_old_price  =  (int)$old_pprice[$key] ;
-                $current_old_qty    =  (int)$old_qty[$key] ;
-                $current_price      =  (int)$product_price[$key] ;
-                $current_qty        =  (int)$product_qty[$key] ;
 
-                $cat = (int)$cats[$key];
-                $sub_cat = (int)$sub_cat[$key];
-                $auto_prices = (int)$auto_price[$key];
-
-
-                // الجزا دا شبه كامل هيكون ناقص اني اقارن الاسعار وبناء عليها اعمل هيستوري جديد
-                // كنت بعمل غلط المفروض اني اسحب الاسعار الثقديمه كلها 
-                //                  ظظ واقرانها بالجديده واشتغل علي اساسها 
-                $full_amount = $current_old_qty + $current_qty ;
-                $average = ( $current_old_price * $current_old_qty + $current_price * $current_qty ) /  ( $full_amount ) ;
                 $data = array(
                     'tid' => $invocieno,
                     'pid' => $product_id[$key],
@@ -185,60 +211,62 @@ class Purchase extends CI_Controller
                     'product_des' => $product_des[$key],
                     'unit' => $product_unit[$key]
                 );
-                $new_data = array( // 7 inputs 
-                    'qty' => numberClean($full_amount),
-                    'fproduct_price' => rev_amountExchange_s($average, $currency, $this->aauth->get_user()->loc),
-                    'product_price' => rev_amountExchange_s($retail_price[$key], $currency, $this->aauth->get_user()->loc),
-                    'wholesale' => rev_amountExchange_s($wholesale_price[$key], $currency, $this->aauth->get_user()->loc),
-                    'taxrate' => numberClean($product_tax[$key]),
-                    'disrate' => numberClean($product_discount[$key]),
-                    'product_des' => $product_des[$key],
-                );
+
                 $flag = true;
                 $productlist[$prodindex] = $data;
                 $i++;
                 $prodindex++;
                 $amt = numberClean($product_qty[$key]);
+
                 if ($product_id[$key] > 0) {
                     if ($this->input->post('update_stock') == 'yes') {
-                        $this->db->set('qty', "qty+$amt", FALSE);
-                        $this->db->where('pid', $product_id[$key]);
-                        $this->db->update('geopos_products');
 
-                        // update code wll be here 
-                        $this->db->set($new_data);
+                        $this->db->set('qty', "qty+$amt", FALSE);
                         $this->db->where('pid', $product_id[$key]);
                         $this->db->update('geopos_products');
                     }
                     $itc += $amt;
                 }
+
             }
             if ($prodindex > 0) {
                 $this->db->insert_batch('geopos_purchase_items', $productlist);
                 $this->db->set(array('discount' => rev_amountExchange_s(amountFormat_general($total_discount), $currency, $this->aauth->get_user()->loc), 'tax' => rev_amountExchange_s(amountFormat_general($total_tax), $currency, $this->aauth->get_user()->loc), 'items' => $itc));
                 $this->db->where('id', $invocieno);
                 $this->db->update('geopos_purchase');
+
             } else {
                 echo json_encode(array('status' => 'Error', 'message' =>
                     "Please choose product from product list. Go to Item manager section if you have not added the products."));
                 $transok = false;
             }
+
+
             echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('Purchase order success') . "<a href='view?id=$invocieno' class='btn btn-info btn-lg'><span class='fa fa-eye' aria-hidden='true'></span>" . $this->lang->line('View') . " </a>"));
         } else {
             echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('ERROR')));
             $transok = false;
         }
+
+
         if ($transok) {
             $this->db->trans_complete();
         } else {
             $this->db->trans_rollback();
         }
+
+
     }
+
+
     public function ajax_list()
     {
+
         $list = $this->purchase->get_datatables();
         $data = array();
+
         $no = $this->input->post('start');
+
         foreach ($list as $invoices) {
             $no++;
             $row = array();
@@ -249,8 +277,10 @@ class Purchase extends CI_Controller
             $row[] = amountExchange($invoices->total, 0, $this->aauth->get_user()->loc);
             $row[] = '<span class="st-' . $invoices->status . '">' . $this->lang->line(ucwords($invoices->status)) . '</span>';
             $row[] = '<a href="' . base_url("purchase/view?id=$invoices->id") . '" class="btn btn-success btn-xs"><i class="fa fa-eye"></i> ' . $this->lang->line('View') . '</a> &nbsp; <a href="' . base_url("purchase/printinvoice?id=$invoices->id") . '&d=1" class="btn btn-info btn-xs"  title="Download"><span class="fa fa-download"></span></a>&nbsp; &nbsp;<a href="#" data-object-id="' . $invoices->id . '" class="btn btn-danger btn-xs delete-object"><span class="fa fa-trash"></span></a>';
+
             $data[] = $row;
         }
+
         $output = array(
             "draw" => $_POST['draw'],
             "recordsTotal" => $this->purchase->count_all(),
@@ -259,7 +289,9 @@ class Purchase extends CI_Controller
         );
         //output to json format
         echo json_encode($output);
+
     }
+
     public function view()
     {
         $this->load->model('accounts_model');
@@ -276,23 +308,33 @@ class Purchase extends CI_Controller
         $this->load->view('fixed/header', $head);
         if ($data['invoice']['tid']) $this->load->view('purchase/view', $data);
         $this->load->view('fixed/footer');
+
     }
+
+
     public function printinvoice()
     {
+
         $tid = $this->input->get('id');
+
         $data['id'] = $tid;
         $data['title'] = "Purchase $tid";
         $data['invoice'] = $this->purchase->purchase_details($tid);
         $data['products'] = $this->purchase->purchase_products($tid);
         $data['employee'] = $this->purchase->employee($data['invoice']['eid']);
         $data['invoice']['multi'] = 0;
+
         $data['general'] = array('title' => $this->lang->line('Purchase Order'), 'person' => $this->lang->line('Supplier'), 'prefix' => prefix(2), 't_type' => 0);
+
+
         ini_set('memory_limit', '64M');
+
         if ($data['invoice']['taxstatus'] == 'cgst' || $data['invoice']['taxstatus'] == 'igst') {
             $html = $this->load->view('print_files/invoice-a4-gst_v' . INVV, $data, true);
         } else {
             $html = $this->load->view('print_files/invoice-a4_v' . INVV, $data, true);
         }
+
         //PDF Rendering
         $this->load->library('pdf');
         if (INVV == 1) {
@@ -304,24 +346,35 @@ class Purchase extends CI_Controller
             $pdf = $this->pdf->load_split(array('margin_top' => 5));
         }
         $pdf->SetHTMLFooter('<div style="text-align: right;font-family: serif; font-size: 8pt; color: #5C5C5C; font-style: italic;margin-top:-6pt;">{PAGENO}/{nbpg} #' . $data['invoice']['tid'] . '</div>');
+
         $pdf->WriteHTML($html);
+
         if ($this->input->get('d')) {
+
             $pdf->Output('Purchase_#' . $data['invoice']['tid'] . '.pdf', 'D');
         } else {
             $pdf->Output('Purchase_#' . $data['invoice']['tid'] . '.pdf', 'I');
         }
+
+
     }
+
     public function delete_i()
     {
         $id = $this->input->post('deleteid');
+
         if ($this->purchase->purchase_delete($id)) {
             echo json_encode(array('status' => 'Success', 'message' =>
                 "Purchase Order #$id has been deleted successfully!"));
+
         } else {
+
             echo json_encode(array('status' => 'Error', 'message' =>
                 "There is an error! Purchase has not deleted."));
         }
+
     }
+
     public function editaction()
     {
         $currency = $this->input->post('mcurrency');
@@ -342,24 +395,31 @@ class Purchase extends CI_Controller
         $shipping = rev_amountExchange_s($this->input->post('shipping'), $currency, $this->aauth->get_user()->loc);
         $shipping_tax = rev_amountExchange_s($this->input->post('ship_tax'), $currency, $this->aauth->get_user()->loc);
         if ($ship_taxtype == 'incl') $shipping = $shipping - $shipping_tax;
+
         $itc = 0;
         if ($discountFormat == '0') {
             $discstatus = 0;
         } else {
             $discstatus = 1;
         }
+
         if ($customer_id == 0) {
             echo json_encode(array('status' => 'Error', 'message' =>
                 "Please add a new supplier or search from a previous added!"));
             exit();
         }
+
         $this->db->trans_start();
         $flag = false;
         $transok = true;
+
+
         //Product Data
         $pid = $this->input->post('pid');
         $productlist = array();
+
         $prodindex = 0;
+
         $this->db->delete('geopos_purchase_items', array('tid' => $invocieno));
         $product_id = $this->input->post('pid');
         $product_name1 = $this->input->post('product_name', true);
@@ -375,6 +435,7 @@ class Purchase extends CI_Controller
         $product_des = $this->input->post('product_description', true);
         $product_unit = $this->input->post('unit');
         $product_hsn = $this->input->post('hsn');
+
         foreach ($pid as $key => $value) {
             $total_discount += numberClean(@$ptotal_disc[$key]);
             $total_tax += numberClean($ptotal_tax[$key]);
@@ -393,10 +454,14 @@ class Purchase extends CI_Controller
                 'product_des' => $product_des[$key],
                 'unit' => $product_unit[$key]
             );
+
+
             $productlist[$prodindex] = $data;
+
             $prodindex++;
             $amt = numberClean($product_qty[$key]);
             $itc += $amt;
+
             if ($this->input->post('update_stock') == 'yes') {
                 $amt = numberClean(@$product_qty[$key]) - numberClean(@$old_product_qty[$key]);
                 $this->db->set('qty', "qty+$amt", FALSE);
@@ -405,14 +470,18 @@ class Purchase extends CI_Controller
             }
             $flag = true;
         }
+
         $bill_date = datefordatabase($invoicedate);
         $bill_due_date = datefordatabase($invocieduedate);
         $total_discount = rev_amountExchange_s(amountFormat_general($total_discount), $currency, $this->aauth->get_user()->loc);
         $total_tax = rev_amountExchange_s(amountFormat_general($total_tax), $currency, $this->aauth->get_user()->loc);
+
         $data = array('invoicedate' => $bill_date, 'invoiceduedate' => $bill_due_date, 'subtotal' => $subtotal, 'shipping' => $shipping, 'ship_tax' => $shipping_tax, 'ship_tax_type' => $ship_taxtype, 'discount' => $total_discount, 'tax' => $total_tax, 'total' => $total, 'notes' => $notes, 'csd' => $customer_id, 'items' => $itc, 'taxstatus' => $tax, 'discstatus' => $discstatus, 'format_discount' => $discountFormat, 'refer' => $refer, 'term' => $pterms, 'multi' => $currency);
         $this->db->set($data);
         $this->db->where('id', $invocieno);
+
         if ($flag) {
+
             if ($this->db->update('geopos_purchase', $data)) {
                 $this->db->insert_batch('geopos_purchase_items', $productlist);
                 echo json_encode(array('status' => 'Success', 'message' =>
@@ -422,11 +491,14 @@ class Purchase extends CI_Controller
                     "There is a missing field!"));
                 $transok = false;
             }
+
+
         } else {
             echo json_encode(array('status' => 'Error', 'message' =>
                 "Please add atleast one product in order!"));
             $transok = false;
         }
+
         if ($this->input->post('update_stock') == 'yes') {
             if ($this->input->post('restock')) {
                 foreach ($this->input->post('restock') as $key => $value) {
@@ -434,29 +506,60 @@ class Purchase extends CI_Controller
                     $prid = $myArray[0];
                     $dqty = numberClean($myArray[1]);
                     if ($prid > 0) {
+
                         $this->db->set('qty', "qty-$dqty", FALSE);
                         $this->db->where('pid', $prid);
                         $this->db->update('geopos_products');
                     }
                 }
+
             }
         }
+
+
         if ($transok) {
             $this->db->trans_complete();
         } else {
             $this->db->trans_rollback();
         }
     }
+
     public function update_status()
     {
         $tid = $this->input->post('tid');
         $status = $this->input->post('status');
+
+
         $this->db->set('status', $status);
         $this->db->where('id', $tid);
         $this->db->update('geopos_purchase');
+
         echo json_encode(array('status' => 'Success', 'message' =>
             'Purchase Order Status updated successfully!', 'pstatus' => $status));
     }
+
+    public function product_fetching()
+    {
+        $category = $this->input->get('category');
+        $sub_cat = $this->input->get('sub_cat');
+
+        $this->db->select('geopos_products.*, category.title as category_title, sub_cat.title as sub_cat_title, geopos_warehouse.title as warehouse_title');
+        $this->db->from('geopos_products');
+        if ($category > 0) {
+            $this->db->where('pcat', $category);
+        }
+        if ($sub_cat > 0) {
+            $this->db->where('sub_id', $sub_cat);
+        }
+        $this->db->join('`geopos_product_cat` `category`', 'category.id = geopos_products.pcat');
+        $this->db->join('`geopos_product_cat` `sub_cat`', 'geopos_products.sub_id=sub_cat.id AND (sub_cat.c_type=1)', 'left');
+        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
+
+        $query = $this->db->get();
+        $result = $query->result_array();
+        echo json_encode($result);
+    }
+
     public function file_handling()
     {
         if ($this->input->get('op')) {
@@ -472,28 +575,9 @@ class Purchase extends CI_Controller
             ));
             $files = (string)$this->uploadhandler_generic->filenaam();
             if ($files != '') {
+
                 $this->purchase->meta_insert($id, 4, $files);
             }
         }
-    }
-    public function product_fetching()
-    {
-        $category = $this->input->get('category');
-        $sub_cat = $this->input->get('sub_cat');
-        $this->db->select('geopos_products.pid,geopos_products.pcat,geopos_products.sub_id,geopos_products.auto_prices,geopos_products.product_code,geopos_products.pcat,geopos_products.product_name,geopos_products.product_price,geopos_products.fproduct_price,geopos_products.qty,geopos_products.sub_id,geopos_products.wholesale,geopos_products.taxrate,geopos_products.disrate,geopos_products.product_des,geopos_products.unit,category.title as category_title, sub_cat.title as sub_cat_title, geopos_warehouse.title as warehouse_title');
-        $this->db->from('geopos_products');
-        if ($category > 0) {
-            $this->db->where('pcat', $category);
-        }
-        if ($sub_cat > 0) {
-            $this->db->where('sub_id', $sub_cat);
-        }
-        $this->db->join('`geopos_product_cat` `category`', 'category.id = geopos_products.pcat');
-        $this->db->join('`geopos_product_cat` `sub_cat`', 'geopos_products.sub_id=sub_cat.id AND (sub_cat.c_type=1)', 'left');
-        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
-
-        $query = $this->db->get();
-        $result = $query->result_array();
-        echo json_encode($result);
     }
 }

@@ -153,7 +153,6 @@
                         <select name="product_status" class="form-control">
                             <option value='1'><?php echo $this->lang->line('New') ?></option>
                             <option value='2'><?php echo $this->lang->line('Used') ?></option>
-                            <option value='3'><?php echo $this->lang->line('As New') ?></option>
                         </select>
                     </div>
 
@@ -533,6 +532,8 @@
 <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js'); ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
 <script>
+
+
     $(document).on('change', "#product_code", function (e) {    
         var code= document.getElementById("product_code").value ; 
         jQuery.ajax({
@@ -622,6 +623,7 @@ function calculate_prices() {
   
 
 };
+    // get the sub categories
     $("#product_cat").on('change', function() {
         parent_cat = $('#product_cat').val(); 
         $.ajax({
@@ -965,4 +967,8 @@ function calculate_prices() {
         }
         });
     } );
+
+    // set the defult category and bring it's childs if it has
+    $('#product_cat').val('1'); 
+    $('#product_cat').trigger('change');
 </script>  

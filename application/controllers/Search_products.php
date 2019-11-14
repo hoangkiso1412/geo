@@ -96,11 +96,32 @@ class Search_products extends CI_Controller
             $qw .= '(geopos_warehouse.loc=0) AND ';
         }
         if ($name) {
-            $query = $this->db->query("SELECT geopos_products.pid,geopos_products.product_name,geopos_products.product_code,geopos_products.fproduct_price,geopos_products.product_price,geopos_products.wholesale,geopos_products.taxrate,geopos_products.disrate,geopos_products.product_des,geopos_products.unit FROM geopos_products $join WHERE " . $qw . "UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' OR UPPER(geopos_products.product_code) LIKE '" . strtoupper($name) . "%' LIMIT 6");
+            $query = $this->db->query("SELECT geopos_products.pid,geopos_products.qty,geopos_products.product_name,geopos_products.product_code,geopos_products.fproduct_price,geopos_products.product_price,geopos_products.wholesale,geopos_products.taxrate,geopos_products.disrate,geopos_products.product_des,geopos_products.unit,geopos_products.pcat,geopos_products.sub_id,geopos_products.auto_prices FROM geopos_products $join WHERE " . $qw . "UPPER(geopos_products.product_name) LIKE '%" . strtoupper($name) . "%' OR UPPER(geopos_products.product_code) LIKE '" . strtoupper($name) . "%' LIMIT 6");
 
             $result = $query->result_array();
             foreach ($result as $row) {
-                $name = array($row['product_name'], amountExchange_s($row['fproduct_price'], 0, $this->aauth->get_user()->loc), $row['pid'], amountFormat_general($row['taxrate']), amountFormat_general($row['disrate']), $row['product_des'], $row['unit'], $row['product_code'], $row_num , amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) ,  amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc));
+                $name = array(
+                        $row['product_name'],
+                        amountExchange_s($row['fproduct_price'], 0, $this->aauth->get_user()->loc), 
+                        $row['pid'], 
+                        amountFormat_general($row['taxrate']), 
+                        amountFormat_general($row['disrate']), 
+                        $row['product_des'],
+                        $row['unit'], 
+                        $row['product_code'], 
+                        $row_num , 
+                        amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) ,  
+                        amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc) , 
+                        amountFormat_general($row['qty']),
+                        $row['pcat'],
+                        $row['sub_id'],
+                        $row['auto_prices']
+                    );
+                // amountFormat_general($row['taxrate'])
+                // amountFormat_general($row['disrate'])
+                // $row['product_des'],
+                // $row['unit'], 
+
                 array_push($out, $name);
             }
             echo json_encode($out);

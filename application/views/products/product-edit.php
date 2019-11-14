@@ -1,3 +1,6 @@
+<?php
+    //  pre($product);
+?>
 <div class="content-body">
     <div class="card">
         <div class="card-header">
@@ -47,10 +50,11 @@
                             <?php
                                 foreach ($cat as $row) {
                                     $cid = $row['id'];
+                                    $cat_selected =  $product['pcat'] == $cid ? 'selected' :  '' ;
                                     $title = $row['title'];
                                     $rsale = $row['retail_discount'];
                                     $wsale = $row['wholesale_discount'];
-                                    echo "<option r-sale = '$rsale' w-sale = '$wsale' value='$cid'>$title</option>";
+                                    echo "<option $cat_selected r-sale = '$rsale' w-sale = '$wsale' value='$cid'>$title</option>";
                                 }
                             ?>
 
@@ -152,8 +156,10 @@ function calculate_prices() {
                 category = category.options[category.selectedIndex].text;
                 if(data.length > 0){
                     var options = "<option>Sub of "+ category +" </option>";
+                    var currunt_sub_cat =  "<?php echo $product['sub_id']; ?>"
                     $.each(data, function(key, option) {
-                        options += '<option r-sale = "'+option['retail_discount']+'" w-sale = "'+option['wholesale_discount']+'" value="'+option['id']+'">'+option['title']+'</option>' 
+                        var selected = option['id'] == currunt_sub_cat  ?  ' selected ' :  "" ;
+                        options += '<option '+selected+' r-sale = "'+option['retail_discount']+'" w-sale = "'+option['wholesale_discount']+'" value="'+option['id']+'">'+option['title']+'</option>' 
                     });
                     document.getElementById("normal_sub_cat").disabled = false;
                 }else{
@@ -207,8 +213,9 @@ function calculate_prices() {
 
                         <div class="col-sm-6">
                             <input type="text" placeholder="Product Code"
-                                   class="form-control required" name="product_code" id="product_code"
+                                   class="form-control required" id="product_code"
                                    value="<?php echo $product['product_code'] ?>" disabled>
+                            <input type="hidden" name="product_code" value="<?php echo $product['product_code'] ?>">
                         </div>
                         <label class="col-sm-1 col-form-label"><?php echo $this->lang->line('Wholesale-Price') ?>*</label>
 
@@ -242,8 +249,6 @@ function calculate_prices() {
                             <select name="product_status" id="product_status" class="form-control required">
                                 <option <?php echo ($product['product_status'] == 1 ? 'selected' : '') ?> value='1'><?php echo $this->lang->line('New') ?></option>
                                 <option <?php echo ($product['product_status'] == 2 ? 'selected' : '') ?> value='2'><?php echo $this->lang->line('Used') ?></option>
-                                <option <?php echo ($product['product_status'] == 3 ? 'selected' : '') ?> value='3'><?php echo $this->lang->line('As New') ?></option>
-
                             </select>
                         </div>
 
@@ -613,6 +618,7 @@ function calculate_prices() {
 
 });
 </script>
+
         <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js');
         $invoice['tid'] = 0; ?>"></script>
         <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
@@ -675,7 +681,7 @@ function calculate_prices() {
             
             $("#related_product").select2();
             <?php if ($product['related_product'] != 'null' && $product['bundle_products']) { ?>
-                const related_val = <?php echo ($product['related_product'] != 'null' && $product['bundle_products'] ? $product['related_product'] : '') ?>;
+                const related_val = <?php echo ($product['related_product'] != 'null' ? $product['related_product'] . "''" : '') ?>;
                 $('#related_product').val(related_val).trigger('change');
             <?php } ?>
             <?php if ($product['is_bundle']) { ?>
@@ -814,9 +820,7 @@ function calculate_prices() {
             }
             else {
                 form_data.append("files[]", files[count]);
-            }
-            console.log(name)
-            
+            }            
         }
         if(error == '') {
             $.ajax({
@@ -874,4 +878,12 @@ function calculate_prices() {
         }
         });
     } );
+    // becase unknown error
+    // price of the Wholesale and retail be 0 even they passed to the the view correctly 
+    // so as a fast solution we will override it 
+    //  simulates if product category changed so we file all the related actions 
+    $('#product_cat').trigger('change');
+    $('#wholesale').val(<?php echo $product['wholesale'];?> ); 
+    $('#product_price').val(<?php echo $product['product_price'];?> ); 
+
 </script>  

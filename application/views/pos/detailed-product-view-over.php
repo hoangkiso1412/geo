@@ -1,12 +1,8 @@
 <?php
-    
-    echo "<pre>";
-// print_r($data);
-    echo "</pre>";
+    // we pass one variable named data hava all the data
     $product =  $data['product'];
     $custom_fields = $data['custom_fields'];
     $product_code = $product['cat_name'];
-    // $product_variation =  $data['product_variation'];
     $product_stocks =  $data['product_stocks'];
     $sales = $data['sales'];
     $Locs_n_wars = $data['Locs_n_wars'] ;

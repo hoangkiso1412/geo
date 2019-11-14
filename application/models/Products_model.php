@@ -177,10 +177,10 @@ class Products_model extends CI_Model
         if (!$difference->d > 0) {
             $wdate = null;
         }
-
         if ($this->aauth->get_user()->loc) {
             if ($ware_valid['loc'] == $this->aauth->get_user()->loc or $ware_valid['loc'] == '0' or $warehouse == 0) {
                 if (strlen($barcode) > 5 and is_numeric($barcode)) {
+                    $catid = $catid > 0 ? $catid :  1 ;
                     $data = array(
                         'pcat' => $catid,
                         'warehouse' => $warehouse,
@@ -251,16 +251,7 @@ class Products_model extends CI_Model
                 } else {
                     echo json_encode(array('status' => 'Error', 'message' =>
                         $this->lang->line('ERROR')));
-                }
-                // History Table 
-                $data = array(
-                    'pid'               => $pid ,
-                    'product_price'     => $product_price ,
-                    'fproduct_price'    => $factoryprice ,
-                    'wholesale'         => $wholesale ,
-                );
-                $this->db->insert('geopos_products_prices_history', $data ) ;            
-
+                }                
                 if ($v_type) {
                     foreach ($v_type as $key => $value) {
                         if ($v_type[$key] && numberClean($v_stock[$key]) > 0.00) {
@@ -332,7 +323,9 @@ class Products_model extends CI_Model
                     'product_status' => $product_status,
                     'bundle_products' => $bundle_products,
                     'bundle_discount' => $discounnt_array,
-                    'search_meta' => $search_meta
+                    'search_meta' => $search_meta,
+                    'auto_prices' => $calculate_profit_value , 
+
                 );
             } else {
                 $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
@@ -361,7 +354,8 @@ class Products_model extends CI_Model
                     'product_status' => $product_status,
                     'bundle_products' => $bundle_products,
                     'bundle_discount' => $discounnt_array,
-                    'search_meta' => $search_meta
+                    'search_meta' => $search_meta,
+                    'auto_prices' => $calculate_profit_value , 
                 );
             }
             $this->db->trans_start();
@@ -416,6 +410,15 @@ class Products_model extends CI_Model
             }
             $this->custom->save_fields_data($pid, 4);
             $this->db->trans_complete();
+
+            // add history shot
+            $scree_price_data = array(
+                'pid'               => $pid ,
+                'product_price'     => $product_price ,
+                'fproduct_price'    => $factoryprice ,
+                'wholesale'         => $wholesale
+            );
+            $this->db->insert('geopos_products_prices_history', $scree_price_data ) ;
         }
     }
 
@@ -517,9 +520,8 @@ class Products_model extends CI_Model
                     $this->lang->line('ERROR')));
             }
         }
-        // History Table 
-                // Insert INTO geopos_products_prices_history (pid,product_price,fproduct_price,wholesale) VALUES (9,788,333,130)
 
+        // History Table 
         $data =  array(
             'pid'  => $pid,
         );
@@ -612,12 +614,12 @@ class Products_model extends CI_Model
         $query = $this->db->get();
         $to_warehouse_name = $query->row_array()['title'];
         $i = 0;
+        pre($products_l);
         foreach ($products_l as $row) {
             $qty = 0;
             if (array_key_exists($i, $qtyArray)) {
                 $qty = $qtyArray[$i];
             }
-
             $this->db->select('*');
             $this->db->from('geopos_products');
             $this->db->where('pid', $row);
@@ -648,7 +650,7 @@ class Products_model extends CI_Model
                 $c_pid = $pr['pid'];
                 $product_name = $pr['product_name'];
 
-                if ($c_pid) {
+                if ($c_pid) { 
                     $this->db->set('qty', "qty+$qty", false);
                     $this->db->where('pid', $c_pid);
                     $this->db->update('geopos_products');
@@ -695,6 +697,7 @@ class Products_model extends CI_Model
                 $data['bundle_products'] = $pr['bundle_products'];
                 $data['bundle_discount'] = $pr['bundle_discount'];
                 $data['search_meta'] = $pr['search_meta'];
+                $data['auto_prices'] = $pr['auto_prices'];
                 
                 if ($pr['merge'] == 2) {
                     $this->db->select('pid,product_name');
@@ -729,7 +732,6 @@ class Products_model extends CI_Model
                     $pid = $this->db->insert_id();
                     $this->movers(1, $pid, $qty, 0, 'Stock Transferred & Initialized W ' . $to_warehouse_name);
                     $this->aauth->applog("[Product Transfer] -$product_name  -Qty-$qty  W $to_warehouse_name ID " . $pr2['pid'], $this->aauth->get_user()->username);
-
                     $this->transfer_custom_fields($row,$pid);
                 }
 
@@ -837,6 +839,7 @@ class Products_model extends CI_Model
         $query .= " LEFT JOIN geopos_warehouse ON geopos_warehouse.id = geopos_tranfering_products.w_to "; 
         $query .= " LEFT JOIN geopos_products  ON geopos_products.pid = geopos_tranfering_products.pid "; 
         $query .= " WHERE geopos_tranfering_products.status =  1 ";
+        echo $query ;
         $query_result = $this->db->query($query)->result_array();
         return $query_result ;
     }
@@ -850,5 +853,4 @@ class Products_model extends CI_Model
         $query_result = $this->db->query($query)->result_array();
         return $query_result ;
     }
-
 }

@@ -135,10 +135,6 @@ class Purchase extends CI_Controller
             $product_name1 = $this->input->post('product_name', true);
             $product_qty = $this->input->post('product_qty');
             $product_price = $this->input->post('product_price');
-            $retail_price = $this->input->post('retail_price');
-            $wholesale_price = $this->input->post('wholesale_price');
-            $old_pprice = $this->input->post('old_pprice');
-            $old_qty = $this->input->post('old_qty');
             $product_tax = $this->input->post('product_tax');
             $product_discount = $this->input->post('product_discount');
             $product_subtotal = $this->input->post('product_subtotal');
@@ -147,29 +143,9 @@ class Purchase extends CI_Controller
             $product_des = $this->input->post('product_description', true);
             $product_unit = $this->input->post('unit');
             $product_hsn = $this->input->post('hsn');
-            $cats = $this->input->post('cats');
-            $sub_cats = $this->input->post('sub-cats');
-            $auto_prices = $this->input->post('auto-prices');
-
             foreach ($pid as $key => $value) {
                 $total_discount += numberClean(@$ptotal_disc[$key]);
                 $total_tax += numberClean($ptotal_tax[$key]);
-
-                $current_old_price  =  (int)$old_pprice[$key] ;
-                $current_old_qty    =  (int)$old_qty[$key] ;
-                $current_price      =  (int)$product_price[$key] ;
-                $current_qty        =  (int)$product_qty[$key] ;
-
-                $cat = (int)$cats[$key];
-                $sub_cat = (int)$sub_cat[$key];
-                $auto_prices = (int)$auto_price[$key];
-
-
-                // الجزا دا شبه كامل هيكون ناقص اني اقارن الاسعار وبناء عليها اعمل هيستوري جديد
-                // كنت بعمل غلط المفروض اني اسحب الاسعار الثقديمه كلها 
-                //                  ظظ واقرانها بالجديده واشتغل علي اساسها 
-                $full_amount = $current_old_qty + $current_qty ;
-                $average = ( $current_old_price * $current_old_qty + $current_price * $current_qty ) /  ( $full_amount ) ;
                 $data = array(
                     'tid' => $invocieno,
                     'pid' => $product_id[$key],
@@ -185,15 +161,6 @@ class Purchase extends CI_Controller
                     'product_des' => $product_des[$key],
                     'unit' => $product_unit[$key]
                 );
-                $new_data = array( // 7 inputs 
-                    'qty' => numberClean($full_amount),
-                    'fproduct_price' => rev_amountExchange_s($average, $currency, $this->aauth->get_user()->loc),
-                    'product_price' => rev_amountExchange_s($retail_price[$key], $currency, $this->aauth->get_user()->loc),
-                    'wholesale' => rev_amountExchange_s($wholesale_price[$key], $currency, $this->aauth->get_user()->loc),
-                    'taxrate' => numberClean($product_tax[$key]),
-                    'disrate' => numberClean($product_discount[$key]),
-                    'product_des' => $product_des[$key],
-                );
                 $flag = true;
                 $productlist[$prodindex] = $data;
                 $i++;
@@ -202,11 +169,6 @@ class Purchase extends CI_Controller
                 if ($product_id[$key] > 0) {
                     if ($this->input->post('update_stock') == 'yes') {
                         $this->db->set('qty', "qty+$amt", FALSE);
-                        $this->db->where('pid', $product_id[$key]);
-                        $this->db->update('geopos_products');
-
-                        // update code wll be here 
-                        $this->db->set($new_data);
                         $this->db->where('pid', $product_id[$key]);
                         $this->db->update('geopos_products');
                     }
@@ -480,7 +442,8 @@ class Purchase extends CI_Controller
     {
         $category = $this->input->get('category');
         $sub_cat = $this->input->get('sub_cat');
-        $this->db->select('geopos_products.pid,geopos_products.pcat,geopos_products.sub_id,geopos_products.auto_prices,geopos_products.product_code,geopos_products.pcat,geopos_products.product_name,geopos_products.product_price,geopos_products.fproduct_price,geopos_products.qty,geopos_products.sub_id,geopos_products.wholesale,geopos_products.taxrate,geopos_products.disrate,geopos_products.product_des,geopos_products.unit,category.title as category_title, sub_cat.title as sub_cat_title, geopos_warehouse.title as warehouse_title');
+
+        $this->db->select('geopos_products.pid,geopos_products.pcat,geopos_products.product_name,geopos_products.product_price,geopos_products.fproduct_price,geopos_products.qty,geopos_products.sub_id,geopos_products.wholesale, category.title as category_title, sub_cat.title as sub_cat_title, geopos_warehouse.title as warehouse_title');
         $this->db->from('geopos_products');
         if ($category > 0) {
             $this->db->where('pcat', $category);
