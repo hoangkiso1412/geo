@@ -160,7 +160,7 @@ class Products_model extends CI_Model
 
 
 
-    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '', $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value)
+    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '0', $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value)
     {
         $ware_valid = $this->valid_warehouse($warehouse);
         if (!$sub_cat) {

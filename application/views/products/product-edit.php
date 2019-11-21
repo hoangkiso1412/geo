@@ -1,5 +1,6 @@
 <?php
-    //  pre($product);
+    // pre($product);
+    $check_auto_prices =  $product['auto_prices'] == '1' ?  'checked' : ' ' ;
 ?>
 <div class="content-body">
     <div class="card">
@@ -67,11 +68,16 @@
                             </select>
                         </div>
                     </div>
-                
-
-
-
 <script>
+
+    //  sync hidden prices 
+    $('#product_price,#wholesale,#fproduct_price').change(function(){ 
+        document.getElementById('hidden_product_price').value  =  document.getElementById('product_price').value ; 
+        document.getElementById('hidden_wholesale').value= document.getElementById('wholesale').value;
+        document.getElementById('hidden_fproduct_price').value= document.getElementById('fproduct_price').value ;
+    });
+
+
  $("#product_cat").change(function () {
     calculate_prices();
 });
@@ -118,7 +124,9 @@ function calculate_prices() {
                 }
                 // set values
                 document.getElementById("product_price").value = current_r_price ;
+                document.getElementById("hidden_product_price").value = current_r_price ;
                 document.getElementById("wholesale").value = current_w_price ;
+                document.getElementById("hidden_wholesale").value = current_w_price ;
                 // disabling
                 document.getElementById("product_price").disabled = true;
                 document.getElementById("wholesale").disabled = true;
@@ -151,7 +159,6 @@ function calculate_prices() {
                 };
             },
             success: function(data){
-                console.log(data);
                 var category = document.getElementById('product_cat');
                 category = category.options[category.selectedIndex].text;
                 if(data.length > 0){
@@ -222,8 +229,14 @@ function calculate_prices() {
                         <div class="col-sm-3">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" name="wholesale"  id="wholesale" class="form-control required" placeholder="0.00"
+                                <input type="text" id="wholesale" class="form-control required" placeholder="0.00"
                                     aria-describedby="sizing-addon" onkeypress="return isNumber(event)" value="<?php echo edit_amountExchange_s($product['wholesale'], 0, $this->aauth->get_user()->loc) ?>">
+
+                                <input type="hidden" name="wholesale" id="hidden_wholesale" class="form-control" 
+                                placeholder="0.00" aria-describedby="sizing-addon"
+                                onkeypress="return isNumber(event)"
+                                value="<?php echo edit_amountExchange_s($product['wholesale'], 0, $this->aauth->get_user()->loc) ?>">
+
                             </div>
                         </div>
 
@@ -236,10 +249,16 @@ function calculate_prices() {
                         <div class="col-sm-6">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" name="product_price" id="product_price" class="form-control required"
+                                <input type="text" id="product_price" class="form-control required"
                                        placeholder="0.00" aria-describedby="sizing-addon"
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['product_price'], 0, $this->aauth->get_user()->loc) ?>">
+
+                                <input type="hidden" name="product_price" id="hidden_product_price" class="form-control" 
+                                placeholder="0.00" aria-describedby="sizing-addon"
+                                onkeypress="return isNumber(event)"
+                                value="<?php echo edit_amountExchange_s($product['product_price'], 0, $this->aauth->get_user()->loc) ?>">
+
                             </div>
                         </div>
                         <label class="col-sm-1 control-label"
@@ -260,10 +279,16 @@ function calculate_prices() {
                         <div class="col-sm-5">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" name="fproduct_price" class="form-control" id="fproduct_price"
+                                <input type="text" class="form-control" id="fproduct_price"
                                        placeholder="0.00" aria-describedby="sizing-addon1"
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['fproduct_price'], 0, $this->aauth->get_user()->loc) ?>">
+                                
+                                <input type="hidden" name="fproduct_price" id="hidden_fproduct_price" class="form-control" 
+                                placeholder="0.00" aria-describedby="sizing-addon"
+                                onkeypress="return isNumber(event)"
+                                value="<?php echo edit_amountExchange_s($product['fproduct_price'], 0, $this->aauth->get_user()->loc) ?>">
+
                             </div>
                         </div>
                         <div class="col-sm-2">
@@ -279,8 +304,8 @@ function calculate_prices() {
                         <div class="col-sm-2">
                             <div class="input-group mt-1">
                                 <label class="" ><?php echo $this->lang->line('Auto Profit'); ?></label>
-                                <input type="checkbox" class="" name="calculate_profit" id="calculate_profit" onchange="calculate_prices()">
-                                <input type="hidden" class="" name="calculate_profit_value" id="calculate_profit_value" value = '0'>
+                                <input type="checkbox" class="" name="calculate_profit" id="calculate_profit" <?php echo $check_auto_prices; ?> onchange="calculate_prices()">
+                                <input type="hidden" class="" name="calculate_profit_value" id="calculate_profit_value" value = '<?php echo $product['auto_prices']; ?>'>
                             </div>
                         </div>
                     </div>
@@ -444,7 +469,7 @@ function calculate_prices() {
 		                                    $title = $row['product_name'];
                                                     $row['wholesale'] = is_numeric($row['wholesale']) ? $row['wholesale'] : 0;
                                                     $row['product_price'] = is_numeric($row['product_price']) ? $row['product_price'] : 0;
-                                                    $title_full =  $row['product_name'] . ':' . $row['product_price']. ':' .$row['wholesale'];
+                                                    $title_full =  $row['product_name'] . ':' . $row['product_price']. ':' .$row['wholesale'] . ':' .$row['fproduct_price'] ;
 			                                $v =  json_decode($product['bundle_products']);
 			                                $sel = (is_array($v) && in_array($cid, $v)) ? 'selected="selected"' : '';
 		                                    echo "<option value=".$cid." ".$sel.">".$title_full."</option>";
@@ -610,12 +635,11 @@ function calculate_prices() {
             </div>
         </div>
 <script>
-     $(document).on('click', ".free-disapled-inputs", function (e) {
+    $(document).on('click', ".free-disapled-inputs", function (e) {
     document.getElementById('wholesale').disabled = false;
     document.getElementById('product_price').disabled = false;  
     document.getElementById('fproduct_price').disabled = false;
     document.getElementById('product_code').disabled = false;
-
 });
 </script>
 
@@ -669,12 +693,11 @@ function calculate_prices() {
         if (this.checked) {
             $(".bundel_select").show();
             $(".select2-container--default").width('100%');
-            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
-            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = document.getElementById('fproduct_price').disabled  =  true;
+            // calculate the sum of the products 
         } else {
             $(".bundel_select").hide();
-            document.getElementById('product_price').disabled = document.getElementById('wholesale').disabled  = false;
-            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+            document.getElementById('product_price').disabled = document.getElementById('wholesale').disabled  = document.getElementById('fproduct_price').disabled  = false;
         }
     });
     $("#bundle_products").select2();
@@ -724,12 +747,12 @@ function calculate_prices() {
                         processResults: function (data) {
 	                    return {
 	                        results: $.map(data, function (item) {
-				    // check if prices are correct
-				    item.wholesale = isNumeric(item.wholesale) ? item.wholesale : 0;
-				    // check if prices are correct
-				    item.product_price = isNumeric(item.product_price) ? item.product_price : 0;
+                            // check if prices are correct
+                            item.product_price = isNumeric(item.product_price) ? item.product_price : 0;
+                            item.wholesale = isNumeric(item.wholesale) ? item.wholesale : 0;
+                            item.fproduct_price = isNumeric(item.fproduct_price) ? item.fproduct_price : 0;
 	                            return {
-	                                text: item.product_name + ':' + item.product_price + ':' + item.wholesale,
+                                    text: item.product_name + ':' + item.product_price + ':' + item.wholesale +':' + item.fproduct_price  ,
 	                                id: item.pid
 	                            }
 	                        })
@@ -753,6 +776,8 @@ function calculate_prices() {
      function update_bundle_prices(){
              var retail_price = 0;
              var wholesale_price = 0;
+             var fproduct_price  = 0 ;
+
              var bundle_p_discount_amount = document.getElementById('bundle_p_discount_amount').value;
              var bundle_p_discount_factor = document.getElementById('bundle_p_discount_factor').value;
              var bundle_w_discount_amount = document.getElementById('bundle_w_discount_amount').value;
@@ -762,12 +787,22 @@ function calculate_prices() {
                         var current_item_spilit = current_item.split(":");
                         retail_price = ( parseFloat( retail_price ) + parseFloat( current_item_spilit[1] ) ).toFixed(2);
                         wholesale_price = ( parseFloat( wholesale_price ) +  parseFloat( current_item_spilit[2] ) ).toFixed(2);
+                        fproduct_price = ( parseFloat( fproduct_price ) +  parseFloat( current_item_spilit[3] ) ).toFixed(2);
+
 	    		//return $(el).val();
 		}).get();
                 retail_price = apply_discount(retail_price, bundle_p_discount_amount, bundle_p_discount_factor);
                 wholesale_price = apply_discount(wholesale_price, bundle_w_discount_amount, bundle_w_discount_factor);
-                document.getElementById('product_price').value= retail_price;
+                fproduct_price = apply_discount(fproduct_price, 100 , 100);
+
+                document.getElementById('product_price').value= retail_price; 
+                document.getElementById('hidden_product_price').value= retail_price; 
+
                 document.getElementById('wholesale').value= wholesale_price;
+                document.getElementById('hidden_wholesale').value= wholesale_price;
+
+                document.getElementById('fproduct_price').value= fproduct_price;
+                document.getElementById('hidden_fproduct_price').value= fproduct_price;
      }
 	$("#bundle_products, #bundle_p_discount_factor, #bundle_w_discount_factor").on('change', function () {
 		update_bundle_prices();

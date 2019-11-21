@@ -117,33 +117,38 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                            <input type="text" name="product_price" id="product_price" class="form-control required"
+                            <input type="text" id="product_price" class="form-control required"
                                    placeholder="0.00" aria-describedby="sizing-addon"
                                    onkeypress="return isNumber(event)">
+                            <input type="hidden" name="product_price" id="hidden_product_price" class="form-control" 
+                                placeholder="0.00" aria-describedby="sizing-addon"
+                                onkeypress="return isNumber(event)">
                         </div>
-
-
                     </div>
                     <label class="col-sm-1 control-label"
                     for="wholesale"><?php echo $this->lang->line('Wholesale-Price') ?>*</label>
                     <div class="col-sm-3">
                         <div class="input-group">
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                            <input type="text" name="wholesale" id="wholesale" class="form-control required" placeholder="0.00"
+                            <input type="text" id="wholesale" class="form-control required" placeholder="0.00"
                                 aria-describedby="sizing-addon" onkeypress="return isNumber(event)">
+                            <input type="hidden" name="wholesale" id="hidden_wholesale" class="form-control" 
+                                placeholder="0.00" aria-describedby="sizing-addon"
+                                onkeypress="return isNumber(event)">
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
-
                     <label class="col-sm-2 col-form-label"><?php echo $this->lang->line('Purchase Order') . $this->lang->line('Price') ?></label>
-
                     <div class="col-sm-6">
                         <div class="input-group">
                             <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                            <input type="text" name="fproduct_price" id="fproduct_price" class="form-control"
+                            <input type="text" id="fproduct_price" class="form-control"
                                    placeholder="0.00" aria-describedby="sizing-addon1"
                                    onkeypress="return isNumber(event)" onchange="calculate_prices()" >
+                            <input type="hidden" name="fproduct_price" id="hidden_fproduct_price" class="form-control" 
+                                placeholder="0.00" aria-describedby="sizing-addon"
+                                onkeypress="return isNumber(event)">
                         </div>
                     </div>
                     <label class="col-sm-1 control-label"
@@ -529,9 +534,23 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+    $(document).on('click', ".free-disapled-inputs", function (e) {
+        document.getElementById('wholesale').disabled = false;
+        document.getElementById('product_price').disabled = false; 
+        document.getElementById('fproduct_price').disabled = false; 
+    });
+</script>
+
+
+
 <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js'); ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
 <script>
+
 
 
     $(document).on('change', "#product_code", function (e) {    
@@ -549,6 +568,15 @@
             }
         });
     });
+
+
+    //  sync hidden prices 
+    $('#product_price,#wholesale,#fproduct_price').change(function(){ 
+        document.getElementById('hidden_product_price').value  =  document.getElementById('product_price').value ; 
+        document.getElementById('hidden_wholesale').value= document.getElementById('wholesale').value;
+        document.getElementById('hidden_fproduct_price').value= document.getElementById('fproduct_price').value ;
+    });
+
 
  $("#product_cat").change(function () {
     calculate_prices();
@@ -599,7 +627,9 @@ function calculate_prices() {
 
                 // set values
                 document.getElementById("product_price").value = current_r_price ;
+                document.getElementById("hidden_product_price").value = current_r_price ;
                 document.getElementById("wholesale").value = current_w_price ;
+                document.getElementById("hidden_wholesale").value = current_w_price ;
                 // disabling
                 document.getElementById("product_price").disabled = true;
                 document.getElementById("wholesale").disabled = true;
@@ -623,6 +653,9 @@ function calculate_prices() {
   
 
 };
+
+
+
     // get the sub categories
     $("#product_cat").on('change', function() {
         parent_cat = $('#product_cat').val(); 
@@ -731,13 +764,11 @@ function calculate_prices() {
     $('#bundle').change(function() {
         if (this.checked) {
             $(".bundel_select").show();
-            $(".select2-container--default").width('100%');
-            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
-            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+            $(".select2-container--default").width('100%');  
+            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = document.getElementById('fproduct_price').disabled = true;
         } else {
             $(".bundel_select").hide();
-            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = false;
-            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
+            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = document.getElementById('fproduct_price').disabled = false;
         }
     });
 
@@ -818,7 +849,6 @@ function calculate_prices() {
                     return {
                         product: product,
                         '<?=$this->security->get_csrf_token_name()?>': crsf_hash
-
                     };
                 },
                 processResults: function (data) {
@@ -827,11 +857,10 @@ function calculate_prices() {
 
 			    // check if prices are correct
 			    item.wholesale = isNumeric(item.wholesale) ? item.wholesale : 0;
-
-			    // check if prices are correct
 			    item.product_price = isNumeric(item.product_price) ? item.product_price : 0;
+			    item.fproduct_price = isNumeric(item.fproduct_price) ? item.fproduct_price : 0;
                             return {
-                                text: item.product_name + ':' + item.product_price + ':' + item.wholesale,
+                                text: item.product_name + ':' + item.product_price + ':' + item.wholesale +':' + item.fproduct_price  ,
                                 id: item.pid
                             }
                         })
@@ -858,22 +887,39 @@ function calculate_prices() {
      }
 
     function update_bundle_prices(){
-        var retail_price = 0;
+        var retail_price    = 0;
         var wholesale_price = 0;
+        var fproduct_price  = 0 ;
+
         var bundle_p_discount_amount = document.getElementById('bundle_p_discount_amount').value;
         var bundle_p_discount_factor = document.getElementById('bundle_p_discount_factor').value;
+
         var bundle_w_discount_amount = document.getElementById('bundle_w_discount_amount').value;
         var bundle_w_discount_factor = document.getElementById('bundle_w_discount_factor').value;
+        
+        
         $("#bundle_products :selected").map(function(i, el) {
             var current_item =  $(el).text();
             var current_item_spilit = current_item.split(":");
             retail_price = ( parseFloat( retail_price ) + parseFloat( current_item_spilit[1] ) ).toFixed(2);
             wholesale_price = ( parseFloat( wholesale_price ) +  parseFloat( current_item_spilit[2] ) ).toFixed(2);
+            fproduct_price = ( parseFloat( fproduct_price ) +  parseFloat( current_item_spilit[3] ) ).toFixed(2);
+            
         }).get();
+
         retail_price = apply_discount(retail_price, bundle_p_discount_amount, bundle_p_discount_factor);
         wholesale_price = apply_discount(wholesale_price, bundle_w_discount_amount, bundle_w_discount_factor);
-        document.getElementById('product_price').value= retail_price;
+        fproduct_price = apply_discount(fproduct_price, 100 , 100);
+
+
+        document.getElementById('product_price').value= retail_price; 
+        document.getElementById('hidden_product_price').value= retail_price; 
+
         document.getElementById('wholesale').value= wholesale_price;
+        document.getElementById('hidden_wholesale').value= wholesale_price;
+
+        document.getElementById('fproduct_price').value= fproduct_price;
+        document.getElementById('hidden_fproduct_price').value= fproduct_price;
     }
 	$("#bundle_products, #bundle_p_discount_factor, #bundle_w_discount_factor").on('change', function () {
 		update_bundle_prices();
@@ -890,13 +936,6 @@ function calculate_prices() {
 
     	update_bundle_prices();
 	});
-
- $(document).on('click', ".free-disapled-inputs", function (e) {
-    document.getElementById('wholesale').disabled = false;
-    document.getElementById('product_price').disabled = false; 
-    document.getElementById('fproduct_price').disabled = false; 
-});
-
 <?php foreach ($custom_fields as $row) { ?>
     $('#files-<?php echo $row['id'] ?>').change(function(e){
         e.preventDefault();
@@ -971,4 +1010,8 @@ function calculate_prices() {
     // set the defult category and bring it's childs if it has
     $('#product_cat').val('1'); 
     $('#product_cat').trigger('change');
+
+    
+
+
 </script>  

@@ -330,7 +330,7 @@
                                     <tr>
                                         <th>
                                             <label class="form-checkbox">
-                                                <input type="checkbox" v-model="selectAll" @click="select">
+                                                <input type="checkbox" id="select_all">
                                                 <i class="form-icon"></i>
                                             </label>
                                         </th>
@@ -354,7 +354,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="add_products_rows()" >Save changes</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="add_products_rows()" >Save changes</button>
                             </div>
                             </div>
                         </div>
@@ -506,6 +506,10 @@
     };
 
     function get_products(){
+        // reset select all checkbox
+        document.getElementById('select_all').checked = false ; 
+
+
         var sub = $('#normal_sub_cat').val();
         var  cat= $('#product_cat').val();
         if(!(sub > 0) ){
@@ -528,7 +532,7 @@
                     $.each(data, function(key, product) {
                         rows += '<tr>';
                             rows += '<td>'; 
-                            rows += '<input id="'+product['pid']+'" type="checkbox" id="checkbox-id" data-role ="checkproduct" >';
+                            rows += '<input id="'+product['pid']+'" type="checkbox" data-role ="checkproduct" >';
                             rows += '<input id="data-disrate-'+product['pid']+'" type="hidden" value="'+product['disrate']+'">';
                             rows += '<input id="data-pprice-'+product['pid']+'" type="hidden" value="'+product['fproduct_price']+'">';
                             rows += '<input id="data-pid-'+product['pid']+'" type="hidden" value="'+product['pid']+'">';
@@ -615,10 +619,9 @@
         data += '<td colspan="1">';
             data += '<p>Want to calculate the prices depend on old profit ratio ?</p>';
             data += '<input id="hidden-old-pprice-'+row_counter+'" type="hidden" style="display:block" name="old_pprice[]" >';
+            data += '<input id="hidden-old-rprice-'+row_counter+'" type="hidden" style="display:block" name="old-rprice[]" >';
+            data += '<input id="hidden-old-wprice-'+row_counter+'" type="hidden" style="display:block" name="old-wprice[]" >';
             data += '<input id="hidden-old-qty-'+row_counter+'" type="hidden" style="display:block" name="old_qty[]" >';
-            data += '<input id="hidden-cat-'+row_counter+'" type="hidden" style="display:block" name="cats[]" >';
-            data += '<input id="hidden-sub-cat-'+row_counter+'" type="hidden" style="display:block" name="sub-cats[]" >';
-            data += '<input id="hidden-auto-prices-'+row_counter+'" type="hidden" style="display:block" name="auto-prices[]" >';
             data += '</td>';
             data += '<td colspan="1"><input onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-' + row_counter + '" ><input type="hidden" value= "0" id="calculate-prices-value-' + row_counter + '" ></td>';
             data += '<td colspan="1"><input type="text" class="form-control req prc "id="old-price-' + row_counter + '"  onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
@@ -637,7 +640,6 @@
     $('#addproductrow').on('click', function (e) {
         add_empty_row(row_counter);
     });
-
     function calculate_prices (checkbox_id){
         var status =  document.getElementById(checkbox_id).checked;
         id = checkbox_id.split("-");
@@ -731,9 +733,8 @@
         $('#amount-' + id[1]).val(1);
         $('#old-price-' + id[1]).val(full_data[1]);
         $('#hidden-old-pprice-' +  id[1]).val(full_data[1]);
-        $('#hidden-cat-' +  id[1]).val(full_data[12]);
-        $('#hidden-sub-cat-' +  id[1]).val(full_data[13]);
-        $('#hidden-auto-prices-' +  id[1]).val(full_data[14]);
+        $('#hidden-old-rprice-' +  id[1]).val(full_data[9]);
+        $('#hidden-old-wprice-' +  id[1]).val(full_data[10]);
         $('#hidden-old-qty-' +  id[1]).val(full_data[11]);
         $('#old-retail-price-' + id[1]).val(full_data[9]);
         $('#old-wholesale-price-' + id[1]).val(full_data[10]);
@@ -746,6 +747,10 @@
         $('#alert-' + id[1]).val(full_data[8]);
         rowTotal(cvalue);
         billUpyog();
+
+
+
+
     }
     function fill_row_data_from_popup(product_id ,row_id){
         var disrate =  $('#data-disrate-' + product_id).val();
@@ -779,10 +784,17 @@
         $('#productname-' + row_id).val(name);
         $('#amount-' + row_id).val(1);
         $('#old-price-' + row_id).val(pprice);
+
+
+
+
+
         $('#hidden-cat-' +  row_id).val(cat);
         $('#hidden-sub-cat-' +  row_id).val(sub_cat);
         $('#hidden-auto-prices-' +  row_id).val(auto_pr);
         $('#hidden-old-pprice-' + row_id).val(pprice);
+        $('#hidden-old-rprice-' +  row_id).val(rprice);
+        $('#hidden-old-wprice-' +  row_id).val(wprice);
         $('#hidden-old-qty-' + row_id).val(qty);
         $('#old-retail-price-' + row_id).val(rprice);
         $('#old-wholesale-price-' + row_id).val(wprice);
@@ -796,5 +808,13 @@
         rowTotal(row_counter);
         billUpyog();
     }
+
+    $('#select_all').on('click', function (e) {
+        var products = document.querySelectorAll("[data-role ='checkproduct']");
+        console.log(products);
+        products.forEach(function(product){
+            document.getElementById(product.id).checked = true ; 
+        });
+    });
 
 </script>

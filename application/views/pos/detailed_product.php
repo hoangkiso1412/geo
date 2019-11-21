@@ -154,9 +154,7 @@
     $(document).on('click', ".view-object", function (e) {
         e.preventDefault();
         $('#view-object-id').val($(this).attr('data-object-id'));
-
         $('#view_model').modal({backdrop: 'static', keyboard: false});
-
         var actionurl = $('#view-action-url').val();
         $.ajax({
             url: baseurl + 'detailed_products/view_over',
@@ -190,5 +188,4 @@
     var dtformat = $('#hdata').attr('data-df');
     var currency = $('#hdata').attr('data-curr');
 </script>
-<script src="<?php echo assets_url('assets/myjs/detailed_products.js') . APPVER; ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/detailed_products_control.js') . APPVER; ?>"></script>

@@ -6,6 +6,7 @@
     $product_stocks =  $data['product_stocks'];
     $sales = $data['sales'];
     $Locs_n_wars = $data['Locs_n_wars'] ;
+    $sales_per_div =  2 ;
 ?>
 
 <div class="text-center modal-header">
@@ -88,7 +89,6 @@ $("#bzoom").zoom({
 if(count($sales) >  0 ){ ?>
 <h5><?php echo  $this->lang->line('Sales') . ' ( ' . $this->lang->line('Invoices').' : '.count($sales) . ' )'; ?></h5>
 <table class="table table-striped table-bordered">
-
             <tr>
                 <td><strong><?php echo $this->lang->line('Location') ?></strong></td>
                 <td><strong><?php echo $this->lang->line('Invoice') ?></strong></td>
@@ -96,31 +96,54 @@ if(count($sales) >  0 ){ ?>
                 <td><strong><?php echo $this->lang->line('Qty') ?></strong></td>
                 <td><strong><?php echo $this->lang->line('Price') ?></strong></td>
             </tr>
-
-            <?php 
-            foreach ($sales as $purchase) { 
-                
+            <?php
+            foreach ($sales as $key => $purchase) { 
+                $num = $key +  1;  
+                $pagination = ceil($num /$sales_per_div);
                 ?>
-
-                <tr>
-                <td><strong><?php echo $Locs_n_wars[$purchase['pid']]['location']; ?></strong></td>
-                <td><strong><?php echo $purchase['tid'] ?></strong></td>
-                <td><strong><?php echo $purchase['invoicedate'] ?></strong></td>
-                <td><strong><?php echo $purchase['qty'] ?></strong></td>
-                <td><strong><?php echo $purchase['price'] ?></strong></td>
-            </tr>
+                <tr id='sales-result-<?php echo $num ;?>'  data-pagination='<?php echo  $pagination ;  ?>' >
+                    <td><strong><?php echo $Locs_n_wars[$purchase['pid']]['location']; ?></strong></td>
+                    <td><strong><?php echo $purchase['tid'] ?></strong></td>
+                    <td><strong><?php echo $purchase['invoicedate'] ?></strong></td>
+                    <td><strong><?php echo $purchase['qty'] ?></strong></td>
+                    <td><strong><?php echo $purchase['price'] ?></strong></td>
+                </tr>
             <?php }
+            ?>            
+            </table>
+            <?php
+                if($pagination >  1 ){
+                    for ($i=1; $i <= $pagination ; $i++) { 
+                        echo '<button type="button" class="btn" style="margin: 3px;" onclick="pagination('.$i.')">'.$i.'</button>';
+                    }
+                }
             ?>
-            <?php ?>
-            </table> <hr>
+            <script>
+                function pagination(pagination){
+                    var rows = document.querySelectorAll("[data-pagination]");
+                    rows.forEach(function(row){
+                        var current_id  = row.id ;
+                        var current_pagination  = row.getAttribute('data-pagination');
+                        document.getElementById(row.id).style.display = "none"; 
+                        if(pagination  == current_pagination){
+                            // document.getElementById(row.id).style.display = "inline"; 
+                            $('#'+current_id).attr("style", "");
+                        }
+                    });
+                }
+
+                // show the pagination 1 on load
+                pagination(1);
+            </script>
+
+
+
+
+
+
 <?php 
             
-}
-?>
-
-
-
-<?php    
+}   
     echo "<pre>";
     //print_r($Locs_n_wars);
     echo "</pre>";

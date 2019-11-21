@@ -31,4 +31,4 @@ CREATE TABLE IF NOT EXISTS geopos_tranfering_products (
 	w_to INT(11) NOT NULL ,
 	status INT(11) NOT NULL ,
 )
-ALTER TABLE `geopos_products` CHANGE `wholesale` `wholesale` INT(11) NULL DEFAULT '0'; 
+ALTER TABLE `geopos_products` CHANGE `wholesale` `wholesale` INT(11) NOT NULL DEFAULT '0'; 

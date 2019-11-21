@@ -147,27 +147,20 @@ class Purchase extends CI_Controller
             $product_des = $this->input->post('product_description', true);
             $product_unit = $this->input->post('unit');
             $product_hsn = $this->input->post('hsn');
-            $cats = $this->input->post('cats');
-            $sub_cats = $this->input->post('sub-cats');
-            $auto_prices = $this->input->post('auto-prices');
+            $old_rprice = $this->input->post('old-rprice');
+            $old_wprice = $this->input->post('old-wprice');
 
             foreach ($pid as $key => $value) {
                 $total_discount += numberClean(@$ptotal_disc[$key]);
                 $total_tax += numberClean($ptotal_tax[$key]);
 
                 $current_old_price  =  (int)$old_pprice[$key] ;
+                $current_old_rprice  =  (int)$old_rprice[$key] ;
+                $current_old_wprice  =  (int)$old_wprice[$key] ;
                 $current_old_qty    =  (int)$old_qty[$key] ;
                 $current_price      =  (int)$product_price[$key] ;
                 $current_qty        =  (int)$product_qty[$key] ;
 
-                $cat = (int)$cats[$key];
-                $sub_cat = (int)$sub_cat[$key];
-                $auto_prices = (int)$auto_price[$key];
-
-
-                // الجزا دا شبه كامل هيكون ناقص اني اقارن الاسعار وبناء عليها اعمل هيستوري جديد
-                // كنت بعمل غلط المفروض اني اسحب الاسعار الثقديمه كلها 
-                //                  ظظ واقرانها بالجديده واشتغل علي اساسها 
                 $full_amount = $current_old_qty + $current_qty ;
                 $average = ( $current_old_price * $current_old_qty + $current_price * $current_qty ) /  ( $full_amount ) ;
                 $data = array(
@@ -211,6 +204,24 @@ class Purchase extends CI_Controller
                         $this->db->update('geopos_products');
                     }
                     $itc += $amt;
+                }
+
+                // History Table 
+                $data =  array(
+                    'pid'  => $product_id[$key],
+                );
+                
+                if($current_old_price != $average){
+                    $data['fproduct_price'] = $average;
+                }
+                if($current_old_rprice != $retail_price[$key]){
+                    $data['product_price'] = $retail_price[$key] ;
+                }
+                if($current_old_wprice != $wholesale_price[$key]){
+                    $data['wholesale'] = $wholesale_price[$key];
+                }
+                if( count($data) > 1 ){
+                    $this->db->insert('geopos_products_prices_history', $data ) ;       
                 }
             }
             if ($prodindex > 0) {

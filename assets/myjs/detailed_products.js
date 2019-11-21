@@ -171,7 +171,6 @@ $(document).on('click', ".select_pos_item", function (e) {
 
 
         //ajax request
-
         $('#basicPay #popup_main_title').empty();
         $('#basicPay #popup_main_title').append( $(this).attr('data-name') );
 
@@ -182,16 +181,13 @@ $(document).on('click', ".select_pos_item", function (e) {
         document.getElementById('popup_product_price').value = $(this).attr('data-price');
         document.getElementById('popup_product_wholesale').value = $(this).attr('data-wholesale');
         document.getElementById('popup_product_stock').value = $(this).attr('data-stock');
-
         document.getElementById('popup_product_url').setAttribute("href", $(this).attr('data-url') );
-
 
 
         rowTotal(cvalue);
         billUpyog();
         $('#ganak').val(cvalue + 1);
         $('#amount-' + cvalue).focus();
-
     }
 });
 
