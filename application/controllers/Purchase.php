@@ -88,6 +88,7 @@ class Purchase extends CI_Controller
     //action
     public function action()
     {
+        $this->load->model('Products_model', 'products');
         $currency = $this->input->post('mcurrency');
         $customer_id = $this->input->post('customer_id');
         $invocieno = $this->input->post('invocieno');
@@ -154,12 +155,12 @@ class Purchase extends CI_Controller
                 $total_discount += numberClean(@$ptotal_disc[$key]);
                 $total_tax += numberClean($ptotal_tax[$key]);
 
-                $current_old_price  =  (int)$old_pprice[$key] ;
-                $current_old_rprice  =  (int)$old_rprice[$key] ;
-                $current_old_wprice  =  (int)$old_wprice[$key] ;
-                $current_old_qty    =  (int)$old_qty[$key] ;
-                $current_price      =  (int)$product_price[$key] ;
-                $current_qty        =  (int)$product_qty[$key] ;
+                $current_old_price  = (int)$old_pprice[$key];
+                $current_old_rprice = (int)$old_rprice[$key];
+                $current_old_wprice = (int)$old_wprice[$key];
+                $current_old_qty    = (int)$old_qty[$key];
+                $current_price      = (int)$product_price[$key];
+                $current_qty        = (int)$product_qty[$key];
 
                 $full_amount = $current_old_qty + $current_qty ;
                 $average = ( $current_old_price * $current_old_qty + $current_price * $current_qty ) /  ( $full_amount ) ;
@@ -198,32 +199,26 @@ class Purchase extends CI_Controller
                         $this->db->where('pid', $product_id[$key]);
                         $this->db->update('geopos_products');
 
-                        // update code wll be here 
+                        // update products table 
                         $this->db->set($new_data);
                         $this->db->where('pid', $product_id[$key]);
                         $this->db->update('geopos_products');
+
+                        // History Table 
+                        $data =  array( 'pid'  => $product_id[$key] );
+                        if($current_old_price != $average){ $data['fproduct_price'] = $average; }
+                        if($current_old_rprice != $retail_price[$key]){ $data['product_price'] = $retail_price[$key] ;}
+                        if($current_old_wprice != $wholesale_price[$key]){ $data['wholesale'] = $wholesale_price[$key]; }
+                        if( count($data) > 1 ){
+                            $this->db->insert('geopos_products_prices_history', $data ) ;       
+                        }
+                        // change the price of the bundles which contain this product 
+                        $diff =  $average -  $current_old_price ; 
+                        $this->products->update_bundles_contain_purchased_product($product_id[$key],'-4.3');
                     }
                     $itc += $amt;
                 }
-
-                // History Table 
-                $data =  array(
-                    'pid'  => $product_id[$key],
-                );
-                
-                if($current_old_price != $average){
-                    $data['fproduct_price'] = $average;
-                }
-                if($current_old_rprice != $retail_price[$key]){
-                    $data['product_price'] = $retail_price[$key] ;
-                }
-                if($current_old_wprice != $wholesale_price[$key]){
-                    $data['wholesale'] = $wholesale_price[$key];
-                }
-                if( count($data) > 1 ){
-                    $this->db->insert('geopos_products_prices_history', $data ) ;       
-                }
-            }
+            } //  end of foreach
             if ($prodindex > 0) {
                 $this->db->insert_batch('geopos_purchase_items', $productlist);
                 $this->db->set(array('discount' => rev_amountExchange_s(amountFormat_general($total_discount), $currency, $this->aauth->get_user()->loc), 'tax' => rev_amountExchange_s(amountFormat_general($total_tax), $currency, $this->aauth->get_user()->loc), 'items' => $itc));

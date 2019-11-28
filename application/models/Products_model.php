@@ -823,7 +823,7 @@ class Products_model extends CI_Model
                 $no ++ ;
                 $product_price  = $change['product_price'] !== NULL  ? $change['product_price'] : $this->lang->line('__no changes__');
                 $wholesale      = $change['wholesale'] !== NULL  ? $change['wholesale'] : $this->lang->line('__no changes__');
-                $fproduct_price  = $change['fproduct_price'] !== NULL  ? $change['fproduct_price'] : $this->lang->line('__no changes__');
+                $fproduct_price = $change['fproduct_price'] !== NULL  ? $change['fproduct_price'] : $this->lang->line('__no changes__');
                 $date           = $change['date'];
                 $output .= "<tr role='row' class='odd'><td>$no</td><td>$fproduct_price</td><td>$product_price</td><td>$wholesale</td><td>$date</td></tr>";
             }
@@ -851,6 +851,28 @@ class Products_model extends CI_Model
         $query .= " LEFT JOIN geopos_products  ON geopos_products.pid = geopos_tranfering_products.pid "; 
         $query .= " WHERE geopos_tranfering_products.status =  2 ";
         $query_result = $this->db->query($query)->result_array();
+        return $query_result ;
+    }
+    public function update_bundles_contain_purchased_product($pid,$diff)
+    {
+        $diff =  number_format($diff,3);
+        $query = "SELECT pid,bundle_products,fproduct_price ";
+        $query .= " FROM geopos_products "; 
+        $query .= " WHERE bundle_products <> 'null' ";
+        $query_result = $this->db->query($query)->result_array();
+        foreach ($query_result as $key => $bundle) {
+            $inner_products = $bundle['bundle_products'];
+            $inner_products =  json_decode($inner_products,TRUE);
+            if(!in_array($pid,$inner_products)){
+                unset($query_result[$key]);
+            }else {
+                $current_price =  $bundle['fproduct_price'] +  $diff ;
+                $query_result[$key]['fproduct_price'] =  $current_price ;
+            }
+        }
+        if( count($query_result) >  0 ){
+            $this->db->update_batch('geopos_products', $query_result, 'pid');
+        }
         return $query_result ;
     }
 }

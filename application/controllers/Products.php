@@ -558,7 +558,7 @@ class Products extends CI_Controller
 
         }else {
             $data['cat'] = $this->categories_model->category_list();
-            $data['warehouse'] = $this->categories_model->warehouse_list();
+            $data['warehouse'] = $this->categories_model->all_warehouse_list_with_location();
             $head['title'] = "Create Transfer";
             $head['usernm'] = $this->aauth->get_user()->username;
             $this->load->view('fixed/header', $head);
@@ -680,6 +680,56 @@ class Products extends CI_Controller
         }
     }
 
+    public function view_over()
+    {
+        $pid = $this->input->post('id');
+        $this->db->select('geopos_products.*,geopos_warehouse.title');
+        $this->db->from('geopos_products');
+        $this->db->where('geopos_products.pid', $pid);
+        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
+        if ($this->aauth->get_user()->loc) {
+            $this->db->group_start();
+            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
+            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+            $this->db->group_end();
+        } elseif (!BDATA) {
+            $this->db->where('geopos_warehouse.loc', 0);
+        }
+        $query = $this->db->get();
+        $data['product'] = $query->row_array();
+        $this->db->select('geopos_products.*,geopos_warehouse.title');
+        $this->db->from('geopos_products');
+        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
+        if ($this->aauth->get_user()->loc) {
+            $this->db->group_start();
+            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
+            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+            $this->db->group_end();
+        } elseif (!BDATA) {
+            $this->db->where('geopos_warehouse.loc', 0);
+        }
+        $this->db->where('geopos_products.merge', 1);
+        $this->db->where('geopos_products.sub', $pid);
+        $query = $this->db->get();
+        $data['product_variations'] = $query->result_array();
+        $this->db->select('geopos_products.*,geopos_warehouse.title');
+        $this->db->from('geopos_products');
+        $this->db->join('geopos_warehouse', 'geopos_warehouse.id = geopos_products.warehouse');
+        if ($this->aauth->get_user()->loc) {
+            $this->db->group_start();
+            $this->db->where('geopos_warehouse.loc', $this->aauth->get_user()->loc);
+            if (BDATA) $this->db->or_where('geopos_warehouse.loc', 0);
+            $this->db->group_end();
+        } elseif (!BDATA) {
+            $this->db->where('geopos_warehouse.loc', 0);
+        }
+        $this->db->where('geopos_products.sub', $pid);
+        $this->db->where('geopos_products.merge', 2);
+        $query = $this->db->get();
+        $data['product_warehouse'] = $query->result_array();
+        $this->load->view('products/view-over', $data);
+    }
+    
     public function label()
     {
         $pid = $this->input->get('id');

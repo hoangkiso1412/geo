@@ -32,3 +32,10 @@ CREATE TABLE IF NOT EXISTS geopos_tranfering_products (
 	status INT(11) NOT NULL ,
 )
 ALTER TABLE `geopos_products` CHANGE `wholesale` `wholesale` INT(11) NOT NULL DEFAULT '0'; 
+
+//  28/11 
+ALTER TABLE `geopos_products_prices_history` CHANGE `product_price`  decimal(15,2) NULL DEFAULT NULL;
+ALTER TABLE `geopos_products_prices_history` CHANGE `fproduct_price` `fproduct_price` DECIMAL(15,2) NULL DEFAULT NULL; 
+ALTER TABLE `geopos_products_prices_history` CHANGE `wholesale` `wholesale` DECIMAL(15,2) NULL DEFAULT NULL; 
+ALTER TABLE `geopos_products_prices_history` CHANGE `wholesale` `wholesale` DECIMAL(15,2) NULL DEFAULT NULL;
+ALTER TABLE `geopos_products` CHANGE `wholesale` `wholesale` DECIMAL(16.2) NOT NULL DEFAULT '0'; 

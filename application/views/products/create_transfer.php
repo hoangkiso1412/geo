@@ -40,7 +40,8 @@
                                         foreach ($warehouse as $row) {
                                             $cid = $row['id'];
                                             $title = $row['title'];
-                                            echo "<option value='$cid'>$title</option>";
+                                            $loc =  $row['cname'] != NULL ? $row['cname'] : 'Main Location';
+                                            echo "<option value='$cid'>$title - $loc</option>";
                                         }
                                         ?>
                                     </select>

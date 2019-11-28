@@ -38,9 +38,11 @@ class Categories_model extends CI_Model
             $where = "WHERE  (loc=" . $this->aauth->get_user()->loc . " ) ";
             if (BDATA) $where = "WHERE  (loc=" . $this->aauth->get_user()->loc . " OR geopos_warehouse.loc=0) ";
         }
-        $query = $this->db->query("SELECT id,title
-FROM geopos_warehouse $where 
-ORDER BY id DESC");
+        $query = $this->db->query(
+            "SELECT id,title
+            FROM geopos_warehouse $where 
+            ORDER BY id DESC"
+        );
         return $query->result_array();
     }
     public function warehouse_list_with_location()
@@ -53,6 +55,15 @@ ORDER BY id DESC");
         }
         //  SELECT geopos_warehouse.id,geopos_warehouse.title ,geopos_locations.cname  FROM geopos_warehouse JOIN geopos_locations ON geopos_locations.id =  geopos_warehouse.loc
         $query = $this->db->query("SELECT id,title FROM geopos_warehouse $where  ORDER BY id DESC");
+        return $query->result_array();
+    }
+    public function all_warehouse_list_with_location()
+    {
+        $query = $this->db->query(
+            "SELECT geopos_warehouse.id,geopos_warehouse.title, geopos_locations.id , geopos_locations.cname
+             FROM geopos_warehouse  
+             LEFT JOIN geopos_locations ON geopos_locations.id = geopos_warehouse.loc"
+        );
         return $query->result_array();
     }
     public function category_stock()
