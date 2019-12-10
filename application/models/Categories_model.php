@@ -60,10 +60,13 @@ class Categories_model extends CI_Model
     public function all_warehouse_list_with_location()
     {
         $query = $this->db->query(
-            "SELECT geopos_warehouse.id,geopos_warehouse.title, geopos_locations.id , geopos_locations.cname
+            "SELECT geopos_warehouse.id,geopos_warehouse.title, geopos_locations.id As loc_id, geopos_locations.cname
              FROM geopos_warehouse  
              LEFT JOIN geopos_locations ON geopos_locations.id = geopos_warehouse.loc"
         );
+        foreach ($query as $key => $warehouse) {
+            // if($warehouse)
+        }
         return $query->result_array();
     }
     public function category_stock()

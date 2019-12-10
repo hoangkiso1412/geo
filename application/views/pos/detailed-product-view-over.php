@@ -1,12 +1,13 @@
 <?php
-    // we pass one variable named data hava all the data
+    // Passed one variable named data hava all the data
     $product =  $data['product'];
     $custom_fields = $data['custom_fields'];
     $product_code = $product['cat_name'];
     $product_stocks =  $data['product_stocks'];
     $sales = $data['sales'];
     $Locs_n_wars = $data['Locs_n_wars'] ;
-    $sales_per_div =  2 ;
+    
+    $sales_per_div =  5 ;
 ?>
 
 <div class="text-center modal-header">

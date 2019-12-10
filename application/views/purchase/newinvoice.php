@@ -610,23 +610,30 @@
         $('#ganak').val(nxt);
         var functionNum = "'" + row_counter + "'";
         count = $('#saman-row div').length;
+        
         //product row
         var data = '<tr><td><input type="text" class="productname form-control" onkeypress="autocomplete_product_name(this.id)" name="product_name[]" placeholder="Enter Product name or Code" id="productname-' + row_counter + '"></td><td><input type="text" class="form-control req amnt" name="product_qty[]" id="amount-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ><input type="hidden" id="alert-' + row_counter + '" value=""  name="alert[]"> </td> <td><input type="text" class="form-control req prc" name="product_price[]" id="price-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td>';
         data +='<td><input type="text" class="form-control req prc" name="retail_price[]" id="retail-price-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td>'
         data +='<td><input type="text" class="form-control req prc" name="wholesale_price[]" id="wholesale-price-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td>'
         data +='<td> <input type="text" class="form-control vat" name="product_tax[]" id="vat-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td id="texttaxa-' + row_counter + '" class="text-center">0</td> <td><input type="text" class="form-control discount" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + row_counter + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td><span class="currenty">' + currency + '</span> <strong><span class=\'ttlText\' id="result-' + row_counter + '">0</span></strong></td> <td class="text-center"><button type="button" data-rowid="' + row_counter + '" class="btn btn-danger removeProd" title="Remove" > <i class="fa fa-minus-square"></i> </button> </td><input type="hidden" name="taxa[]" id="taxa-' + row_counter + '" value="0"><input type="hidden" name="disca[]" id="disca-' + row_counter + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + row_counter + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + row_counter + '" value="0"> <input type="hidden" name="unit[]" id="unit-' + row_counter + '" value=""> <input type="hidden" name="hsn[]" id="hsn-' + row_counter + '" value=""> </tr>';
         data += '<tr>';
-        data += '<td colspan="1">';
-            data += '<p>Want to calculate the prices depend on old profit ratio ?</p>';
-            data += '<input id="hidden-old-pprice-'+row_counter+'" type="hidden" style="display:block" name="old_pprice[]" >';
-            data += '<input id="hidden-old-rprice-'+row_counter+'" type="hidden" style="display:block" name="old-rprice[]" >';
-            data += '<input id="hidden-old-wprice-'+row_counter+'" type="hidden" style="display:block" name="old-wprice[]" >';
-            data += '<input id="hidden-old-qty-'+row_counter+'" type="hidden" style="display:block" name="old_qty[]" >';
+            data += '<td colspan="1">';
+                data += '<p>Calculate prices depend on old profit ratio</p></br>';
+                data += '<input onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-' + row_counter + '" >';
+                data += '<input type="hidden" value= "0" id="calculate-prices-value-' + row_counter + '" >';
+                data += '<input id="hidden-old-pprice-'+row_counter+'" type="hidden" style="display:block" name="old_pprice[]" >';
+                data += '<input id="hidden-old-rprice-'+row_counter+'" type="hidden" style="display:block" name="old-rprice[]" >';
+                data += '<input id="hidden-old-wprice-'+row_counter+'" type="hidden" style="display:block" name="old-wprice[]" >';
+                data += '<input id="hidden-old-qty-'+row_counter+'" type="hidden" style="display:block" name="old_qty[]" >';
             data += '</td>';
-            data += '<td colspan="1"><input onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-' + row_counter + '" ><input type="hidden" value= "0" id="calculate-prices-value-' + row_counter + '" ></td>';
+            data += '<td colspan="1">';
+                data += '<p>Apply average</p>';
+                data += '<input onclick="average_checkbox(this.id)" class="average" type="checkbox" id="average-' + row_counter + '" checked>';
+                data += '<input name="apply_average[]" value="1" type="hidden" id="hidden-average-' + row_counter + '" >';
+            data += '</td>';
             data += '<td colspan="1"><input type="text" class="form-control req prc "id="old-price-' + row_counter + '"  onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
-            data += '<td colspan="1"><input type="text" class="form-control req prc" id="old-retail-price-' + row_counter + '"    onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
-            data += '<td colspan="1"><input type="text" class="form-control req prc" id="old-wholesale-price-' + row_counter + '" onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
+            data += '<td colspan="1"><input type="text" class="form-control reprcq prc" id="old-retail-price-' + row_counter + '"    onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
+            data += '<td colspan="1"><input type="text" class="form-control req " id="old-wholesale-price-' + row_counter + '" onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
             data += '<td colspan="7"><textarea class="form-control"  id="dpid-' + row_counter + '" name="product_description[]" placeholder="Enter Product description" autocomplete="off"></textarea><br></td>';
         data += '</tr>';
         //ajax request
@@ -636,7 +643,6 @@
         row_counter ++ ;
         return current_row_id;
     }
-
     $('#addproductrow').on('click', function (e) {
         add_empty_row(row_counter);
     });
@@ -669,7 +675,6 @@
 
 
     }
-
     function autocomplete_product_name(id){
         row =  id ;
         cvalue = id ;
@@ -720,7 +725,6 @@
             },
         });
     }
-
     function fill_row_data(full_data ,id_arr){
         id = id_arr.split("-");
         var t_r = full_data[3];
@@ -747,10 +751,6 @@
         $('#alert-' + id[1]).val(full_data[8]);
         rowTotal(cvalue);
         billUpyog();
-
-
-
-
     }
     function fill_row_data_from_popup(product_id ,row_id){
         var disrate =  $('#data-disrate-' + product_id).val();
@@ -765,12 +765,6 @@
         var unit    =  $('#data-unit-' + product_id).val();
         var wprice  =  $('#data-wholesale-' + product_id).val();
         var code    =  $('#data-code-' + product_id).val();
-
-
-
-
-
-
         var cat     =  $('#data-cat-' + product_id).val();
         var sub_cat =  $('#data-sub-cat-' + product_id).val();
         var auto_pr =  $('#data-auto-prices-' + product_id).val();
@@ -784,11 +778,6 @@
         $('#productname-' + row_id).val(name);
         $('#amount-' + row_id).val(1);
         $('#old-price-' + row_id).val(pprice);
-
-
-
-
-
         $('#hidden-cat-' +  row_id).val(cat);
         $('#hidden-sub-cat-' +  row_id).val(sub_cat);
         $('#hidden-auto-prices-' +  row_id).val(auto_pr);
@@ -808,13 +797,23 @@
         rowTotal(row_counter);
         billUpyog();
     }
-
     $('#select_all').on('click', function (e) {
         var products = document.querySelectorAll("[data-role ='checkproduct']");
-        console.log(products);
         products.forEach(function(product){
             document.getElementById(product.id).checked = true ; 
         });
     });
+    function average_checkbox(id) {
+        var status = document.getElementById(id).checked;
 
+        id = id.split("-");
+        id = id[1];
+        if(status ==  true){ 
+            document.getElementById('hidden-average-'+id).value = 1;
+            // document.getElementById('calculate-prices-'+id).disabled = false ;
+        }else{
+            document.getElementById('hidden-average-'+id).value = 0;
+            //document.getElementById('calculate-prices-'+id).disabled = true ;
+        }
+    }
 </script>

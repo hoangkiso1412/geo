@@ -31,7 +31,7 @@
                     <input type="hidden" name="act" value="add_product">
                     <table class="table table-striped table-bordered" id='data-table'>
                             <tr>
-                                <td colspan="3"><strong><?php echo $this->lang->line('Product') ?></strong></td>
+                                <td colspan="5"><strong><?php echo $this->lang->line('Product') ?></strong></td>
                                 <td colspan="1">
                                     <strong><?php echo $this->lang->line('From') ?></strong>
                                     <select id="from" name="from" required class="form-control">
@@ -55,7 +55,7 @@
                                         foreach ($warehouse as $row) {
                                             $cid = $row['id'];
                                             $title = $row['title'];
-                                            echo "<option value='$cid'>$title</option>";
+                                            echo "<option value='$cid'>$title - $loc</option>";
                                         }
                                         ?>
                                     </select>
@@ -68,6 +68,8 @@
                             <tr>
                                 <td><strong><?php echo $this->lang->line('Product Name') ?></strong></td>
                                 <td><strong><?php echo $this->lang->line('Code') ?></strong></td>
+                                <td><strong><?php echo $this->lang->line('Cat') ?></strong></td>
+                                <td><strong><?php echo $this->lang->line('Sub Cat') ?></strong></td>
                                 <td><strong><?php echo $this->lang->line('Transfered Qty') ?></strong></td>
                                 <td><strong><?php echo $this->lang->line('Current warehouse Stock') ?></strong></td>
                                 <td><strong><?php echo $this->lang->line('Distination warehouse Stock') ?></strong></td>
@@ -117,13 +119,14 @@
         function add_tr(){
             var tr =  '<tr id="tr-'+trs_counter+'">';
                     tr += '<td>';
-                        tr += '<select id="select-'+trs_counter+'" class="products_select">';
+                        tr += '<select name="products[]" id="select-'+trs_counter+'" class="form-control products_select">';
                             tr += '<option>Select</option>' ;
                             tr += options ;
                         tr += '</select>' ;
-                        tr += '<input  style="display:none" type="text" name="products[]" value ="0" id="pid-'+trs_counter+'">' ;
                     tr += '</td>';
                     tr += '<td id="code-'+trs_counter+'"></td>';
+                    tr += '<td id="cat-'+trs_counter+'"></td>';
+                    tr += '<td id="sub-cat-'+trs_counter+'"></td>';
                     tr += '<td id="transfered-qty-'+trs_counter+'" ><input type="number" value ="1" class="form-control margin-bottom required" name="qty[]" onkeypress="return isNumber(event)"></td>';
                     tr += '<td id="from-stock-'+trs_counter+'"></td>';
                     tr += '<td id="to-stock-'+trs_counter+'"></td>';
@@ -134,9 +137,10 @@
         }
 
         $("#get_products").on('click', function () {
-            from =  document.getElementById('from').value ; 
+            from =  document.getElementById('from').value ;
             to =  document.getElementById('to').value ; 
-            if(from != '0'  &&  to !=  '0'){
+            
+            if(from != '0'  &&  to !=  '0'  &&  to !=  from ){
                 // Put the warehouse ids into hidden input so we can disable the selects if we want
                 document.getElementById('from_value').value =  from;
                 document.getElementById('to_value').value   =  to;
@@ -169,13 +173,15 @@
                     }
                 });
             }else{
-                alert('Select the warehouses before');
+                alert('Select 2 defiirent WareHouses before');
             };
         });
 
         $(document.body).on('change',".products_select",function (e) {
             var select_id = get_id(this.id);
             var pid = this.value; 
+
+            if(pid > 0){
                 //  Get list of the products 
                 $.ajax({
                     url: baseurl + 'products/product_transfer_data?pid='+pid+'&from='+from+'&to='+to,
@@ -190,13 +196,20 @@
                     },
                     success: function(data){
                         document.getElementById('code-'+select_id).innerHTML =  data[0]['product_code'];
-                        document.getElementById('pid-'+select_id).value =  data[0]['pid'];
+                        document.getElementById('cat-'+select_id).innerHTML =  data[0]['cat'];
+                        document.getElementById('sub-cat-'+select_id).innerHTML =  data[0]['sub_cat'];
                         document.getElementById('transfered-qty-'+select_id).innerHTML =  '<input type="number" placeholder="max is '+data[0]['from_qty']+'" min ="1" max="'+data[0]['from_qty']+'" value = "1" class="form-control margin-bottom required" name="qty[]" onkeypress="return isNumber(event)">';
                         document.getElementById('from-stock-'+select_id).innerHTML =  data[0]['from_qty'];
                         document.getElementById('to-stock-'+select_id).innerHTML =  data[0]['to_qty'];
                     }
                 });
-
-
+            }else{
+                document.getElementById('code-'+select_id).innerHTML = '';
+                document.getElementById('cat-'+select_id).innerHTML =  '';
+                document.getElementById('sub-cat-'+select_id).innerHTML =  '';
+                document.getElementById('transfered-qty-'+select_id).innerHTML =  '<input disabled type="number" value = "" class="form-control margin-bottom" name="qty[]" >';
+                document.getElementById('from-stock-'+select_id).innerHTML =  '';
+                document.getElementById('to-stock-'+select_id).innerHTML =  '';
+            }
         });
     </script>

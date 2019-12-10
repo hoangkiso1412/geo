@@ -72,6 +72,8 @@ class Purchase extends CI_Controller
         $data['exchange'] = $this->plugins->universal_api(5);
         $this->load->library("Common");
         $data['taxlist'] = $this->common->taxlist_edit($data['invoice']['taxstatus']);
+        $this->load->model('categories_model');
+        $data['cats'] = $this->categories_model->category_list();
         $this->load->view('fixed/header', $head);
         $this->load->view('purchase/edit', $data);
         $this->load->view('fixed/footer');
@@ -140,6 +142,7 @@ class Purchase extends CI_Controller
             $wholesale_price = $this->input->post('wholesale_price');
             $old_pprice = $this->input->post('old_pprice');
             $old_qty = $this->input->post('old_qty');
+            $apply_average = $this->input->post('apply_average');
             $product_tax = $this->input->post('product_tax');
             $product_discount = $this->input->post('product_discount');
             $product_subtotal = $this->input->post('product_subtotal');
@@ -161,9 +164,18 @@ class Purchase extends CI_Controller
                 $current_old_qty    = (int)$old_qty[$key];
                 $current_price      = (int)$product_price[$key];
                 $current_qty        = (int)$product_qty[$key];
+                $current_apply_avg  = (int)$apply_average[$key];
 
                 $full_amount = $current_old_qty + $current_qty ;
-                $average = ( $current_old_price * $current_old_qty + $current_price * $current_qty ) /  ( $full_amount ) ;
+
+                if( $current_apply_avg == 0){
+                    $final_price = $current_price;
+                }elseif ($current_price == 0) {
+                    $final_price = $current_old_price;
+                }else {
+                    $final_price = ( $current_old_price * $current_old_qty + $current_price * $current_qty ) /  ( $full_amount ) ;
+                }
+
                 $data = array(
                     'tid' => $invocieno,
                     'pid' => $product_id[$key],
@@ -177,11 +189,13 @@ class Purchase extends CI_Controller
                     'totaltax' => rev_amountExchange_s($ptotal_tax[$key], $currency, $this->aauth->get_user()->loc),
                     'totaldiscount' => rev_amountExchange_s($ptotal_disc[$key], $currency, $this->aauth->get_user()->loc),
                     'product_des' => $product_des[$key],
-                    'unit' => $product_unit[$key]
+                    'unit' => $product_unit[$key],
+                    'rprice' => rev_amountExchange_s($retail_price[$key], $currency, $this->aauth->get_user()->loc),
+                    'wprice' => rev_amountExchange_s($wholesale_price[$key], $currency, $this->aauth->get_user()->loc),
                 );
                 $new_data = array( // 7 inputs 
                     'qty' => numberClean($full_amount),
-                    'fproduct_price' => rev_amountExchange_s($average, $currency, $this->aauth->get_user()->loc),
+                    'fproduct_price' => rev_amountExchange_s($final_price, $currency, $this->aauth->get_user()->loc),
                     'product_price' => rev_amountExchange_s($retail_price[$key], $currency, $this->aauth->get_user()->loc),
                     'wholesale' => rev_amountExchange_s($wholesale_price[$key], $currency, $this->aauth->get_user()->loc),
                     'taxrate' => numberClean($product_tax[$key]),
@@ -206,15 +220,18 @@ class Purchase extends CI_Controller
 
                         // History Table 
                         $data =  array( 'pid'  => $product_id[$key] );
-                        if($current_old_price != $average){ $data['fproduct_price'] = $average; }
+                        if($current_old_price != $final_price && $final_price != '0' ){ $data['fproduct_price'] = $final_price; }
                         if($current_old_rprice != $retail_price[$key]){ $data['product_price'] = $retail_price[$key] ;}
                         if($current_old_wprice != $wholesale_price[$key]){ $data['wholesale'] = $wholesale_price[$key]; }
                         if( count($data) > 1 ){
                             $this->db->insert('geopos_products_prices_history', $data ) ;       
                         }
+
                         // change the price of the bundles which contain this product 
-                        $diff =  $average -  $current_old_price ; 
-                        $this->products->update_bundles_contain_purchased_product($product_id[$key],'-4.3');
+                        if($final_price !=  $current_old_price){
+                            $diff =  $final_price -  $current_old_price ; 
+                            $this->products->update_bundles_contain_purchased_product($product_id[$key],'-4.3');    
+                        }
                     }
                     $itc += $amt;
                 }

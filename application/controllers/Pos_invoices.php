@@ -292,16 +292,20 @@ class Pos_invoices extends CI_Controller
                 $product_unit = $this->input->post('unit');
                 $product_hsn = $this->input->post('hsn', true);
                 $product_alert = $this->input->post('alert');
+                
+                if( $pay_ids != ''){
+                    $their_are_paid_products =  TRUE ; 
+                }else {
+                    $their_are_paid_products =  FALSE ; 
+                }
 
                 $pay_ids = explode(',', $pay_ids);
 
                 foreach ($pid as $key => $value) {
-
-
                     $total_discount += numberClean(@$ptotal_disc[$key]);
                     $total_tax += numberClean($ptotal_tax[$key]);
 
-	               if( in_array($key, $pay_ids) ) {
+	               if( in_array($key, $pay_ids) && $their_are_paid_products == TRUE ) {
 	               		$paid_result = 1;
 	               }else{
 	               		$paid_result = 0;

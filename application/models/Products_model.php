@@ -160,7 +160,7 @@ class Products_model extends CI_Model
 
 
 
-    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '0', $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value)
+    public function addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type = '', $w_stock = '', $w_alert = '', $sub_cat = '', $b_id = '', $related_product, $favorite = '', $wholesale = '0', $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value,$extrabarcodes)
     {
         $ware_valid = $this->valid_warehouse($warehouse);
         if (!$sub_cat) {
@@ -208,6 +208,7 @@ class Products_model extends CI_Model
                         'bundle_discount' => $discounnt_array,
                         'search_meta' => $search_meta ,
                         'auto_prices' => $calculate_profit_value , 
+                        'extra_barcodes' =>  $extrabarcodes
                     );
                 } else {
                     $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
@@ -239,6 +240,7 @@ class Products_model extends CI_Model
                         'bundle_discount' => $discounnt_array,
                         'search_meta' => $search_meta,
                         'auto_prices' => $calculate_profit_value , 
+                        'extra_barcodes' =>  $extrabarcodes
                     );
                 }
                 $this->db->trans_start();
@@ -325,7 +327,7 @@ class Products_model extends CI_Model
                     'bundle_discount' => $discounnt_array,
                     'search_meta' => $search_meta,
                     'auto_prices' => $calculate_profit_value , 
-
+                    'extra_barcodes' =>  $extrabarcodes
                 );
             } else {
                 $barcode = rand(100, 999) . rand(0, 9) . rand(1000000, 9999999) . rand(0, 9);
@@ -355,7 +357,8 @@ class Products_model extends CI_Model
                     'bundle_products' => $bundle_products,
                     'bundle_discount' => $discounnt_array,
                     'search_meta' => $search_meta,
-                    'auto_prices' => $calculate_profit_value , 
+                    'auto_prices' => $calculate_profit_value ,
+                    'extra_barcodes' =>  $extrabarcodes 
                 );
             }
             $this->db->trans_start();
@@ -422,7 +425,7 @@ class Products_model extends CI_Model
         }
     }
 
-    public function edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat = '', $b_id = '', $related_product, $favorite ='', $wholesale, $product_status, $bundle_products, $discounnt_array, $search_meta)
+    public function edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat = '', $b_id = '', $related_product, $favorite ='', $wholesale, $product_status, $bundle_products, $discounnt_array, $search_meta , $calculate_profit_value , $extrabarcodes )
     {
         $this->db->select('qty,product_price,fproduct_price,wholesale');
         $this->db->from('geopos_products');
@@ -456,7 +459,10 @@ class Products_model extends CI_Model
                     'product_status' => $product_status,
                     'bundle_products' => $bundle_products,
                     'bundle_discount' => $discounnt_array,
-                    'search_meta' => $search_meta
+                    'search_meta' => $search_meta,
+                    'auto_prices' => $calculate_profit_value ,
+                    'extra_barcodes' =>  $extrabarcodes 
+
                 );
 
                 $this->db->set($data);
@@ -503,8 +509,10 @@ class Products_model extends CI_Model
                 'product_status' => $product_status,
                 'bundle_products' => $bundle_products,
                 'bundle_discount' => $discounnt_array,
-                'search_meta' => $search_meta
-            );
+                'search_meta' => $search_meta,
+                'auto_prices' => $calculate_profit_value ,
+                'extra_barcodes' =>  $extrabarcodes 
+        );
             $this->db->set($data);
             $this->db->where('pid', $pid);
             if ($this->db->update('geopos_products')) {
@@ -614,7 +622,6 @@ class Products_model extends CI_Model
         $query = $this->db->get();
         $to_warehouse_name = $query->row_array()['title'];
         $i = 0;
-        pre($products_l);
         foreach ($products_l as $row) {
             $qty = 0;
             if (array_key_exists($i, $qtyArray)) {
@@ -839,7 +846,6 @@ class Products_model extends CI_Model
         $query .= " LEFT JOIN geopos_warehouse ON geopos_warehouse.id = geopos_tranfering_products.w_to "; 
         $query .= " LEFT JOIN geopos_products  ON geopos_products.pid = geopos_tranfering_products.pid "; 
         $query .= " WHERE geopos_tranfering_products.status =  1 ";
-        echo $query ;
         $query_result = $this->db->query($query)->result_array();
         return $query_result ;
     }

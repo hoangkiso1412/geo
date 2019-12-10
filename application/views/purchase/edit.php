@@ -1,3 +1,6 @@
+<?php
+    // pre($products);
+?>
 <div class="content-body">
     <div class="card">
         <div class="card-content">
@@ -8,11 +11,7 @@
             </div>
             <div class="card-body">
                 <form method="post" id="data_form">
-
-
                     <div class="row">
-
-
                         <div class="col-sm-6 cmp-pnl">
                             <div id="customerpanel" class="inner-cmp-pnl">
                                 <div class="form-group row">
@@ -176,56 +175,94 @@
 
                                 <thead>
                                 <tr class="item_header bg-gradient-directional-amber">
-                                    <th width="30%"
-                                        class="text-center"><?php echo $this->lang->line('Item Name') ?></th>
-                                    <th width="8%" class="text-center"><?php echo $this->lang->line('Quantity') ?></th>
-                                    <th width="10%" class="text-center"><?php echo $this->lang->line('Rate') ?></th>
-                                    <th width="10%" class="text-center"><?php echo $this->lang->line('Tax') ?>(%)</th>
-                                    <th width="10%" class="text-center"><?php echo $this->lang->line('Tax') ?></th>
-                                    <th width="7%" class="text-center"><?php echo $this->lang->line('Discount') ?></th>
-                                    <th width="10%" class="text-center"><?php echo $this->lang->line('Amount') ?>
-                                        (<?php echo $this->config->item('currency'); ?>)
-                                    </th>
-                                    <th width="5%" class="text-center"><?php echo $this->lang->line('Action') ?></th>
-                                </tr>
+                                <th width="30%" class="text-center"><?php echo $this->lang->line('Item Name') ?></th>
+                                <th width="8%" class="text-center"><?php echo $this->lang->line('Quantity') ?></th>
+                                <th width="10%" class="text-center"><?php echo $this->lang->line('Purchase') ?></th>
+                                <th width="10%" class="text-center"><?php echo $this->lang->line('Retail') ?></th>
+                                <th width="10%" class="text-center"><?php echo $this->lang->line('WHolesale') ?></th>
+                                <th width="10%" class="text-center"><?php echo $this->lang->line('Tax') ?>(%)</th>
+                                <th width="10%" class="text-center"><?php echo $this->lang->line('Tax') ?></th>
+                                <th width="7%" class="text-center"><?php echo $this->lang->line('Discount') ?></th>
+                                <th width="10%" class="text-center">
+                                    <?php echo $this->lang->line('Amount') ?>
+                                    (<?php echo $this->config->item('currency'); ?>)
+                                </th>
+                                <th width="5%" class="text-center"><?php echo $this->lang->line('Action') ?></th>
+                            </tr>
                                 </thead>
                                 <tbody>
                                 <?php $i = 0;
                                 foreach ($products as $row) {
-                                    echo '<tr >
-                        <td><input type="text" class="form-control" name="product_name[]" placeholder="Enter Product name or Code"  value="' . $row['product'] . '">
-                        </td>
-                        <td><input type="text" class="form-control req amnt" name="product_qty[]" id="amount-' . $i . '"
-                                   onkeypress="return isNumber(event)" onkeyup="rowTotal(' . $i . '), billUpyog()"
-                                   autocomplete="off" value="' . amountFormat_general($row['qty']) . '" ><input type="hidden" name="old_product_qty[]" value="' . amountFormat_general($row['qty']) . '" ></td>
-                        <td><input type="text" class="form-control req prc" name="product_price[]" id="price-' . $i . '"
-                                   onkeypress="return isNumber(event)" onkeyup="rowTotal(' . $i . '), billUpyog()"
-                                   autocomplete="off" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '"></td>
-                        <td> <input type="text" class="form-control vat" name="product_tax[]" id="vat-' . $i . '"
-                                    onkeypress="return isNumber(event)" onkeyup="rowTotal(' . $i . '), billUpyog()"
-                                    autocomplete="off"  value="' . amountFormat_general($row['tax']) . '"></td>
-                        <td class="text-center" id="texttaxa-' . $i . '">' . edit_amountExchange_s($row['totaltax'], $invoice['multi'], $this->aauth->get_user()->loc) . '</td>
-                        <td><input type="text" class="form-control discount" name="product_discount[]"
-                                   onkeypress="return isNumber(event)" id="discount-' . $i . '"
-                                   onkeyup="rowTotal(' . $i . '), billUpyog()" autocomplete="off"  value="' . amountFormat_general($row['discount']) . '"></td>
-                        <td><span class="currenty">' . $this->config->item('currency') . '</span>
-                            <strong><span class="ttlText" id="result-' . $i . '">' . edit_amountExchange_s($row['subtotal'], $invoice['multi'], $this->aauth->get_user()->loc) . '</span></strong></td>
-                        <td class="text-center">
-<button type="button" data-rowid="' . $i . '" class="btn btn-danger removeProd" title="Remove"> <i class="fa fa-minus-square"></i> </button>
-                        </td>
-                        <input type="hidden" name="taxa[]" id="taxa-' . $i . '" value="' . edit_amountExchange_s($row['totaltax'], $invoice['multi'], $this->aauth->get_user()->loc) . '">
-                        <input type="hidden" name="disca[]" id="disca-' . $i . '" value="' . edit_amountExchange_s($row['totaldiscount'], $invoice['multi'], $this->aauth->get_user()->loc) . '">
-                        <input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' . $i . '" value="' . edit_amountExchange_s($row['subtotal'], $invoice['multi'], $this->aauth->get_user()->loc) . '">
-                        <input type="hidden" class="pdIn" name="pid[]" id="pid-' . $i . '" value="' . $row['pid'] . '">
-                         <input type="hidden" name="unit[]" id="unit-' . $i . '" value="' . $row['unit'] . '">   <input type="hidden" name="hsn[]" id="unit-' . $i . '" value="' . $row['code'] . '">
-                    </tr><tr class="desc_p"><td colspan="8"><textarea id="dpid-' . $i . '" class="form-control" name="product_description[]" placeholder="Enter Product description" autocomplete="off">' . $row['product_des'] . '</textarea><br></td></tr>';
+                                    echo '<tr>
+                                            <td>
+                                                <input readonly type="text" class="form-control" name="product_name[]" placeholder="Enter Product name or Code"  value="' . $row['product'] . '">
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class="form-control req amnt" name="product_qty[]" id="amount-'.$i.'" onkeypress="return isNumber(event)" onkeyup="rowTotal('."'".$i."'".'), billUpyog()" autocomplete="off" value="' . amountFormat_general($row['qty']) . '" >
+                                                <input type="hidden" id="alert-'.$i.'" value="' . amountFormat_general($row['qty']) . '" name="alert[]"> 
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class="form-control req prc" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '" name="product_price[]" id="price-'.$i.'" onkeypress="return isNumber(event)" onkeyup="rowTotal('."'".$i."'".'), billUpyog()" autocomplete="off">
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class="form-control req prc" value="' . edit_amountExchange_s($row['rprice'], $invoice['multi'], $this->aauth->get_user()->loc) . '" name="retail_price[]" id="retail-price-'.$i.'" onkeypress="return isNumber(event)" onkeyup="rowTotal('."'".$i."'".'), billUpyog()" autocomplete="off">
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class="form-control req prc" value="' . edit_amountExchange_s($row['wprice'], $invoice['multi'], $this->aauth->get_user()->loc) . '"  name="wholesale_price[]" id="wholesale-price-'.$i.'" onkeypress="return isNumber(event)" onkeyup="rowTotal('."'".$i."'".'), billUpyog()" autocomplete="off">
+                                            </td>
+                                            <td> 
+                                                <input readonly type="text" class="form-control vat" name="product_tax[]" id="vat-' . $i . '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' . $i . '), billUpyog()" autocomplete="off"  value="' . amountFormat_general($row['tax']) . '">
+                                            </td>
+                                            <td class="text-center" id="texttaxa-' . $i . '">
+                                                ' . edit_amountExchange_s($row['totaltax'], $invoice['multi'], $this->aauth->get_user()->loc) . '
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class="form-control discount" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' . $i . '" onkeyup="rowTotal(' . $i . '), billUpyog()" autocomplete="off"  value="' . amountFormat_general($row['discount']) . '">
+                                            </td>
+                                            <td>
+                                                <span class="currenty">' . $this->config->item('currency') . '</span>
+                                                <strong><span class="ttlText" id="result-' . $i . '">' . edit_amountExchange_s($row['subtotal'], $invoice['multi'], $this->aauth->get_user()->loc) . '</span></strong>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" data-rowid="0" class="btn btn-danger removeProd" title="Remove">
+                                                <i class="fa fa-minus-square"></i> 
+                                                </button> 
+                                            </td>
+                                            <input type="hidden" name="taxa[]" id="taxa-' . $i . '" value="' . edit_amountExchange_s($row['totaltax'], $invoice['multi'], $this->aauth->get_user()->loc) . '">
+                                            <input type="hidden" name="disca[]" id="disca-' . $i . '" value="' . edit_amountExchange_s($row['totaldiscount'], $invoice['multi'], $this->aauth->get_user()->loc) . '">
+                                            <input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' . $i . '" value="' . edit_amountExchange_s($row['subtotal'], $invoice['multi'], $this->aauth->get_user()->loc) . '">
+                                            <input type="hidden" class="pdIn" name="pid[]" id="pid-' . $i . '" value="' . $row['pid'] . '">
+                                            <input type="hidden" name="unit[]" id="unit-' . $i . '" value="' . $row['unit'] . '">   <input type="hidden" name="hsn[]" id="unit-' . $i . '" value="' . $row['code'] . '">
+                                        </tr>';
+                                        echo '<tr>
+                                            <td colspan="1">
+                                                <p>Want to calculate the prices depend on old profit ratio ?</p>
+                                                <input id="hidden-old-pprice-'.$i.'" type="hidden" style="display:block" name="old_pprice[]" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '" >
+                                                <input id="hidden-old-rprice-'.$i.'" type="hidden" style="display:block" name="old-rprice[]" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '" >
+                                                <input id="hidden-old-wprice-'.$i.'" type="hidden" style="display:block" name="old-wprice[]" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '" >
+                                                <input id="hidden-old-qty-'.$i.'" type="hidden" style="display:block" name="old_qty[]" value="' . amountFormat_general($row['qty']) . '">
+                                            </td>
+                                            <td colspan="1">
+                                                <input disabled onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-'.$i.'">
+                                                <input type="hidden" value="0" id="calculate-prices-value-'.$i.'">
+                                            </td>
+                                            <td colspan="1">
+                                                <input type="text" class="form-control req prc " id="old-price-'.$i.'" onkeypress="return isNumber(event)" autocomplete="off" disabled="" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '" >
+                                            </td>
+                                            <td colspan="1">
+                                                <input type="text" class="form-control req prc" id="old-retail-price-'.$i.'" onkeypress="return isNumber(event)" autocomplete="off" value="' . edit_amountExchange_s($row['rprice'], $invoice['multi'], $this->aauth->get_user()->loc) . '" disabled="">
+                                            </td>
+                                            <td colspan="1">
+                                                <input type="text" class="form-control req prc" id="old-wholesale-price-'.$i.'" onkeypress="return isNumber(event)" autocomplete="off" disabled="" value="' . edit_amountExchange_s($row['wprice'], $invoice['multi'], $this->aauth->get_user()->loc) . '" >
+                                            </td>
+                                            <td colspan="7">
+                                                <textarea readonly id="dpid-' . $i . '" class="form-control" name="product_description[]" placeholder="Enter Product description" autocomplete="off">' . $row['product_des'] . '</textarea>                                            <br>
+                                            </td>
+                                        </tr>';
                                     $i++;
                                 } ?>
                                 <tr class="last-item-row sub_c">
                                     <td class="add-row">
-                                        <button type="button" class="btn btn-success" id="addproduct">
-                                            <i class="fa fa-plus-square"></i> <?php echo $this->lang->line('Add Row') ?>
-                                        </button>
                                     </td>
                                     <td colspan="7"></td>
                                 </tr>
@@ -340,6 +377,70 @@
                             </table>
                         </div>
 
+                        <!-- Modal -->
+                        <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Select products</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <div class="col-sm-6"><label class="col-form-label" for="product_cat">Product Category</label>
+                                        <select name="product_cat" id="product_cat" class="form-control" onchange="get_products()">
+                                            <option value="0"> -- Select Category -- </option>
+                                            <?php
+                                                foreach ($cats as $key => $cat) {
+                                                    $cid = $cat['id'];
+                                                    $title = $cat['title'];            
+                                                    echo "<option value='$cid'>$title</option>";
+                                                };
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6"><label class="col-form-label" for="sub_cat">Sub Category</label>
+                                        <select id="normal_sub_cat" name="sub_cat" class="form-control required" disabled onchange="get_products()">
+                                        </select>
+                                    </div>
+                                </div>
+                                <table class="table table-responsive" id="popup-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <label class="form-checkbox">
+                                                <input type="checkbox" id="select_all">
+                                                <i class="form-icon"></i>
+                                            </label>
+                                        </th>
+                                        <th scope="col"><?php echo $this->lang->line('Product Name') ?></th>
+                                        <th scope="col"><?php echo $this->lang->line('Category') ?></th>
+                                        <th scope="col">
+                                            <?php echo $this->lang->line('Sub') ?><?php echo $this->lang->line('Category') ?>
+                                        </th>
+                                        <th scope="col"><?php echo $this->lang->line('Warehouse') ?></th>
+                                        <th scope="col"><?php echo $this->lang->line('Stock Units') ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody id='popup-table-body'> 
+                                    <tr>
+                                        <td scope="col"><?php echo $this->lang->line('Warehouse') ?></td>
+                                        <td scope="col"><?php echo $this->lang->line('Stock Units') ?></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="add_products_rows()" >Save changes</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
                         <input type="hidden" value="purchase/editaction" id="action-url">
                         <input type="hidden" value="puchase_search" id="billtype">
                         <input type="hidden" value="<?php echo $i; ?>" name="counter" id="ganak">
@@ -354,6 +455,7 @@
 
                         <input type="hidden" value="<?php
                         $tt = 0;
+                        $invoice['shipping'] =  $invoice['shipping'] != 0 ?  $invoice['shipping'] :  1 ;
                         if ($invoice['ship_tax_type'] == 'incl') $tt = @number_format(($invoice['shipping'] - $invoice['ship_tax']) / $invoice['shipping'], 2, '.', '');
                         echo amountFormat_general(number_format((($invoice['ship_tax'] / $invoice['shipping']) * 100) + $tt, 3, '.', '')); ?>"
                                name="shipRate" id="ship_rate">
@@ -361,8 +463,6 @@
                                id="ship_taxtype">
                         <input type="hidden" value="<?= amountFormat_general($invoice['ship_tax']); ?>" name="ship_tax"
                                id="ship_tax">
-
-
                 </form>
             </div>
 
@@ -472,7 +572,320 @@
         </div>
     </div>
 </div>
-<script type="text/javascript"> $('.editdate').datepicker({
+<script 
+    type="text/javascript"> $('.editdate').datepicker({
         autoHide: true,
         format: '<?php echo $this->config->item('dformat2'); ?>'
-    });</script>
+    });
+    
+    row_counter =  0 ; // counter of the added products AS GLOBAL VARIABLE 
+    // add_empty_row();
+    function  add_products_rows(){
+        var products = document.querySelectorAll("[data-role ='checkproduct']");
+        products.forEach(function(product){
+            var checked = product.checked ;
+            var added_row_id = "";
+            if(checked ==  true){
+                added_row_id = add_empty_row();
+                fill_row_data_from_popup(product.id,added_row_id)
+            }
+        });
+
+    };
+    function get_and_open(){
+        get_products();
+        $('#exampleModal').modal();
+    };
+
+    function get_products(){
+        // reset select all checkbox
+        document.getElementById('select_all').checked = false ; 
+
+
+        var sub = $('#normal_sub_cat').val();
+        var  cat= $('#product_cat').val();
+        if(!(sub > 0) ){
+            sub =  0 ;
+        }
+        $.ajax({
+            url: baseurl + 'purchase/product_fetching?category='+cat+'&sub_cat='+sub,
+            dataType: 'json',
+            type: 'POST',
+            quietMillis: 50,
+            data: function (product) {
+                return {
+                    product: product,
+                    '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                };
+            },
+            success: function(data){
+                var rows = "";
+                if(data.length > 0){
+                    $.each(data, function(key, product) {
+                        rows += '<tr>';
+                            rows += '<td>'; 
+                            rows += '<input id="'+product['pid']+'" type="checkbox" data-role ="checkproduct" >';
+                            rows += '<input id="data-disrate-'+product['pid']+'" type="hidden" value="'+product['disrate']+'">';
+                            rows += '<input id="data-pprice-'+product['pid']+'" type="hidden" value="'+product['fproduct_price']+'">';
+                            rows += '<input id="data-pid-'+product['pid']+'" type="hidden" value="'+product['pid']+'">';
+                            rows += '<input id="data-des-'+product['pid']+'" type="hidden" value="'+product['product_des']+'">';
+                            rows += '<input id="data-name-'+product['pid']+'" type="hidden" value="'+product['product_name']+'">';
+                            rows += '<input id="data-rprice-'+product['pid']+'" type="hidden" value="'+product['product_price']+'">';
+                            rows += '<input id="data-qty-'+product['pid']+'" type="hidden" value="'+product['qty']+'">';
+                            rows += '<input id="data-subid-'+product['pid']+'" type="hidden" value="'+product['sub_id']+'">';
+                            rows += '<input id="data-taxrate-'+product['pid']+'" type="hidden" value="'+product['taxrate']+'">';
+                            rows += '<input id="data-unit-'+product['pid']+'" type="hidden" value="'+product['unit']+'">';
+                            rows += '<input id="data-wholesale-'+product['pid']+'" type="hidden" value="'+product['wholesale']+'">';
+                            rows += '<input id="data-code-'+product['pid']+'" type="hidden" value="'+product['product_code']+'">';
+
+                            rows += '<input id="data-cat-'+product['pid']+'" type="hidden" value="'+product['pcat']+'">';
+                            rows += '<input id="data-sub-cat-'+product['pid']+'" type="hidden" value="'+product['sub_id']+'">';
+                            rows += '<input id="data-auto-prices-'+product['pid']+'" type="hidden" value="'+product['auto_prices']+'">';
+
+                            rows += '</td>'; 
+                            rows += '<td>'+product['product_name']+'</td>'; 
+                            rows += '<td>'+product['category_title']+'</td>';
+                            if(product['sub_cat_title'] == null ){
+                                rows += '<td>-</td>'; 
+                            }else{
+                                rows += '<td>'+product['sub_cat_title']+' 888</td>'; 
+                            }
+                            rows += '<td>'+product['warehouse_title']+'</td>'; 
+                            rows += '<td>'+product['qty']+'</td>'; 
+                        rows += '</tr>'; 
+                    });
+                    // popup-table-body
+                    $("#popup-table tbody tr").remove();
+                    $("#popup-table-body").html(rows);
+                }else{
+                    $("#popup-table-body").html("No Products Here");
+                    document.getElementById("normal_sub_cat").disabled = true;
+                }
+            }
+	    });
+    }
+    $("#product_cat").on('change', function() {
+        parent_cat = $('#product_cat').val(); 
+        $.ajax({
+            url: baseurl + 'products/sub_cat?id='+parent_cat,
+            dataType: 'json',
+            type: 'POST',
+            quietMillis: 50,
+            data: function (product) {
+                return {
+                    product: product,
+                    '<?=$this->security->get_csrf_token_name()?>': crsf_hash
+                };
+            },
+            success: function(data){
+                var category = document.getElementById('product_cat');
+                category = category.options[category.selectedIndex].text;
+
+                if(data.length > 0){
+                    var options = "<option value='0'>Sub of "+ category +" </option>";
+                    $.each(data, function(key, option) {
+                        options += '<option value="'+option['id']+'">'+option['title']+'</option>' 
+                    });
+                    document.getElementById("normal_sub_cat").disabled = false;
+                }else{
+                    var options = "<option value='0'>NO SUBS for "+ category +" </option>";
+                    document.getElementById("normal_sub_cat").disabled = true;
+                }
+                document.getElementById('normal_sub_cat').innerHTML = options;
+            }
+	    });
+    });
+
+    function add_empty_row(){
+        var nxt = parseInt(row_counter);
+        var currency = $('#hdata').attr('data-curr');
+        $('#ganak').val(nxt);
+        var functionNum = "'" + row_counter + "'";
+        count = $('#saman-row div').length;
+        //product row
+        var data = '<tr><td><input type="text" class="productname form-control" onkeypress="autocomplete_product_name(this.id)" name="product_name[]" placeholder="Enter Product name or Code" id="productname-' + row_counter + '"></td><td><input type="text" class="form-control req amnt" name="product_qty[]" id="amount-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ><input type="hidden" id="alert-' + row_counter + '" value=""  name="alert[]"> </td> <td><input type="text" class="form-control req prc" name="product_price[]" id="price-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td>';
+        data +='<td><input type="text" class="form-control req prc" name="retail_price[]" id="retail-price-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td>'
+        data +='<td><input type="text" class="form-control req prc" name="wholesale_price[]" id="wholesale-price-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td>'
+        data +='<td> <input type="text" class="form-control vat" name="product_tax[]" id="vat-' + row_counter + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td id="texttaxa-' + row_counter + '" class="text-center">0</td> <td><input type="text" class="form-control discount" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + row_counter + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td><span class="currenty">' + currency + '</span> <strong><span class=\'ttlText\' id="result-' + row_counter + '">0</span></strong></td> <td class="text-center"><button type="button" data-rowid="' + row_counter + '" class="btn btn-danger removeProd" title="Remove" > <i class="fa fa-minus-square"></i> </button> </td><input type="hidden" name="taxa[]" id="taxa-' + row_counter + '" value="0"><input type="hidden" name="disca[]" id="disca-' + row_counter + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + row_counter + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + row_counter + '" value="0"> <input type="hidden" name="unit[]" id="unit-' + row_counter + '" value=""> <input type="hidden" name="hsn[]" id="hsn-' + row_counter + '" value=""> </tr>';
+        data += '<tr>';
+        data += '<td colspan="1">';
+            data += '<p>Want to calculate the prices depend on old profit ratio ?</p>';
+            data += '<input id="hidden-old-pprice-'+row_counter+'" type="hidden" style="display:block" name="old_pprice[]" >';
+            data += '<input id="hidden-old-rprice-'+row_counter+'" type="hidden" style="display:block" name="old-rprice[]" >';
+            data += '<input id="hidden-old-wprice-'+row_counter+'" type="hidden" style="display:block" name="old-wprice[]" >';
+            data += '<input id="hidden-old-qty-'+row_counter+'" type="hidden" style="display:block" name="old_qty[]" >';
+            data += '</td>';
+            data += '<td colspan="1"><input onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-' + row_counter + '" ><input type="hidden" value= "0" id="calculate-prices-value-' + row_counter + '" ></td>';
+            data += '<td colspan="1"><input type="text" class="form-control req prc "id="old-price-' + row_counter + '"  onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
+            data += '<td colspan="1"><input type="text" class="form-control req prc" id="old-retail-price-' + row_counter + '"    onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
+            data += '<td colspan="1"><input type="text" class="form-control req prc" id="old-wholesale-price-' + row_counter + '" onkeypress="return isNumber(event)" autocomplete="off"  disabled></td>';
+            data += '<td colspan="7"><textarea class="form-control"  id="dpid-' + row_counter + '" name="product_description[]" placeholder="Enter Product description" autocomplete="off"></textarea><br></td>';
+        data += '</tr>';
+        //ajax request
+        // $('#saman-row').append(data);
+        $('tr.last-item-row').before(data);
+        var current_row_id = row_counter; 
+        row_counter ++ ;
+        return current_row_id;
+    }
+    $('#addproductrow').on('click', function (e) {
+        add_empty_row(row_counter);
+    });
+    function calculate_prices (checkbox_id){
+        var status =  document.getElementById(checkbox_id).checked;
+        id = checkbox_id.split("-");
+        id = id[2];
+        if (status == true ) { // if checked
+            var price =  parseInt(document.getElementById("price-"+id).value);
+            if( price >  0 && document.getElementById("pid-"+id).value !=  '' ){
+                var old_price  =  parseInt(document.getElementById("old-price-"+id).value) ; 
+                var old_retial =  parseInt(document.getElementById("old-retail-price-"+id).value) ; 
+                var old_whole  =  parseInt(document.getElementById("old-wholesale-price-"+id).value) ; 
+
+                document.getElementById("retail-price-"+id).value    = old_retial * price /  old_price ; 
+                if( !(document.getElementById("retail-price-"+id).value > 0 ) ){
+                    document.getElementById("retail-price-"+id).value  =  0 ;
+                }
+                document.getElementById("wholesale-price-"+id).value = old_whole  * price /  old_price ; 
+                if( !(document.getElementById("wholesale-price-"+id).value > 0 ) ){
+                    document.getElementById("wholesale-price-"+id).value  =  0 ;
+                }
+            }else{
+                alert('<?php echo $this->lang->line('PLease Insert Correct Purshase Price') ?>');
+                document.getElementById(checkbox_id).checked = false ;
+            }
+        }else{
+            document.getElementById("calculate-prices-value-"+id).value = 0;   
+        }
+
+
+    }
+    function autocomplete_product_name(id){
+        row =  id ;
+        cvalue = id ;
+        $('#' + id).autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: baseurl + 'search_products/puchase_search',
+                    dataType: "json",
+                    method: 'post',
+                    data: 'name_startsWith=' + request.term + '&type=product_list&row_num=' + row + '&wid=' + $("#s_warehouses option:selected").val() + '&' + d_csrf,
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            var product_d = item[0];
+                            return {
+                                label: product_d,
+                                value: product_d,
+                                data: item
+                            };
+                        }));
+                    }
+                });
+            },
+            autoFocus: true,
+            minLength: 0,
+            select: function (event, ui) {
+                id_arr = $(this).attr('id');
+                fill_row_data(ui.item.data ,id_arr );
+            },
+            create: function (e) {
+                $(this).prev('.ui-helper-hidden-accessible').remove();
+            }
+        });
+    }
+    function autocomplete_product_row(id){
+        row =  id ;
+        cvalue = id ;
+        $('#' + id).autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: baseurl + 'search_products/puchase_search',
+                    dataType: "json",
+                    method: 'post',
+                    data: 'name_startsWith=' + request.term + '&type=product_list&row_num=' + row + '&wid=' + $("#s_warehouses option:selected").val() + '&' + d_csrf,
+                    success: function (data) {
+                        fill_row_data(full_data ,id_arr);
+                    }
+                });
+            },
+        });
+    }
+    function fill_row_data(full_data ,id_arr){
+        id = id_arr.split("-");
+        var t_r = full_data[3];
+        if ($("#taxformat option:selected").attr('data-trate')) {
+            t_r = $("#taxformat option:selected").attr('data-trate');
+        }
+        var discount = full_data[4];
+        var custom_discount = $('#custom_discount').val();
+        if (custom_discount > 0) discount = deciFormat(custom_discount);
+        $('#amount-' + id[1]).val(1);
+        $('#old-price-' + id[1]).val(full_data[1]);
+        $('#hidden-old-pprice-' +  id[1]).val(full_data[1]);
+        $('#hidden-old-rprice-' +  id[1]).val(full_data[9]);
+        $('#hidden-old-wprice-' +  id[1]).val(full_data[10]);
+        $('#hidden-old-qty-' +  id[1]).val(full_data[11]);
+        $('#old-retail-price-' + id[1]).val(full_data[9]);
+        $('#old-wholesale-price-' + id[1]).val(full_data[10]);
+        $('#pid-' + id[1]).val(full_data[2]);
+        $('#vat-' + id[1]).val(t_r);
+        $('#discount-' + id[1]).val(discount);
+        $('#dpid-' + id[1]).val(full_data[5]);
+        $('#unit-' + id[1]).val(full_data[6]);
+        $('#hsn-' + id[1]).val(full_data[7]);
+        $('#alert-' + id[1]).val(full_data[8]);
+        rowTotal(cvalue);
+        billUpyog();
+    }
+    function fill_row_data_from_popup(product_id ,row_id){
+        var disrate =  $('#data-disrate-' + product_id).val();
+        var pprice  =  $('#data-pprice-' + product_id).val();
+        var pid     =  $('#data-pid-' + product_id).val();
+        var des     =  $('#data-des-' + product_id).val();
+        var name    =  $('#data-name-' + product_id).val();
+        var rprice  =  $('#data-rprice-' + product_id).val();
+        var qty     =  $('#data-qty-' + product_id).val();
+        var subid   =  $('#data-subid-' + product_id).val();
+        var taxrate =  $('#data-taxrate-' + product_id).val();
+        var unit    =  $('#data-unit-' + product_id).val();
+        var wprice  =  $('#data-wholesale-' + product_id).val();
+        var code    =  $('#data-code-' + product_id).val();
+        var cat     =  $('#data-cat-' + product_id).val();
+        var sub_cat =  $('#data-sub-cat-' + product_id).val();
+        var auto_pr =  $('#data-auto-prices-' + product_id).val();
+        var t_r = $('#data-taxrate-' + row_id).val();
+        if ($("#taxformat option:selected").attr('data-trate')) {
+            t_r = $("#taxformat option:selected").attr('data-trate');
+        }
+        var discount = disrate; 
+        var custom_discount = $('#custom_discount').val();
+        if (custom_discount > 0) discount = deciFormat(custom_discount);
+        $('#productname-' + row_id).val(name);
+        $('#amount-' + row_id).val(1);
+        $('#old-price-' + row_id).val(pprice);
+        $('#hidden-cat-' +  row_id).val(cat);
+        $('#hidden-sub-cat-' +  row_id).val(sub_cat);
+        $('#hidden-auto-prices-' +  row_id).val(auto_pr);
+        $('#hidden-old-pprice-' + row_id).val(pprice);
+        $('#hidden-old-rprice-' +  row_id).val(rprice);
+        $('#hidden-old-wprice-' +  row_id).val(wprice);
+        $('#hidden-old-qty-' + row_id).val(qty);
+        $('#old-retail-price-' + row_id).val(rprice);
+        $('#old-wholesale-price-' + row_id).val(wprice);
+        $('#pid-' + row_id).val(pid);
+        $('#vat-' + row_id).val(t_r);
+        $('#discount-' + row_id).val(discount);
+        $('#dpid-' + row_id).val(des);
+        $('#unit-' + row_id).val(unit);
+        $('#hsn-' + row_id).val(code); 
+        $('#alert-' + row_id).val(row_id);
+        rowTotal(row_counter);
+        billUpyog();
+    }
+    $('#select_all').on('click', function (e) {
+        var products = document.querySelectorAll("[data-role ='checkproduct']");
+        products.forEach(function(product){
+            document.getElementById(product.id).checked = true ; 
+        });
+    });
+</script>

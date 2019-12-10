@@ -25,10 +25,7 @@
                                     In </strong></div>
                             <input type="hidden" name="customer_wholesale" id="customer_wholesale" value="0">
                         </div>
-
-
                     </div>
-
                 </div>
                 <div>
                     <div class="mt-1" id="alert-due"></div>
@@ -45,7 +42,7 @@
                             </div>
                             <div class="col-3">
                                 <i
-                                        class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Total') ?>
+                                    class="fa fa-shopping-bag"></i> <?php echo $this->lang->line('Total') ?>
                             </div>
                             <div class="col-2">
                                 <i class="fa fa-money"></i> <?php echo $this->lang->line('Pay') ?>

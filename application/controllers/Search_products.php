@@ -301,13 +301,7 @@ class Search_products extends CI_Controller
         $result = $query->result_array();
         $i = 0;
         echo '<div class="row match-height">';
-        foreach ($result as $key => $row) {
-            echo "sssssssssssssssssssssssss" ;
-            $related_products = implode(',', json_decode($row['related_product'],true));
-            $query3 = "SELECT geopos_products.* FROM geopos_products WHERE pid in(". $related_products . ',' .");";
-            $query3 = $this->db->query($query);    
-            $result2 = $query3->result_array();
-                
+        foreach ($result as $key => $row) {      
             $out .= '<div class="col-3 border "><div class="rounded text-center mt-3 pb-3">
                     ' . ($row['favorite'] ? '<i class="fa fa-heart favorite-products"></i>' : '') .  (($row['bundle_products']== 'null') ?  '' :'<i class="fa fa-object-group bundle-products"></i>' ) .'
                         <a   id="posp' . $i . '"  class="select_pos_item btn btn-outline-light-blue round" data-bundle="' . ($row['bundle_products']=='null' ? false : true) .'"   data-name="' . $row['product_name'] . '"  data-price="' . amountExchange_s($row['product_price'], 0, $this->aauth->get_user()->loc) . '" data-wholesale="' . amountExchange_s($row['wholesale'], 0, $this->aauth->get_user()->loc) . '"  data-tax="' . amountFormat_general($row['taxrate']) . '"  data-discount="' . amountFormat_general($row['disrate']) . '"   data-pcode="' . $row['product_code'] . '"   data-pid="' . $row['pid'] . '"  data-stock="' . amountFormat_general($row['qty']) . '" data-unit="' . $row['unit'] . '" >

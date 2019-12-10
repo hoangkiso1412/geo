@@ -229,7 +229,7 @@ function calculate_prices() {
                         <div class="col-sm-3">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" id="wholesale" class="form-control required" placeholder="0.00"
+                                <input type="text" id="wholesale" class="form-control required has-hidden" placeholder="0.00"
                                     aria-describedby="sizing-addon" onkeypress="return isNumber(event)" value="<?php echo edit_amountExchange_s($product['wholesale'], 0, $this->aauth->get_user()->loc) ?>">
 
                                 <input type="hidden" name="wholesale" id="hidden_wholesale" class="form-control" 
@@ -249,7 +249,7 @@ function calculate_prices() {
                         <div class="col-sm-6">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" id="product_price" class="form-control required"
+                                <input type="text" id="product_price" class="form-control required has-hidden"
                                        placeholder="0.00" aria-describedby="sizing-addon"
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['product_price'], 0, $this->aauth->get_user()->loc) ?>">
@@ -279,7 +279,7 @@ function calculate_prices() {
                         <div class="col-sm-5">
                             <div class="input-group">
                                 <span class="input-group-addon"><?php echo $this->config->item('currency') ?></span>
-                                <input type="text" class="form-control" id="fproduct_price"
+                                <input type="text" class="form-control has-hidden" id="fproduct_price"
                                        placeholder="0.00" aria-describedby="sizing-addon1"
                                        onkeypress="return isNumber(event)"
                                        value="<?php echo edit_amountExchange_s($product['fproduct_price'], 0, $this->aauth->get_user()->loc) ?>">
@@ -347,7 +347,7 @@ function calculate_prices() {
                     </div>
                     <div class="form-group row">
 
-                        <label class="col-sm-2 col-form-label"><?php echo $this->lang->line('Stock Units') ?>*</label>
+                    <label class="col-sm-2 col-form-label"><?php echo $this->lang->line('Stock Units') ?>*</label>
 
                         <div class="col-sm-4">
                             <input type="text" placeholder="Total Items in stock"
@@ -355,6 +355,12 @@ function calculate_prices() {
                                    onkeypress="return isNumber(event)"
                                    value="<?php echo amountFormat_general($product['qty']) ?>">
                         </div>
+                        <label class="col-sm-1 col-form-label"></label>
+                        <label class="col-sm-1 col-form-label"><?php echo $this->lang->line('Extra Codes') ?>*</label>
+                        <div class="col-sm-4">
+                            <input type="text" placeholder="seperate your barcodes with comma(,)" class="form-control margin-bottom" name="extrabarcodes" value="<?php echo $product['extra_barcodes'] ; ?>" >
+                        </div>
+
                     </div>
                     <div class="form-group row">
 
@@ -913,6 +919,11 @@ function calculate_prices() {
         }
         });
     } );
+    $(".has-hidden").on('change', function (e) {
+        var hidden_input_id =  "hidden_" + this.id;
+        document.getElementById(hidden_input_id).value= this.value;
+    });
+
     // becase unknown error
     // price of the Wholesale and retail be 0 even they passed to the the view correctly 
     // so as a fast solution we will override it 

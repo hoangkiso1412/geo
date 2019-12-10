@@ -186,6 +186,7 @@ class Products extends CI_Controller
         $search_meta .= $product_name.' , ';
         $search_meta .= $product_code.' , ';
         $search_meta .= $extrabarcodes.' , ';
+
         $cats_list = $this->categories_model->category_list();
         $cat_name = '';
         foreach ($cats_list as $row) {
@@ -238,7 +239,7 @@ class Products extends CI_Controller
                 echo json_encode(array('status' => 'Error', 'message' => '<br>- Rules:<br> - Product name should be unique name! <br> - This product name is already used before!'));
             }else {
                 if ($catid) {
-                    $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value);
+                    $this->products->addnew($catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $v_type, $v_stock, $v_alert, $wdate, $code_type, $w_type, $w_stock, $w_alert, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value,$extrabarcodes);
                 }
             }
         }
@@ -373,10 +374,14 @@ class Products extends CI_Controller
         $discounnt_array['bundle_w_discount_factor'] = $bundle_w_discount_factor;
         $discounnt_array = json_encode($discounnt_array);
 
-        $search_meta = '';
-        $search_meta .= $product_name.' ';
-        $search_meta .= $product_code.' ';
-        // add category to search_meta
+        $calculate_profit_value = $this->input->post('calculate_profit_value');
+        $extrabarcodes = $this->input->post('extrabarcodes');
+
+        // Search Meta
+        $search_meta = ''; 
+        $search_meta .= $product_name.' , ';
+        $search_meta .= $product_code.' , ';
+        $search_meta .= $extrabarcodes.' , ';
         $cats_list = $this->categories_model->category_list();
         $cat_name = '';
         foreach ($cats_list as $row) {
@@ -427,7 +432,7 @@ class Products extends CI_Controller
         if (!$sub_cat) $sub_cat = 0;
         $brand = $this->input->post('brand');
         if ($pid) {
-            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta);
+            $this->products->edit($pid, $catid, $warehouse, $product_name, $product_code, $product_price, $factoryprice, $taxrate, $disrate, $product_qty, $product_qty_alert, $product_desc, $image, $unit, $barcode, $code_type, $sub_cat, $brand, $related_product, $favorite, $wholesale, $product_status, $bundle_products, $discounnt_array,$search_meta,$calculate_profit_value , $extrabarcodes );
         }
     }
 
@@ -490,9 +495,14 @@ class Products extends CI_Controller
         $from = $this->input->get('from');
         $to = $this->input->get('to');
 
-        $query =  "SELECT geopos_products.product_code , geopos_products.pid , geopos_products.qty AS from_qty FROM geopos_products WHERE warehouse = $from  AND geopos_products.pid = $pid ";
-        $query = $this->db->query($query);
+        $query   = "SELECT geopos_products.product_code , geopos_products.pid AS pid, geopos_products.qty AS from_qty  , category.title AS cat , sub_category.title AS sub_cat ";
+        $query  .= " FROM geopos_products  ";
+        $query  .= " LEFT JOIN geopos_product_cat AS category 	ON geopos_products.pcat = category.id ";
+        $query  .= " LEFT JOIN geopos_product_cat AS sub_category 	ON geopos_products.sub_id = sub_category.id  ";
+        $query  .= " WHERE warehouse = $from  AND geopos_products.pid = $pid ";
+        $query   = $this->db->query($query);
         $results = $query->result_array();
+        
         $query = "SELECT SUM(qty) AS qty FROM geopos_products WHERE warehouse = $to  AND product_code = '" . $results[0]['product_code'] . "'";
         $query = $this->db->query($query);
         $results2 = $query->result_array();
@@ -500,6 +510,8 @@ class Products extends CI_Controller
         // edit numbers format
         $results[0]['from_qty'] = number_format($results[0]['from_qty']);
         $results[0]['to_qty'] =  $results2[0]['qty'] != '' ? number_format($results2[0]['qty']) : 0 ;
+
+        // pre($results);
 
         echo json_encode($results);
     }
@@ -576,11 +588,11 @@ class Products extends CI_Controller
                 $update_array[$key]['status'] = 2; 
             }
             $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
-
         }else {
             $data['products']   = $this->products->out_transfered_products();
             $head['title']      = "Prepare Transfer";
             $head['usernm']     = $this->aauth->get_user()->username;
+
             $this->load->view('fixed/header', $head);
             $this->load->view('products/prepare_transfer', $data);
             $this->load->view('fixed/footer');
@@ -596,9 +608,6 @@ class Products extends CI_Controller
                 $update_array[$key]['status'] = 3; 
             }
             $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
-
-
-
             $qtys = "";
             foreach ($_POST['qty'] as $key => $qty) {
                 $comma =  $key >  0 ? "," : "" ;
@@ -909,7 +918,6 @@ class Products extends CI_Controller
     public function check_product_code()
     {
         $loc =  $this->aauth->get_user()->loc ;
-        //echo  "loc :  " . $loc ;
         $code = $this->input->get('code');
         $query = " SELECT geopos_products.pid , geopos_warehouse.loc  FROM geopos_products ";
         $query .= " LEFT JOIN geopos_warehouse ON geopos_products.warehouse = geopos_warehouse.id ";

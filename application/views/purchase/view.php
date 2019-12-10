@@ -58,10 +58,6 @@
                             <a href="#pop_model" data-toggle="modal" data-remote="false"
                                class="btn btn-large btn-success" title="Change Status"
                             ><span class="fa fa-retweet"></span> <?php echo $this->lang->line('Change Status') ?></a>
-                            <a href="#cancel-bill" class="btn btn-danger" id="cancel-bill_p"><i
-                                        class="fa fa-minus-circle"> </i> <?php echo $this->lang->line('Cancel') ?>
-                            </a>
-
                             </div><?php
                             if ($invoice['multi'] > 0) {
 
