@@ -886,7 +886,6 @@ class Products_model extends CI_Model
             $query .= " LEFT JOIN geopos_warehouse ON geopos_warehouse.id = geopos_tranfering_products.w_from "; 
             $query .= " LEFT JOIN geopos_products  ON geopos_products.pid = geopos_tranfering_products.pid "; 
             $query .= " WHERE geopos_tranfering_products.status =  2  $and_warehouses_query_part ";
-            echo $query ;
             $query_result = $this->db->query($query)->result_array(); 
         }
         return $query_result ;
