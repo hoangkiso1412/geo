@@ -171,20 +171,6 @@ class testing extends CI_Controller
         ///////////////////////////////////////    S    T    A    R    T       ::::       T    E    S    T    I    N    G    ///////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        echo "sharing is :  "  .  BDATA . "</br>" ;
-        echo 'the loc status is  :   '   .  $this->aauth->get_user()->loc ;
-
-
-
-
-        $this->products->_get_datatables_query();
-
-        $query = $this->products->db->get();
-        
-        pre($query->result());
-
-
-
 
 
 

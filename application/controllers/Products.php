@@ -214,7 +214,6 @@ class Products extends CI_Controller
 
         // add custom fields to search_meta
         $custom_fields = $this->input->post('custom');
-        pre($custom_fields);
         if( is_array($custom_fields) ) {
             foreach ($custom_fields as $key => $value) {
                 if ($value) {
@@ -421,7 +420,6 @@ class Products extends CI_Controller
 
         // add custom fields to search_meta
         $custom_fields = $this->input->post('custom');
-        pre($custom_fields);
         if( is_array($custom_fields) ) {
             foreach ($custom_fields as $key => $value) {
                 if ($value) {
@@ -485,7 +483,7 @@ class Products extends CI_Controller
     public function new_stock_transfer_products()
     {
         $from = $this->input->get('from');
-        $query =  "SELECT geopos_products.pid, geopos_products.product_name FROM geopos_products WHERE warehouse = $from ";
+        $query =  "SELECT geopos_products.pid, geopos_products.product_name FROM geopos_products WHERE warehouse = $from AND bundle_products = 'null'  ";
         $query = $this->db->query($query);
         $results = $query->result_array();
         echo json_encode($results);
@@ -567,8 +565,11 @@ class Products extends CI_Controller
                     $stocks[$key]['status'] = 1;    // allready created 1 , allready prepared 2 , allready recieved 3
                 }
             }
-            $this->db->insert_batch('geopos_tranfering_products', $stocks);
-
+            if($this->db->insert_batch('geopos_tranfering_products', $stocks)){
+                echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('Products are now ready to be prepared') ));
+            }else {
+                echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('Some thing Wrong') ));
+            }
         }else {
             $data['cat'] = $this->categories_model->category_list();
             $data['warehouse'] = $this->categories_model->all_warehouse_list_with_location();
@@ -582,18 +583,27 @@ class Products extends CI_Controller
     public function prepare_transfer(){
         if ($this->input->post()) {
             $qts= $_POST['qty'] ;
+            $approve= $_POST['approve'] ;
             $update_array =  array();
-            foreach ($qts as $key => $qty) { 
-                $update_array[$key]['id'] =  $_POST['ids'][$key]; 
-                $update_array[$key]['qty'] = $qty; 
-                $update_array[$key]['status'] = 2; 
+
+            foreach ($qts as $key => $qty) {
+                if($approve[$key] == 1){
+                    $update_array[$key]['id'] =  $_POST['ids'][$key]; 
+                    $update_array[$key]['qty'] = $qty; 
+                    $update_array[$key]['status'] = 2;     
+                }
             }
-            $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
+            if(count($update_array) >  0){
+                if($this->db->update_batch('geopos_tranfering_products', $update_array , 'id')){
+                    echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('Products transfered correctly') ));
+                }else {
+                    echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('Some thing Wrong') ));
+                }
+            }
         }else {
             $data['products']   = $this->products->out_transfered_products();
             $head['title']      = "Prepare Transfer";
             $head['usernm']     = $this->aauth->get_user()->username;
-
             $this->load->view('fixed/header', $head);
             $this->load->view('products/prepare_transfer', $data);
             $this->load->view('fixed/footer');
@@ -602,11 +612,15 @@ class Products extends CI_Controller
     public function received_transfer(){
         if ($this->input->post()) { 
             $qts= $_POST['qty'] ;
+            $approve= $_POST['approve'] ;
             $update_array =  array();
+
             foreach ($qts as $key => $qty) { 
-                $update_array[$key]['id'] =  $_POST['ids'][$key]; 
-                $update_array[$key]['qty'] = $qty; 
-                $update_array[$key]['status'] = 3; 
+                if($approve[$key] == 1){
+                    $update_array[$key]['id'] =  $_POST['ids'][$key]; 
+                    $update_array[$key]['qty'] = $qty; 
+                    $update_array[$key]['status'] = 3; 
+                }
             }
             $this->db->update_batch('geopos_tranfering_products', $update_array , 'id');
             $qtys = "";
@@ -615,9 +629,15 @@ class Products extends CI_Controller
                 $qtys .= $comma.$qty;
             }
             $this->products->transfer($_POST['from'],$_POST['pids'],$_POST['to'],$qtys);
+
+            if($this->products->transfer($_POST['from'],$_POST['pids'],$_POST['to'],$qtys)){
+                echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('Products recieved correctly') ));
+            }else {
+                echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('Some thing Wrong') ));
+            }
         }else {
             $data['products']   = $this->products->received_transfer();
-            $head['title']      = "Prepare Transfer";
+            $head['title']      = "Received Transfer";
             $head['usernm']     = $this->aauth->get_user()->username;
             $this->load->view('fixed/header', $head);
             $this->load->view('products/received_transfer', $data);

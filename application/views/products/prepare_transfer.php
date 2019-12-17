@@ -29,7 +29,9 @@
                             <tr>
                                 <td><strong><?php echo $this->lang->line('Product Name') ?></strong></td>
                                 <td><strong><?php echo $this->lang->line('Code') ?></strong></td>
-                                <td><strong><?php echo $this->lang->line('Ready Qty to :  ') .  $products[0]['w_to_name'] ?> </strong></td>
+                                <td><strong><?php echo $this->lang->line('Approve Transferring') ?></strong></td>
+                                <td><strong><?php echo $this->lang->line('To Warehouse') ?></strong></td>
+                                <td><strong><?php echo $this->lang->line('Qty');?> </strong></td>
                             </tr>
                             <?php
                                 foreach ($products as $key => $product) { ?>
@@ -39,8 +41,10 @@
                                             <input style="display: none" type="text" value="<?php echo $product['pid']; ?>">
                                             <input style="display: none" type="text" name="ids[]" value="<?php echo $product['id']; ?>">
                                         </td>
-                                        <td id="code-0"><?php echo $product['product_code']; ?></td>
-                                        <td id="transfered-qty-0"><input type="number" value="<?php echo number_format($product['qty']); ?>" min= "0" placeholder= "max is <?php echo number_format($product['max_available']); ?>" max="<?php echo $product['max_available']; ?>" class="form-control margin-bottom required" name="qty[]" onkeypress="return isNumber(event)"></td>
+                                        <td><?php echo $product['product_code']; ?></td>
+                                        <td><input class='checkbox-has-hidden' type='checkbox' id='approve-<?php echo $key; ?>'> <input type='hidden'  id='hidden-approve-<?php echo $key; ?>' value='0' name='approve[]'></td>
+                                        <td><?php echo $product['w_to_name'];?></td>
+                                        <td><input type="number" value="<?php echo number_format($product['qty']); ?>" min= "0" placeholder= "max is <?php echo number_format($product['max_available']); ?>" max="<?php echo $product['max_available']; ?>" class="form-control margin-bottom required" name="qty[]" onkeypress="return isNumber(event)"></td>
                                     </tr>
                                 <?php }
                             ?>
@@ -61,3 +65,13 @@
             </form>
         </div>
     </div>
+    <script>
+        $(".checkbox-has-hidden").on('change', function (e) {
+            var hidden_input_id =  "hidden-" + this.id;
+            if(this.checked == true ){
+                document.getElementById(hidden_input_id).value=1;
+            }else{
+                document.getElementById(hidden_input_id).value=0;
+            }
+        });
+    </script>

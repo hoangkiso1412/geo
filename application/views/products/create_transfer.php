@@ -37,7 +37,7 @@
                                     <select id="from" name="from" required class="form-control">
                                         <option value='0'><?php echo $this->lang->line('Select') ?></option>
                                         <?php
-                                        foreach ($from_warehouses as $row) {
+                                        foreach ($warehouse as $row) {
                                             $cid = $row['id'];
                                             $title = $row['title'];
                                             $loc =  $row['cname'] != NULL ? $row['cname'] : 'Main Location';
@@ -52,7 +52,7 @@
                                     <select id="to" name="to" required class="form-control">
                                         <option value='0'><?php echo $this->lang->line('Select') ?></option>
                                         <?php
-                                        foreach ($to_warehouses as $row) {
+                                        foreach ($warehouse as $row) {
                                             $cid = $row['id'];
                                             $title = $row['title'];
                                             $loc =  $row['cname'] != NULL ? $row['cname'] : 'Main Location';
@@ -142,7 +142,6 @@
             to =  document.getElementById('to').value ; 
             
             if(from != '0'  &&  to !=  '0'  &&  to !=  from ){
-                // Put the warehouse ids into hidden input so we can disable the selects if we want
                 document.getElementById('from_value').value =  from;
                 document.getElementById('to_value').value   =  to;
 

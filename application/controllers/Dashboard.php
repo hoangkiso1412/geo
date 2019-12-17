@@ -61,6 +61,11 @@ class Dashboard extends CI_Controller
             $data['stock'] = $this->dashboard_model->stock();
             $head['usernm'] = $this->aauth->get_user()->username;
             $head['title'] = 'Dashboard';
+
+            $this->load->model('Products_model', 'products');
+            $data['out_transfer_counter'] = $this->products->transfing_products_counter(1);
+            $data['in_transfer_counter'] = $this->products->transfing_products_counter(2);
+
             $this->load->view('fixed/header', $head);
             $this->load->view('dashboard', $data);
             $this->load->view('fixed/footer');

@@ -16,7 +16,7 @@
 </script>
 
 <div class="row">
-    <div class="col-xl-3 col-lg-6 col-12">
+    <div class="col-xl-2 col-lg-4 col-12">
         <div class="card">
             <div class="card-content">
                 <div class="media align-items-stretch">
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-12">
+    <div class="col-xl-2 col-lg-4 col-12">
         <div class="card">
             <div class="card-content">
                 <div class="media align-items-stretch">
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-12">
+    <div class="col-xl-2 col-lg-4 col-12">
         <div class="card">
             <div class="card-content">
                 <div class="media align-items-stretch">
@@ -63,7 +63,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-lg-6 col-12">
+    <div class="col-xl-2 col-lg-4 col-12">
         <div class="card">
             <div class="card-content">
                 <div class="media align-items-stretch">
@@ -74,6 +74,40 @@
                         <h5><?php echo $this->lang->line('this') . $this->lang->line('month') . $this->lang->line('sales') ?></h5>
                         <h5 class="text-bold-400 mb-0"><i
                                     class="ft-arrow-up"></i> <?= amountExchange($monthsales, 0, $this->aauth->get_user()->loc) ?>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-success bg-darken-2">
+                        <i class="ft-wind font-large-2 white"></i>
+                    </div>
+                    <div class="p-1 bg-gradient-x-success white media-body">
+                        <h5><?php echo $this->lang->line('Out') . ' ' . $this->lang->line('transfers') ?></h5>
+                        <h5 class="text-bold-400 mb-0">
+                            <i class="ft-arrow-up"></i><?php echo $out_transfer_counter ?>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-success bg-darken-2">
+                        <i class="ft-wind font-large-2 white"></i>
+                    </div>
+                    <div class="p-1 bg-gradient-x-success white media-body">
+                        <h5><?php echo $this->lang->line('In') . ' ' . $this->lang->line('transfers') ?></h5>
+                        <h5 class="text-bold-400 mb-0">
+                            <i class="ft-arrow-down"></i><?php echo $in_transfer_counter ?>
                         </h5>
                     </div>
                 </div>
