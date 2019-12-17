@@ -141,6 +141,8 @@ class testing extends CI_Controller
         $this->load->model('categories_model'); 
         $this->load->model('Detailed_products_model', 'globalsearch');
         $this->load->model('plugins_model', 'plugins');
+        $this->load->model('Products_model', 'products');
+
         $this->load->library("Common");
         $data['taxlist'] = $this->common->taxlist($this->config->item('tax'));
         $data['gateway'] = $this->invocies->gateway_list('Yes');
@@ -168,6 +170,18 @@ class testing extends CI_Controller
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////    S    T    A    R    T       ::::       T    E    S    T    I    N    G    ///////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        echo "sharing is :  "  .  BDATA . "</br>" ;
+        echo 'the loc status is  :   '   .  $this->aauth->get_user()->loc ;
+
+
+
+
+        $this->products->_get_datatables_query();
+
+        $query = $this->products->db->get();
+        
+        pre($query->result());
 
 
 

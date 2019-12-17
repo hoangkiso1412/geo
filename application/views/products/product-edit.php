@@ -69,15 +69,12 @@
                         </div>
                     </div>
 <script>
-
     //  sync hidden prices 
     $('#product_price,#wholesale,#fproduct_price').change(function(){ 
         document.getElementById('hidden_product_price').value  =  document.getElementById('product_price').value ; 
         document.getElementById('hidden_wholesale').value= document.getElementById('wholesale').value;
         document.getElementById('hidden_fproduct_price').value= document.getElementById('fproduct_price').value ;
     });
-
-
  $("#product_cat").change(function () {
     calculate_prices();
 });
@@ -102,6 +99,9 @@ function calculate_prices() {
         if ( fproduct_price> 0 ) { //  category
             var cat = document.getElementById('product_cat').value
             if (cat !== '' ) { //  category
+                // update the status of auto calculate 
+                document.getElementById('calculate_profit_value').value = 1 ;
+
                 // fields
                 var sub_cat = document.getElementById('normal_sub_cat').value
                 // sale ratios
@@ -141,6 +141,9 @@ function calculate_prices() {
     } else {
         document.getElementById("product_price").disabled = false;
         document.getElementById("wholesale").disabled = false;
+
+        // update the status of auto calculate 
+        document.getElementById('calculate_profit_value').value = 0 ;
     }
   
   
@@ -718,7 +721,6 @@ function calculate_prices() {
 		            $(".select2-container--default").width('100%');
 		            document.getElementById('product_price').disabled  = document.getElementById('wholesale').disabled = true;
 		            document.getElementById('product_price').value = document.getElementById('wholesale').value = 0;
-
             	            update_bundle_prices();
 	    <?php } else {   ?>
 		            $(".bundel_select").hide();
@@ -783,7 +785,6 @@ function calculate_prices() {
              var retail_price = 0;
              var wholesale_price = 0;
              var fproduct_price  = 0 ;
-
              var bundle_p_discount_amount = document.getElementById('bundle_p_discount_amount').value;
              var bundle_p_discount_factor = document.getElementById('bundle_p_discount_factor').value;
              var bundle_w_discount_amount = document.getElementById('bundle_w_discount_amount').value;
@@ -794,19 +795,15 @@ function calculate_prices() {
                         retail_price = ( parseFloat( retail_price ) + parseFloat( current_item_spilit[1] ) ).toFixed(2);
                         wholesale_price = ( parseFloat( wholesale_price ) +  parseFloat( current_item_spilit[2] ) ).toFixed(2);
                         fproduct_price = ( parseFloat( fproduct_price ) +  parseFloat( current_item_spilit[3] ) ).toFixed(2);
-
 	    		//return $(el).val();
 		}).get();
                 retail_price = apply_discount(retail_price, bundle_p_discount_amount, bundle_p_discount_factor);
                 wholesale_price = apply_discount(wholesale_price, bundle_w_discount_amount, bundle_w_discount_factor);
                 fproduct_price = apply_discount(fproduct_price, 100 , 100);
-
                 document.getElementById('product_price').value= retail_price; 
                 document.getElementById('hidden_product_price').value= retail_price; 
-
                 document.getElementById('wholesale').value= wholesale_price;
                 document.getElementById('hidden_wholesale').value= wholesale_price;
-
                 document.getElementById('fproduct_price').value= fproduct_price;
                 document.getElementById('hidden_fproduct_price').value= fproduct_price;
      }
@@ -890,7 +887,6 @@ function calculate_prices() {
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
     $( function() {
-
         function return_product_id(prod, values) {
         for (var i = 0, len = values.length; i < len; i++) {
             if (values[i][1] == prod) {
@@ -901,7 +897,6 @@ function calculate_prices() {
             }
         }
         }
-
         var Product_List = [
             <?php
             foreach ($products_list as $row) {
@@ -911,7 +906,6 @@ function calculate_prices() {
             }
             ?>
         ];
-
         $( "#product_name" ).autocomplete({
             source: Product_List.map(function(val){return val[1]}),
         select: function (event, ui) {
@@ -923,7 +917,6 @@ function calculate_prices() {
         var hidden_input_id =  "hidden_" + this.id;
         document.getElementById(hidden_input_id).value= this.value;
     });
-
     // becase unknown error
     // price of the Wholesale and retail be 0 even they passed to the the view correctly 
     // so as a fast solution we will override it 
@@ -931,5 +924,4 @@ function calculate_prices() {
     $('#product_cat').trigger('change');
     $('#wholesale').val(<?php echo $product['wholesale'];?> ); 
     $('#product_price').val(<?php echo $product['product_price'];?> ); 
-
 </script>  

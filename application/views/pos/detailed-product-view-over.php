@@ -6,7 +6,6 @@
     $product_stocks =  $data['product_stocks'];
     $sales = $data['sales'];
     $Locs_n_wars = $data['Locs_n_wars'] ;
-    
     $sales_per_div =  5 ;
 ?>
 
@@ -20,7 +19,8 @@
 </table>
 
 <table class="table table-striped table-bordered">
-    <?php echo '<tr><td> ' . $this->lang->line('Barcodes') . ' : ' . $product['barcode'] . '</td></tr>'; ?>
+    <?php echo '<tr><td> ' . $this->lang->line('Barcode') . ' : ' . $product['barcode'] . '</td></tr>'; ?>
+    <?php echo '<tr><td> ' . $this->lang->line('Extra Barcodes') . ' : ' . $product['extra_barcodes'] . '</td></tr>'; ?>
 </table> 
 
 <?php $images_count = 1;?>

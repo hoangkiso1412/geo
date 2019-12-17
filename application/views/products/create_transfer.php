@@ -37,7 +37,7 @@
                                     <select id="from" name="from" required class="form-control">
                                         <option value='0'><?php echo $this->lang->line('Select') ?></option>
                                         <?php
-                                        foreach ($warehouse as $row) {
+                                        foreach ($from_warehouses as $row) {
                                             $cid = $row['id'];
                                             $title = $row['title'];
                                             $loc =  $row['cname'] != NULL ? $row['cname'] : 'Main Location';
@@ -52,9 +52,10 @@
                                     <select id="to" name="to" required class="form-control">
                                         <option value='0'><?php echo $this->lang->line('Select') ?></option>
                                         <?php
-                                        foreach ($warehouse as $row) {
+                                        foreach ($to_warehouses as $row) {
                                             $cid = $row['id'];
                                             $title = $row['title'];
+                                            $loc =  $row['cname'] != NULL ? $row['cname'] : 'Main Location';
                                             echo "<option value='$cid'>$title - $loc</option>";
                                         }
                                         ?>

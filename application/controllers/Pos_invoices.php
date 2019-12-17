@@ -1333,6 +1333,16 @@ class Pos_invoices extends CI_Controller
                     $items[] = $this->toString($row['product'], $row['subtotal']);
                     $sub_t += $row['price'] * $row['qty'];
                 }
+
+                $products_with_cats = array();
+                foreach($data['products'] as $product){
+                    $product['pcat'] = $this->invocies->invoice_get_pcat($product['pid']);
+                    array_push($products_with_cats, $product);
+                }
+                $data['products'] = $products_with_cats;
+
+                
+                
                 $subtotal = $this->toString($this->lang->line('Subtotal'), $sub_t);
                 $tax = $this->toString($this->lang->line('Tax'), $data['invoice']['tax']);
                 $total = $this->toString($this->lang->line('Total'), $data['invoice']['total'], true);

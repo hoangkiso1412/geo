@@ -433,6 +433,7 @@ class Products_model extends CI_Model
         $query = $this->db->get();
         $r_n = $query->row_array();
         $ware_valid = $this->valid_warehouse($warehouse);
+        
         if ($this->aauth->get_user()->loc) {
             if ($ware_valid['loc'] == $this->aauth->get_user()->loc or $ware_valid['loc'] == '0' or $warehouse == 0) {
                 $data = array(
@@ -462,9 +463,7 @@ class Products_model extends CI_Model
                     'search_meta' => $search_meta,
                     'auto_prices' => $calculate_profit_value ,
                     'extra_barcodes' =>  $extrabarcodes 
-
                 );
-
                 $this->db->set($data);
                 $this->db->where('pid', $pid);
 
@@ -859,9 +858,12 @@ class Products_model extends CI_Model
         $query_result = $this->db->query($query)->result_array();
         return $query_result ;
     }
-    public function update_bundles_contain_purchased_product($pid,$diff)
+    public function update_bundles_contain_purchased_product($pid,$pdiff,$rdiff,$wdiff)
     {
-        $diff =  number_format($diff,3);
+        $pdiff =  number_format($pdiff,3);
+        $rdiff =  number_format($rdiff,3);
+        $pdiff =  number_format($pdiff,3);
+
         $query = "SELECT pid,bundle_products,fproduct_price ";
         $query .= " FROM geopos_products "; 
         $query .= " WHERE bundle_products <> 'null' ";
@@ -870,10 +872,16 @@ class Products_model extends CI_Model
             $inner_products = $bundle['bundle_products'];
             $inner_products =  json_decode($inner_products,TRUE);
             if(!in_array($pid,$inner_products)){
-                unset($query_result[$key]);
             }else {
-                $current_price =  $bundle['fproduct_price'] +  $diff ;
-                $query_result[$key]['fproduct_price'] =  $current_price ;
+                if($pdiff > 0 || $rdiff > 0 || $wdiff > 0 ){
+                    
+                    $query_result[$key]['fproduct_price'] =  $bundle['fproduct_price'] +  $pdiff ;
+                    $query_result[$key]['r_price'] =  $bundle['r_price'] +  $rdiff ;
+                    $query_result[$key]['wholesale'] =  $bundle['wholesale'] +  $wdiff ;
+
+                }else {
+                    unset($query_result[$key]);
+                }
             }
         }
         if( count($query_result) >  0 ){

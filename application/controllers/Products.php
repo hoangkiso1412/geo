@@ -214,6 +214,7 @@ class Products extends CI_Controller
 
         // add custom fields to search_meta
         $custom_fields = $this->input->post('custom');
+        pre($custom_fields);
         if( is_array($custom_fields) ) {
             foreach ($custom_fields as $key => $value) {
                 if ($value) {
@@ -243,7 +244,6 @@ class Products extends CI_Controller
                 }
             }
         }
-        
     }
 
 
@@ -421,6 +421,7 @@ class Products extends CI_Controller
 
         // add custom fields to search_meta
         $custom_fields = $this->input->post('custom');
+        pre($custom_fields);
         if( is_array($custom_fields) ) {
             foreach ($custom_fields as $key => $value) {
                 if ($value) {

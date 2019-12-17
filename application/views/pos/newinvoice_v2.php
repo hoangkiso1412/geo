@@ -1,3 +1,4 @@
+<!-------------------------------------------------- Extended POS Style  -------------------------------------------------->
 <form method="post" id="data_form">
     <div class="row ">
         <div class="col-md-6 card p-mobile">

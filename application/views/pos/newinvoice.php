@@ -1,3 +1,4 @@
+<!-------------------------------------------------- Standard POS Style  -------------------------------------------------->
 <form method="post" id="data_form" class="content-body">
     <div class="sidebar-left  bg-white">
         <div class="sidebar">

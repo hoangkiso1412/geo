@@ -193,6 +193,8 @@
                                 <tbody>
                                 <?php $i = 0;
                                 foreach ($products as $row) {
+                                    $checked_status  =  $row['apply_average'] == 1 ? 'checked' :  ' ' ;
+                                    
                                     echo '<tr>
                                             <td>
                                                 <input readonly type="text" class="form-control" name="product_name[]" placeholder="Enter Product name or Code"  value="' . $row['product'] . '">
@@ -243,8 +245,8 @@
                                                 <input id="hidden-old-qty-'.$i.'" type="hidden" style="display:block" name="old_qty[]" value="' . amountFormat_general($row['qty']) . '">
                                             </td>
                                             <td colspan="1">
-                                                <input disabled onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-'.$i.'">
-                                                <input type="hidden" value="0" id="calculate-prices-value-'.$i.'">
+                                                <input disabled '.$checked_status.' onclick="calculate_prices(this.id)" type="checkbox" id="calculate-prices-'.$i.'">
+                                                <input type="hidden" value="'.$row['apply_average'].'" id="calculate-prices-value-'.$i.'">
                                             </td>
                                             <td colspan="1">
                                                 <input type="text" class="form-control req prc " id="old-price-'.$i.'" onkeypress="return isNumber(event)" autocomplete="off" disabled="" value="' . edit_amountExchange_s($row['price'], $invoice['multi'], $this->aauth->get_user()->loc) . '" >
