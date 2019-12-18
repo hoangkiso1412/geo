@@ -176,6 +176,16 @@ class testing extends CI_Controller
 
 
 
+        //  SELECT geopos_products.* FROM geopos_products Where pid IN ("70","71","72") 
+
+
+        $query = "SELECT bundle_products  FROM geopos_products WHERE pid = ". 71;
+        $query_result = $this->db->query($query)->result_array();
+
+        $inner_products =  $query_result[0]['bundle_products'];
+        $inner_products =  json_decode($inner_products,true);
+        pre($inner_products);
+
 
 
 

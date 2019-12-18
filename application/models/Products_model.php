@@ -787,24 +787,20 @@ class Products_model extends CI_Model
     }
     public function pos_get_bundle_by_id($id)
     {
-        try {
-            $out = '';
-            $product_id = $id;
-    
-            $query = "SELECT bundle_products  FROM geopos_products WHERE pid = ". $product_id;
-            $query_result = $this->db->query($query)->result_array();
-           
-           
+        $out = '';
+        $product_id = $id;
+
+        $query = "SELECT bundle_products  FROM geopos_products WHERE pid = ". $product_id;
+        $query_result = $this->db->query($query)->result_array();
+        if($query_result[0]['bundle_products'] != 'null' &&  $query_result[0]['bundle_products'] != NULL){
             $bundes = str_replace(']', ')', str_replace('[', "(", $query_result[0]['bundle_products']));
-    
             $query = "SELECT geopos_products.*  FROM geopos_products Where pid IN ".$bundes;
-    
             $query_result = $this->db->query($query)->result_array();
-            return $query_result;
-        } catch (\Throwable $th) {
+            return $query_result;    
+        }else{
             return [];
         }
-    }
+}
     public function get_product_data($id , $request_name)
     {
         if( $request_name == 'just_name'){
@@ -896,21 +892,20 @@ class Products_model extends CI_Model
         $rdiff =  number_format($rdiff,3);
         $pdiff =  number_format($pdiff,3);
 
-        $query = "SELECT pid,bundle_products,fproduct_price ";
+        $query = "SELECT pid,product_price,wholesale,bundle_products,fproduct_price ";
         $query .= " FROM geopos_products "; 
         $query .= " WHERE bundle_products <> 'null' ";
         $query_result = $this->db->query($query)->result_array();
+
         foreach ($query_result as $key => $bundle) {
             $inner_products = $bundle['bundle_products'];
             $inner_products =  json_decode($inner_products,TRUE);
             if(!in_array($pid,$inner_products)){
             }else {
                 if($pdiff > 0 || $rdiff > 0 || $wdiff > 0 ){
-                    
                     $query_result[$key]['fproduct_price'] =  $bundle['fproduct_price'] +  $pdiff ;
-                    $query_result[$key]['r_price'] =  $bundle['r_price'] +  $rdiff ;
+                    $query_result[$key]['r_price'] =  $bundle['product_price'] +  $rdiff ;
                     $query_result[$key]['wholesale'] =  $bundle['wholesale'] +  $wdiff ;
-
                 }else {
                     unset($query_result[$key]);
                 }
@@ -928,5 +923,22 @@ class Products_model extends CI_Model
             $counter = count($this->received_transfer());
         }
         return $counter ;
+    }
+    public function product_name_list()
+    {
+        if(BDATA !=  1){
+            $loc =  $this->aauth->get_user()->loc ;
+            $where =  " WHERE geopos_warehouse.loc =$loc ";
+        }else {
+            $where = " ";
+        }
+        $code = $this->input->get('code');
+        $query  = " SELECT geopos_products.pid ,      geopos_products.pcat,     geopos_products.warehouse,     geopos_products.product_name,     geopos_products.product_code,     geopos_products.pid ,      geopos_warehouse.loc  ";
+        $query  .= " FROM geopos_products ";
+        $query .= " LEFT JOIN geopos_warehouse ON geopos_products.warehouse = geopos_warehouse.id ";
+        $query .= "$where";
+        $result = $this->db->query($query);
+        $result =  $result ->result_array();
+        return  $result ;
     }
 }

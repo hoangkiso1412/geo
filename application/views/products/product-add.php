@@ -550,9 +550,6 @@
 <script src="<?php echo assets_url('assets/myjs/jquery.ui.widget.js'); ?>"></script>
 <script src="<?php echo assets_url('assets/myjs/jquery.fileupload.js') ?>"></script>
 <script>
-
-
-
     $(document).on('change', "#product_code", function (e) {    
         var code= document.getElementById("product_code").value ; 
         jQuery.ajax({
@@ -561,7 +558,7 @@
             type: 'GET',
             quietMillis: 50,
             success: function(data){
-                if(data != 0){ // not results
+                if(data != 0){ // no products with the same code
                     alert('<?php echo $this->lang->line('this code is used before please choose onother one') ?>');
                     document.getElementById("product_code").value =  "" ;
                 }
@@ -569,7 +566,7 @@
         });
     });
 
-
+    
     //  sync hidden prices 
     $('#product_price,#wholesale,#fproduct_price').change(function(){ 
         document.getElementById('hidden_product_price').value  =  document.getElementById('product_price').value ; 

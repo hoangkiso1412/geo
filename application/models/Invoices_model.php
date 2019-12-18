@@ -45,7 +45,6 @@ class Invoices_model extends CI_Model
         }
     }
 
-
     public function invoice_details($id, $eid = '')
     {
         $this->db->select('geopos_invoices.*,SUM(geopos_invoices.shipping + geopos_invoices.ship_tax) AS shipping,geopos_customers.*,geopos_invoices.loc as loc,geopos_invoices.id AS iid,geopos_customers.id AS cid,geopos_terms.id AS termid,geopos_terms.title AS termtit,geopos_terms.terms AS terms');
@@ -54,7 +53,7 @@ class Invoices_model extends CI_Model
         if ($eid) {
             $this->db->where('geopos_invoices.eid', $eid);
         }
-              if ($this->aauth->get_user()->loc) {
+        if ($this->aauth->get_user()->loc) {
             $this->db->where('geopos_invoices.loc', $this->aauth->get_user()->loc);
         } elseif (!BDATA) {
             $this->db->where('geopos_invoices.loc', 0);
@@ -75,9 +74,6 @@ class Invoices_model extends CI_Model
         return $query->result_array();
 
     }
-
-
-
 
 
     public function invoice_get_pcat($id)

@@ -68,11 +68,7 @@ class Products extends CI_Controller
         $data['variables'] = $this->units->variables_list();
         $head['title'] = "Add Product";
         $head['usernm'] = $this->aauth->get_user()->username;
-
-            $query5 = "SELECT * FROM geopos_products";
-            $query5 = $this->db->query($query5);
-            $data['products_list'] = $query5->result_array();
-
+        $data['products_list'] = $this->products->product_name_list();
         $this->load->view('fixed/header', $head);
         $this->load->view('products/product-add', $data);
         $this->load->view('fixed/footer');
@@ -231,7 +227,7 @@ class Products extends CI_Controller
             }    
         }
 
-        //validate product_name
+        //validate product name
         $this->load->library("form_validation");
         if ($this->input->post()) {
             $this->form_validation->set_rules('product_name', 'ProductName', 'required|is_unique[geopos_products.product_name]', array('is_unique' => 'This %s already exists.'));
@@ -309,11 +305,7 @@ class Products extends CI_Controller
             $query5 = $this->db->query($query5);
             $data['bundle_products'] = $query5->result_array();
         */
-
-            $query5 = "SELECT * FROM geopos_products";
-            $query5 = $this->db->query($query5);
-            $data['products_list'] = $query5->result_array();
-
+        $data['products_list'] = $this->products->product_name_list();
         if ($data['product']['bundle_products'] != 'null' && $data['product']['bundle_products']) {
 		// identifier to check if its bundle or product
 		$data['product']['is_bundle'] = 1;
@@ -628,12 +620,8 @@ class Products extends CI_Controller
                 $comma =  $key >  0 ? "," : "" ;
                 $qtys .= $comma.$qty;
             }
-            $this->products->transfer($_POST['from'],$_POST['pids'],$_POST['to'],$qtys);
-
             if($this->products->transfer($_POST['from'],$_POST['pids'],$_POST['to'],$qtys)){
                 echo json_encode(array('status' => 'Success', 'message' => $this->lang->line('Products recieved correctly') ));
-            }else {
-                echo json_encode(array('status' => 'Error', 'message' => $this->lang->line('Some thing Wrong') ));
             }
         }else {
             $data['products']   = $this->products->received_transfer();
@@ -940,9 +928,8 @@ class Products extends CI_Controller
     {
         $loc =  $this->aauth->get_user()->loc ;
         $code = $this->input->get('code');
-        $query = " SELECT geopos_products.pid , geopos_warehouse.loc  FROM geopos_products ";
-        $query .= " LEFT JOIN geopos_warehouse ON geopos_products.warehouse = geopos_warehouse.id ";
-        $query .= " WHERE  geopos_products.product_code =  '$code'  AND geopos_warehouse.loc = $loc LIMIT 1 ";
+        $query = " SELECT geopos_products.pid FROM geopos_products ";
+        $query .= " WHERE  geopos_products.product_code =  '$code'  ";
         $query = $this->db->query($query);
         $query =   $query->result_array();
         $return =  count($query);

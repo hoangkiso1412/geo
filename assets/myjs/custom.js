@@ -1,12 +1,18 @@
 var billtype = $('#billtype').val();
 var d_csrf = crsf_token + '=' + crsf_hash;
-
 $('#addproduct').on('click', function () {
     var cvalue = parseInt($('#ganak').val()) + 1;
-    alert(cvalue);
-    add_empty_row(cvalue);
+    var nxt = parseInt(cvalue);
+    $('#ganak').val(nxt);
+    var functionNum = "'" + cvalue + "'";
+    count = $('#saman-row div').length;
+    //product row
+    var data = '<tr><td><input type="text" class="form-control" name="product_name[]" placeholder="Enter Product name or Code" id="productname-' + cvalue + '"></td><td><input type="text" class="form-control req amnt" name="product_qty[]" id="amount-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off" value="1" ><input type="hidden" id="alert-' + cvalue + '" value=""  name="alert[]"> </td> <td><input type="text" class="form-control req prc" name="product_price[]" id="price-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td><td> <input type="text" class="form-control vat" name="product_tax[]" id="vat-' + cvalue + '" onkeypress="return isNumber(event)" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td id="texttaxa-' + cvalue + '" class="text-center">0</td> <td><input type="text" class="form-control discount" name="product_discount[]" onkeypress="return isNumber(event)" id="discount-' + cvalue + '" onkeyup="rowTotal(' + functionNum + '), billUpyog()" autocomplete="off"></td> <td><span class="currenty">' + currency + '</span> <strong><span class=\'ttlText\' id="result-' + cvalue + '">0</span></strong></td> <td class="text-center"><button type="button" data-rowid="' + cvalue + '" class="btn btn-danger removeProd" title="Remove" > <i class="fa fa-minus-square"></i> </button> </td><input type="hidden" name="taxa[]" id="taxa-' + cvalue + '" value="0"><input type="hidden" name="disca[]" id="disca-' + cvalue + '" value="0"><input type="hidden" class="ttInput" name="product_subtotal[]" id="total-' + cvalue + '" value="0"> <input type="hidden" class="pdIn" name="pid[]" id="pid-' + cvalue + '" value="0"> <input type="hidden" name="unit[]" id="unit-' + cvalue + '" value=""> <input type="hidden" name="hsn[]" id="hsn-' + cvalue + '" value=""> </tr><tr><td colspan="8"><textarea class="form-control"  id="dpid-' + cvalue + '" name="product_description[]" placeholder="Enter Product description" autocomplete="off"></textarea><br></td></tr>';
+    //ajax request
+    // $('#saman-row').append(data);
+    $('tr.last-item-row').before(data);
+
     row = cvalue;
-    row = 44;
 
     $('#productname-' + cvalue).autocomplete({
         source: function (request, response) {
@@ -52,6 +58,8 @@ $('#addproduct').on('click', function () {
             $('#alert-' + id[1]).val(ui.item.data[8]);
             rowTotal(cvalue);
             billUpyog();
+
+
         },
         create: function (e) {
             $(this).prev('.ui-helper-hidden-accessible').remove();
@@ -59,6 +67,7 @@ $('#addproduct').on('click', function () {
     });
 
 });
+
 
 //caculations
 var precentCalc = function (total, percentageVal) {
@@ -636,11 +645,8 @@ function formatRest(taxFormat, disFormat, trate = '') {
                 taxr += 0;
             }
         }
-
         $("#total-" + x).val(accounting.formatNumber(result));
         $("#result-" + x).html(accounting.formatNumber(result));
-
-
     }
     var sum = accounting.formatNumber(samanYog());
     $("#subttlid").html(sum);
@@ -653,6 +659,7 @@ function formatRest(taxFormat, disFormat, trate = '') {
 
 
 $('#saman-row').on('click', '.removeProd', function () {
+    var row_counter = parseInt($('#ganak').val()) + 1;
     if(row_counter >  1){
         var pidd = $(this).closest('tr').find('.pdIn').val();
         var pqty = $(this).closest('tr').find('.amnt').val();
